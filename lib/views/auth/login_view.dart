@@ -1,0 +1,205 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mannai_user_app/controllers/login_controller.dart';
+import 'package:mannai_user_app/core/constants/app_consts.dart';
+import 'package:mannai_user_app/core/utils/logger.dart';
+import 'package:mannai_user_app/routing/app_router.dart';
+import 'package:mannai_user_app/widgets/app_back.dart';
+import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
+import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
+
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
+
+  @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
+  final controller = LoginController();
+  bool isChecked = false;
+  Future<void> Login(BuildContext context) async {
+    // Get login data from controller
+    final loginData = controller.getLoginData();
+    AppLogger.success("loginData : ${loginData.email}");
+    AppLogger.success("loginData : ${loginData.password}");
+
+    context.push(RouteNames.bottomnav);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/back.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight, // <-- full height!
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        /// ---- TOP AREA ----
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            children: [
+                              AppCircleIconButton(
+                                icon: Icons.arrow_back,
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 65),
+
+                        Center(
+                          child: Image.asset(
+                            "assets/icons/logo.png",
+                            height: 146,
+                            width: 152,
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
+
+                        Expanded(
+                          child: Container(
+                            width: double.infinity,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(30),
+                                topRight: Radius.circular(30),
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(20),
+
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 20),
+
+                                const Text(
+                                  "Welcome!",
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 25),
+
+                                AppTextField(
+                                  controller: controller.email,
+                                  label: "Email Address",
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) =>
+                                      controller.validateEmail(value),
+                                ),
+
+                                const SizedBox(height: 15),
+
+                                AppTextField(
+                                  controller: controller.password,
+                                  label: "Password",
+                                  isPassword: true,
+                                  validator: (value) =>
+                                      controller.validatePassword(value),
+                                ),
+
+                                const SizedBox(height: 10),
+
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Checkbox(
+                                          value: isChecked,
+                                          checkColor: AppColors.btn_primery,
+                                          activeColor: Colors.white,
+                                          onChanged: (v) {
+                                            setState(() => isChecked = v!);
+                                          },
+                                        ),
+                                        const Text("Remember me"),
+                                      ],
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          context.push(RouteNames.uploadcard),
+                                      child: const Text(
+                                        "Forgot Password?",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.btn_primery,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                SizedBox(height: 20),
+
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: AppButton(
+                                        text: "Sign Up",
+                                        color: AppColors.button_secondary,
+                                        width: double.infinity,
+                                        onPressed: () =>
+                                            context.push(RouteNames.Account),
+                                        height: 50,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: AppButton(
+                                        text: "Sign In",
+                                        color: const Color(0xFF0D5F48),
+                                        width: double.infinity,
+                                        onPressed: () {
+                                          Login(context);
+                                        },
+                                        height: 50,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 30),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}

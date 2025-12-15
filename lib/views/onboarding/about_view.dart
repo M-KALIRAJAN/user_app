@@ -1,0 +1,244 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mannai_user_app/core/constants/app_consts.dart';
+import 'package:mannai_user_app/routing/app_router.dart';
+import 'package:mannai_user_app/views/auth/login_view.dart';
+import 'package:mannai_user_app/widgets/app_back.dart';
+import 'package:mannai_user_app/providers/onbording_provider.dart'; // <-- provider file
+
+class AboutView extends ConsumerStatefulWidget {
+  const AboutView({super.key});
+
+  @override
+  ConsumerState<AboutView> createState() => _AboutViewState();
+}
+
+class _AboutViewState extends ConsumerState<AboutView> {
+  final PageController _controller = PageController();
+  int currentIndex = 0;
+
+  void nextPage(int total) {
+    if (currentIndex < total - 1) {
+      _controller.nextPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      context.go(RouteNames.login);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final aboutAsync = ref.watch(aboutContentProvider);
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          /// ---------------- TOP IMAGE ----------------
+          SizedBox(
+            height: 350,
+            width: double.infinity,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    "assets/images/about.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          const Color.fromARGB(0, 241, 238, 238),
+                          Colors.white,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 50,
+                  left: 15,
+                  right: 15,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AppCircleIconButton(
+                        icon: Icons.arrow_back,
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      Text(
+                        "About",
+                        style: TextStyle(
+                          fontSize: AppFontSizes.medium,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Poppins",
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                           context.go(RouteNames.login);
+                        },
+                        child: Container(
+                          height: 25,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.white.withOpacity(0.6),
+                          ),
+                          child: Row(
+                            children: [
+                              const Text(
+                                "Skip",
+                                style: TextStyle(
+                                  color: AppColors.btn_primery,
+                                  fontSize: 12,
+                                  fontFamily: "Poppins",
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Image.asset(
+                                "assets/icons/skip.png",
+                                height: 14,
+                                width: 14,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          /// ---------------- TITLE ----------------
+          Text(
+            "Nadi Bahrain Services",
+            style: TextStyle(
+              fontSize: AppFontSizes.xLarge,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          /// ---------------- CONTENT ----------------
+          SizedBox(
+            height: 250,
+            child: aboutAsync.when(
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              error: (err, _) => const Center(
+                child: Text("Failed to load content"),
+              ),
+              data: (textPages) {
+                if (textPages.isEmpty) {
+                  return const Center(
+                    child: Text("No content available"),
+                  );
+                }
+
+                return PageView.builder(
+                  controller: _controller,
+                  itemCount: textPages.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      currentIndex = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Text(
+                        textPages[index],
+                        textAlign: TextAlign.justify,
+                        style: TextStyle(
+                          fontSize: AppFontSizes.small,
+                          height: 1.5,
+                          fontFamily: "Poppins",
+                          color: Colors.black87,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          /// ---------------- BOTTOM CONTROLS ----------------
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(width: 40),
+
+                /// Indicators
+                aboutAsync.maybeWhen(
+                  data: (textPages) => Row(
+                    children: List.generate(
+                      textPages.length,
+                      (index) => Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        height: 10,
+                        width: 10,
+                        decoration: BoxDecoration(
+                          color: index == currentIndex
+                              ? AppColors.btn_primery
+                              : AppColors.btn_primery.withOpacity(0.3),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ),
+                  orElse: () => const SizedBox(),
+                ),
+
+                /// Next Button
+                GestureDetector(
+                  onTap: () {
+                    final total = aboutAsync.maybeWhen(
+                      data: (list) => list.length,
+                      orElse: () => 0,
+                    );
+                    nextPage(total);
+                  },
+                  child: Container(
+                    height: 38,
+                    width: 38,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: AppColors.button_secondary,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_outlined,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

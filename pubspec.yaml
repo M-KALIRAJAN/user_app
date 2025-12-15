@@ -1,0 +1,102 @@
+name: mannai_user_app
+description: "A new Flutter project."
+publish_to: "none"
+
+# App Version
+version: 1.0.0+1
+
+# -----------------------------------------------------------------------------
+# 🌐 Environment Configuration
+# -----------------------------------------------------------------------------
+environment:
+  sdk: ^3.9.2
+
+# -----------------------------------------------------------------------------
+# 📦 Application Dependencies
+# -----------------------------------------------------------------------------
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # iOS-style icons
+  cupertino_icons: ^1.0.8
+
+  # Router / Navigation
+  go_router: ^17.0.0
+
+  # Logger
+  logger: ^2.6.2
+
+  # Native splash screen
+  # flutter_native_splash: ^2.4.7
+
+  dotted_border: ^3.1.0
+  pinput: ^6.0.1
+  pie_chart: ^5.4.0
+  dio: ^5.9.0
+  provider: ^6.1.5+1
+  image_picker: ^1.2.1
+  cached_network_image: ^3.4.1
+  flutter_riverpod: ^3.0.3
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  shared_preferences: ^2.5.4
+
+# -----------------------------------------------------------------------------
+# 🛠 Dev Dependencies
+# -----------------------------------------------------------------------------
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+# -----------------------------------------------------------------------------
+# 🚀 Native Splash Screen Configuration
+#    ❗ MUST BE AT TOP LEVEL, NOT UNDER "flutter:"
+# -----------------------------------------------------------------------------
+# flutter_native_splash:
+#   color: "#0D5F48" # Background color
+#   image: assets/icons/logo.png # Your splash logo
+#   android: true
+#   ios: true
+
+  # Optional: Custom settings
+  # android_gravity: center
+  # ios_content_mode: scaleAspectFit
+
+  # Required for Android 12+ splash
+  # android_12:
+  #   image: assets/icons/logo.png
+  #   color: "#0D5F48"
+  #   icon_background_color: "#0D5F48"
+
+# -----------------------------------------------------------------------------
+# 🎨 Flutter Assets & Fonts
+# -----------------------------------------------------------------------------
+flutter:
+  uses-material-design: true
+
+  # Image & icon folders
+  assets:
+    - assets/images/
+    - assets/logo/logo.png
+    - assets/icons/
+
+  # ---------------------------------------------------------------------------
+  # ✨ Custom Fonts (You will add here later)
+  #
+  # Example:
+  #
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+
+  #
+  # After adding fonts, run:
+  # flutter clean
+  # flutter pub get
+  # ---------------------------------------------------------------------------
