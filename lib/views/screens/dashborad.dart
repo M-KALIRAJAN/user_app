@@ -1,4 +1,4 @@
-import 'dart:ffi';
+import 'package:shimmer/shimmer.dart';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -25,6 +25,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   @override
   Map<String, dynamic>? services;
+  bool isLoading = true;
 
   @override
   @override
@@ -34,11 +35,43 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> fetchServices() async {
-    final data = await HomeViewService().servicelists();
-    setState(() {
-      services = data;
-    });
-    AppLogger.debug("Services response: $services");
+    try {
+      setState(() => isLoading = true);
+
+      final data = await HomeViewService().servicelists();
+
+      setState(() {
+        services = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      AppLogger.error("Service API error: $e");
+      setState(() => isLoading = false);
+    }
+  }
+
+  Widget serviceShimmerItem() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
+        child: Column(
+          children: [
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(width: 60, height: 8, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget statusItem(Color color, String text) {
@@ -304,64 +337,75 @@ class _DashboardState extends State<Dashboard> {
                   SizedBox(height: 5),
                   SizedBox(
                     height: 105,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: serviceList.length,
-                      itemBuilder: (context, index) {
-                        final service = serviceList[index];
+                    child: isLoading
+                        ? ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: 5,
+                            itemBuilder: (context, index) {
+                              return serviceShimmerItem();
+                            },
+                          )
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: serviceList.length,
+                            itemBuilder: (context, index) {
+                              final service = serviceList[index];
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => SendServiceRequest(
-                                    title: service['name'],
-                                    imagePath: service['serviceImage'] != null
-                                        ? "${ImageBaseUrl.baseUrl}/${service['serviceImage']}"
-                                        : null,
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => SendServiceRequest(
+                                          title: service['name'],
+                                          imagePath:
+                                              service['serviceImage'] != null
+                                              ? "${ImageBaseUrl.baseUrl}/${service['serviceImage']}"
+                                              : null,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Column(
+                                    children: [
+                                      AppCard(
+                                        width: 70,
+                                        height: 70,
+
+                                        child: service['serviceLogo'] != null
+                                            ? Image.network(
+                                                "${ImageBaseUrl.baseUrl}/${service['serviceLogo']}",
+                                                width: 70,
+                                                height: 70,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Icon(
+                                                Icons.miscellaneous_services,
+                                                size: 40,
+                                              ),
+                                      ),
+
+                                      SizedBox(
+                                        width: 80,
+                                        child: Text(
+                                          service['name'],
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );
                             },
-                            child: Column(
-                              children: [
-                                AppCard(
-                                  width: 70,
-                                  height: 70,
-
-                                  child: service['serviceLogo'] != null
-                                      ? Image.network(
-                                          "${ImageBaseUrl.baseUrl}/${service['serviceLogo']}",
-                                          width: 70,
-                                          height: 70,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Icon(
-                                          Icons.miscellaneous_services,
-                                          size: 40,
-                                        ),
-                                ),
-
-                                SizedBox(
-                                  width: 80,
-                                  child: Text(
-                                    service['name'],
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
                           ),
-                        );
-                      },
-                    ),
                   ),
 
                   Padding(

@@ -4,6 +4,7 @@ import 'package:mannai_user_app/controllers/login_controller.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
 import 'package:mannai_user_app/core/utils/logger.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
+import 'package:mannai_user_app/services/auth_service.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
@@ -17,14 +18,25 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final controller = LoginController();
+  final AuthService _authService = AuthService();
   bool isChecked = false;
   Future<void> Login(BuildContext context) async {
     // Get login data from controller
     final loginData = controller.getLoginData();
     AppLogger.success("loginData : ${loginData.email}");
     AppLogger.success("loginData : ${loginData.password}");
+      context.push(RouteNames.bottomnav);
+    try {
+      final response = await _authService.LoginApi(
+        email: loginData.email,
+        password: loginData.password,
+      );
+      AppLogger.info("loginData$response");
+    } catch (e) {
+      AppLogger.error("Login: $e");
+    }
 
-    context.push(RouteNames.bottomnav);
+  
   }
 
   @override
@@ -186,7 +198,7 @@ class _LoginViewState extends State<LoginView> {
                                   ],
                                 ),
 
-                                const SizedBox(height: 30),
+                                const SizedBox(height: 20),
                               ],
                             ),
                           ),

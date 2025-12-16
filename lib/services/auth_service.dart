@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:mannai_user_app/core/network/dio_client.dart';
 import 'package:mannai_user_app/core/utils/logger.dart';
+import 'package:mannai_user_app/preferences/preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -52,7 +55,11 @@ class AuthService {
       // Extract userId from response and store in SharedPreferences
       final userId = response.data["userId"].toString();
       if (userId != null) {
-        await prefs.setString("userId", userId);
+        // await prefs.setString("userId", userId);
+
+        //  Store via AppPreferences
+        await AppPreferences.saveUserId(userId);
+
         AppLogger.warn("userId saved in SharedPreferences: $userId");
       }
 
@@ -92,7 +99,7 @@ class AuthService {
     }
   }
 
-    //Selected Block
+  //Selected Block
   Future<List<Map<String, dynamic>>> selectblock() async {
     try {
       final response = await _dio.get("block");
@@ -115,51 +122,102 @@ class AuthService {
     }
   }
 
- // Adress Details
-Future<Map<String, dynamic>?> adressdetails({
-  required Map<String, dynamic> body,
-}) async {
-  try {
-    final response = await _dio.post(
-      "user-account/address",
-      data: body, //  DIRECT BODY
-    );
+  // Adress Details
+  Future<Map<String, dynamic>?> adressdetails({
+    required Map<String, dynamic> body,
+  }) async {
+    try {
+      final response = await _dio.post(
+        "user-account/address",
+        data: body, //  DIRECT BODY
+      );
 
-    AppLogger.success("ADDRESS RESPONSE  ${response.data}");
-    return response.data;
-  } catch (e) {
-    AppLogger.error("Address API Error  $e");
-    return null;
+      AppLogger.success("ADDRESS RESPONSE  ${response.data}");
+      return response.data;
+    } catch (e) {
+      AppLogger.error("Address API Error  $e");
+      return null;
+    }
   }
-}
 
-// Add Family Member
-Future<Map<String,dynamic>?> memberdetails({
-  required Map<String,dynamic> body,
-})async{
-    try{
+  // Add Family Member
+  Future<Map<String, dynamic>?> memberdetails({
+    required Map<String, dynamic> body,
+  }) async {
+    try {
       final response = await _dio.post(
         "user-account/add-family-member",
-        data:body
-        );
-        AppLogger.success("ADDRESS RESPONSE  ${response.data}");
-    return response.data;
-
-    }catch(e){
-          AppLogger.error("Address API Error  $e");
-    return null;
+        data: body,
+      );
+      AppLogger.success("ADDRESS RESPONSE  ${response.data}");
+      return response.data;
+    } catch (e) {
+      AppLogger.error("Address API Error  $e");
+      return null;
     }
-}
+  }
 
+  // Upload ID
+  Future<Map<String, dynamic>?> uploadidproof({
+    required File frontImage,
+    required File backImage,
+    String? userId,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        "userId": userId,
+        "front_id": await MultipartFile.fromFile(
+          frontImage.path,
+          filename: frontImage.path.split('/').last,
+        ),
+        "back_id": await MultipartFile.fromFile(
+          backImage.path,
+          filename: backImage.path.split('/').last,
+        ),
+      });
 
-  //Sign Up Adress Deatails
-  //   Future<Map<String,dynamic>> accountdetails({
-  //     required String addressType,
-  //     required String city,
-  //     required String building,
-  //     required String aptNo
-  // ,
-  //   }) async{
+      AppLogger.warn("FROMDATA : $formData");
+      final responae = await _dio.post(
+        "user-account/upload-id",
+        data: formData,
+        options: Options(headers: {"Content-Type": "multipart/form-data"}),
+      );
+      return responae.data;
+    } catch (e) {
+      AppLogger.error("Upload proofe: $e");
+    }
+  }
 
-  //   }
+  //OTP verfiy
+  Future<Map<String, dynamic>?> OTPverify({
+    required String otp,
+    required String userId,
+  }) async {
+    try {
+      final response = await _dio.post(
+        "user-account/verify-otp",
+        data: {"userId": userId, "otp": otp},
+      );
+
+      return response.data;
+    } catch (e) {
+      AppLogger.error("OTP: $e");
+    }
+  }
+
+  //Login
+  Future<Map<String, dynamic>?> LoginApi({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await _dio.post(
+        "user-account/signin",
+        data: {"email": email, "password": password},
+      );
+      return response.data;
+    } catch (e) {
+      AppLogger.error("Login: $e");
+    }
+  }
 }

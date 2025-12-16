@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/controllers/address_controller.dart';
 
 import 'package:mannai_user_app/core/constants/app_consts.dart';
+import 'package:mannai_user_app/preferences/preferences.dart';
 import 'package:mannai_user_app/providers/auth_Provider.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
 import 'package:mannai_user_app/services/auth_service.dart';
@@ -33,76 +34,81 @@ class Address extends StatefulWidget {
 
 class _AddressState extends State<Address> {
   String selected = "Flat";
-    bool _isLoading = false;
+  bool _isLoading = false;
   final AuthService _adressservice = AuthService();
   AddressController get controller => widget.controller;
-Future<void> familyAccount(BuildContext context) async {
-  final prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getString("userId");
+  Future<void> familyAccount(BuildContext context) async {
+    // final prefs = await SharedPreferences.getInstance();
+    // final userId = prefs.getString("userId");
+    final userId = await AppPreferences.getUserId();
 
-  if (userId == null) {
-    debugPrint("❌ USER ID IS NULL");
-    return;
-  }
-
-  final body = controller.getApiAddressBody(
-    userId: userId,
-    addressType: selected.toLowerCase(),
-  );
-
-  debugPrint("📤 API BODY 👉 $body");
-
-  bool showLoader = false;
-
-  // Start a delayed timer for loader (300ms)
-  Future.delayed(const Duration(milliseconds: 300), () {
-    if (!showLoader) return;
-    if (mounted) setState(() => _isLoading = true); // show loader only if API is still running
-  });
-
-  try {
-    showLoader = true;
-
-    final response = await _adressservice.adressdetails(body: body);
-
-    // API finished
-    showLoader = false;
-    if (mounted) setState(() => _isLoading = false); // hide loader if it was shown
-
-    if (response != null) {
-      debugPrint("✅ Address saved successfully");
-
-      if (widget.accountType == "Family") {
-        widget.onNext?.call();
-      } else {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: const Text(
-                "Account created successfully",
-                style: TextStyle(color: Colors.white),
-              ),
-              backgroundColor: AppColors.button_secondary,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-
-        // small delay so user can see snackbar
-        Future.delayed(const Duration(seconds: 1), () {
-          context.push(RouteNames.accountverfy);
-        });
-      }
+    if (userId == null) {
+      debugPrint("❌ USER ID IS NULL");
+      return;
     }
-  } catch (e) {
-    showLoader = false;
-    if (mounted) setState(() => _isLoading = false);
-    debugPrint("❌ Address submit failed 👉 $e");
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("Submit failed: $e")));
-  }
-}
 
+    final body = controller.getApiAddressBody(
+      userId: userId,
+      addressType: selected.toLowerCase(),
+    );
+
+    debugPrint("📤 API BODY 👉 $body");
+
+    bool showLoader = false;
+
+    // Start a delayed timer for loader (300ms)
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (!showLoader) return;
+      if (mounted)
+        setState(
+          () => _isLoading = true,
+        ); // show loader only if API is still running
+    });
+
+    try {
+      showLoader = true;
+
+      final response = await _adressservice.adressdetails(body: body);
+
+      // API finished
+      showLoader = false;
+      if (mounted)
+        setState(() => _isLoading = false); // hide loader if it was shown
+
+      if (response != null) {
+        debugPrint("✅ Address saved successfully");
+
+        if (widget.accountType == "Family") {
+          widget.onNext?.call();
+        } else {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: const Text(
+                  "Account created successfully",
+                  style: TextStyle(color: Colors.white),
+                ),
+                backgroundColor: AppColors.button_secondary,
+                duration: const Duration(seconds: 2),
+              ),
+            );
+
+          // small delay so user can see snackbar
+          Future.delayed(const Duration(seconds: 1), () {
+            context.push(RouteNames.accountverfy);
+          });
+        }
+      }
+    } catch (e) {
+      showLoader = false;
+      if (mounted) setState(() => _isLoading = false);
+      debugPrint("❌ Address submit failed 👉 $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Submit failed: $e")));
+    }
+  }
 
   Widget buildType(String type, String icon) {
     final bool isSelected = selected == type;
@@ -282,7 +288,7 @@ Future<void> familyAccount(BuildContext context) async {
           if (!widget.family) // If NOT coming from add member
             AppButton(
               text: widget.accountType == "Family" ? "Continue" : "Sign In",
-                  isLoading: _isLoading,
+              isLoading: _isLoading,
               onPressed: () {
                 final isValid =
                     widget.formKey.currentState?.validate() ?? false;

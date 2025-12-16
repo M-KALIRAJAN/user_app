@@ -17,7 +17,7 @@ class LoginController {
     return Validators.Password(value);
   }
 
-  /// Get the login model from controller data
+
   LoginModel getLoginData() {
     return LoginModel(
       email: email.text,

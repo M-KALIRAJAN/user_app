@@ -269,6 +269,7 @@ import 'package:mannai_user_app/controllers/address_controller.dart';
 import 'package:mannai_user_app/controllers/family_member_controller.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
 import 'package:mannai_user_app/core/utils/logger.dart';
+import 'package:mannai_user_app/preferences/preferences.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
 import 'package:mannai_user_app/services/auth_service.dart';
 import 'package:mannai_user_app/views/auth/individual/Address.dart';
@@ -305,120 +306,68 @@ class _AddmemberState extends State<Addmember> {
   int _totalMembers = 0;
   int _currentMemberIndex = 1;
 
-  // Future<void> _addMember() async {
-  //   final memberValid = widget.formKey.currentState?.validate() ?? false;
-  //   final addressValid = _addressFormKey.currentState?.validate() ?? false;
+  Future<void> _addMember() async {
+    final memberValid = widget.formKey.currentState?.validate() ?? false;
+    final addressValid = _addressFormKey.currentState?.validate() ?? false;
 
-  //   if (!memberValid || !addressValid) return;
+    if (!memberValid || !addressValid) return;
 
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final userId = prefs.getString("userId");
-  //   if (userId == null) return;
+    // final prefs = await SharedPreferences.getInstance();
+    // final userId = prefs.getString("userId");
+    final userId = await AppPreferences.getUserId();
+    if (userId == null) return;
 
-  //   final body = controller.getApiFamilyMemberBody(
-  //     userId: userId,
-  //     address: addressController.getOnlyAddressMap(addressType: "flat"),
-  //   );
+    final body = controller.getApiFamilyMemberBody(
+      userId: userId,
+      address: _isAddress
+          ? addressController.getOnlyAddressMap(addressType: "flat")
+          : null,
+    );
 
-  //   setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
-  //   try {
-  //     final response = await _authService.memberdetails(body: body);
-  //     setState(() => _isLoading = false);
+    try {
+      final response = await _authService.memberdetails(body: body);
+      setState(() => _isLoading = false);
 
-  //     AppLogger.debug("Member added 👉 ${jsonEncode(response)}");
+      AppLogger.debug("Member added 👉 ${jsonEncode(response)}");
 
+      // Clear form for next member
+      controller.fullName.clear();
+      controller.mobile.clear();
+      controller.email.clear();
+      controller.password.clear();
+      controller.relation = null;
+      controller.gender = null;
+      if (_isAddress) addressController.clear();
 
-  //     controller.fullName.clear();
-  //     controller.mobile.clear();
-  //     controller.email.clear();
-  //     controller.password.clear();
-  //     controller.relation = null;
-  //     controller.gender = null;
+      // If last member
+      if (_currentMemberIndex == _totalMembers) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("All members added successfully"),
+            backgroundColor: AppColors.button_secondary,
+            duration: Duration(seconds: 2),
+          ),
+        );
 
-  //     addressController.clear();
-
-  //     setState(() {
-  //       _currentMemberIndex++;
-  //     });
-  //           ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text("Member added successfully"),
-  //         backgroundColor: AppColors.button_secondary,
-  //         duration: Duration(seconds: 2),
-  //       ),
-  //     );
-  //   Future.delayed(const Duration(seconds: 1), () {
-  //     context.push(RouteNames.accountverfy);
-  //   });
-  //   } catch (e) {
-  //     setState(() => _isLoading = false);
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(SnackBar(content: Text("Submit failed: $e")));
-  //   }
-  // }
-
-
-Future<void> _addMember() async {
-  final memberValid = widget.formKey.currentState?.validate() ?? false;
-  final addressValid = _addressFormKey.currentState?.validate() ?? false;
-
-  if (!memberValid || !addressValid) return;
-
-  final prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getString("userId");
-  if (userId == null) return;
-
-  final body = controller.getApiFamilyMemberBody(
-    userId: userId,
-    address: _isAddress ? addressController.getOnlyAddressMap(addressType: "flat") : null,
-  );
-
-  setState(() => _isLoading = true);
-
-  try {
-    final response = await _authService.memberdetails(body: body);
-    setState(() => _isLoading = false);
-
-    AppLogger.debug("Member added 👉 ${jsonEncode(response)}");
-
-    // Clear form for next member
-    controller.fullName.clear();
-    controller.mobile.clear();
-    controller.email.clear();
-    controller.password.clear();
-    controller.relation = null;
-    controller.gender = null;
-    if (_isAddress) addressController.clear();
-
-    // If last member
-    if (_currentMemberIndex == _totalMembers) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("All members added successfully"),
-          backgroundColor: AppColors.button_secondary,
-          duration: Duration(seconds: 2),
-        ),
-      );
-
-      // Delay slightly so user sees the snackbar
-      Future.delayed(const Duration(seconds: 1), () {
-        context.push(RouteNames.accountverfy);
-      });
-    } else {
-      // Increment member index for next member
-      setState(() {
-        _currentMemberIndex++;
-      });
+        // Delay slightly so user sees the snackbar
+        Future.delayed(const Duration(seconds: 1), () {
+          context.push(RouteNames.accountverfy);
+        });
+      } else {
+        // Increment member index for next member
+        setState(() {
+          _currentMemberIndex++;
+        });
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Submit failed: $e")));
     }
-
-  } catch (e) {
-    setState(() => _isLoading = false);
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("Submit failed: $e")));
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -446,14 +395,17 @@ Future<void> _addMember() async {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: "Enter Family Count*",
-                 border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black26),
-        ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.black26),
+                    ),
                   ),
                   validator: controller.validatefamilycount,
                   onChanged: (val) {
@@ -477,7 +429,6 @@ Future<void> _addMember() async {
                 //       fontWeight: FontWeight.w500,
                 //     ),
                 //   ),
-
                 const SizedBox(height: 15),
 
                 AppTextField(

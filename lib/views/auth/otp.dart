@@ -2,9 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
+import 'package:mannai_user_app/core/utils/logger.dart';
+import 'package:mannai_user_app/preferences/preferences.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
+import 'package:mannai_user_app/services/auth_service.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:pinput/pinput.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Otp extends StatefulWidget {
   const Otp({super.key});
@@ -15,6 +19,19 @@ class Otp extends StatefulWidget {
 
 class _OtpState extends State<Otp> {
   final otpController = TextEditingController();
+  final AuthService _authService = AuthService();
+
+  Future<void> sendOtp(BuildContext context) async {
+    // final prefs = await SharedPreferences.getInstance();
+    // final userId = prefs.getString("userId");
+    final userId = await AppPreferences.getUserId();
+    final otp = otpController.text.trim().toString();
+    AppLogger.warn("otpo: $otp");
+    AppLogger.warn("otpo: $userId");
+    final response = await _authService.OTPverify(otp: otp, userId: userId!);
+    debugPrint("OTP verify response: $response");
+  }
+
   @override
   final defaultPinTheme = PinTheme(
     width: 50,
@@ -31,11 +48,9 @@ class _OtpState extends State<Otp> {
       backgroundColor: AppColors.background_clr,
       body: SafeArea(
         child: Center(
-        
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-             
               Text(
                 "Enter Verification code",
                 style: TextStyle(
@@ -60,9 +75,7 @@ class _OtpState extends State<Otp> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-SizedBox(
-  height: 20,
-),
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -83,27 +96,21 @@ SizedBox(
                   ),
                 ],
               ),
-        
+
               Padding(
-                padding: const EdgeInsets.only(top: 90,left: 25,right: 25),
+                padding: const EdgeInsets.only(top: 90, left: 25, right: 25),
                 child: AppButton(
                   text: "Sign In",
-                  onPressed: (){
-                      context.push(RouteNames.accountcreated);
+                  onPressed: () {
+                    context.push(RouteNames.accountcreated);
+                    sendOtp(context);
                   },
                   color: AppColors.btn_primery,
                   width: double.infinity,
                 ),
               ),
 
-              Row(
-                children: [
-                   Container(
-                    width: 30,
-                    height: 1,
-                   )
-                ],
-              )
+              Row(children: [Container(width: 30, height: 1)]),
             ],
           ),
         ),

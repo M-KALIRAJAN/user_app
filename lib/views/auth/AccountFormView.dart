@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mannai_user_app/controllers/signup_controller.dart';
 import 'package:mannai_user_app/core/utils/logger.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
+import 'package:mannai_user_app/preferences/preferences.dart';
 import 'package:mannai_user_app/services/auth_service.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:mannai_user_app/widgets/inputs/app_dropdown.dart';
@@ -42,8 +43,8 @@ Future<void> submitBasicInfo(BuildContext context) async {
 
   controller.saveToModel();
   final data = controller.signupData!;
-  final prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getString("userId");
+   // Get userId via AppPreferences
+  final userId = await AppPreferences.getUserId();
 
   try {
     final response = await _basicInfo.basicInfo(

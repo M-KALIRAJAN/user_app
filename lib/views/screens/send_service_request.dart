@@ -6,6 +6,7 @@ import 'package:mannai_user_app/routing/app_router.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SendServiceRequest extends StatefulWidget {
   final String title;
@@ -20,6 +21,21 @@ class SendServiceRequest extends StatefulWidget {
 class _SendServiceRequestState extends State<SendServiceRequest> {
   @override
   Widget build(BuildContext context) {
+    Widget imageShimmer() {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
+        child: Container(
+          width: double.infinity,
+          height: 200,
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -74,23 +90,14 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(15),
                           child: widget.imagePath != null
-                              ?CachedNetworkImage(
-                                imageUrl:widget.imagePath!,
-                                       width: double.infinity,
-                                  height: 200,
-                                  fit: BoxFit.cover,
-                                )
-                          
-                              : Container(
+                              ? CachedNetworkImage(
+                                  imageUrl: widget.imagePath!,
                                   width: double.infinity,
                                   height: 200,
-                                  color: Colors.grey[300],
-                                  child: const Icon(
-                                    Icons.miscellaneous_services,
-                                    size: 50,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => imageShimmer(),
+                                )
+                              : imageShimmer(),
                         ),
 
                         const SizedBox(height: 25),
