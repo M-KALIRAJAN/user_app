@@ -58,7 +58,7 @@ class SignupController {
       fullName: name.text,
       mobileNumber: mobile.text,
       email: email.text,
-      gender: gender!,
+      gender: gender!.toLowerCase(),
       password: password.text,
 
     );

@@ -54,7 +54,7 @@ class AuthService {
       if (userId != null) {
         await prefs.setString("userId", userId);
         AppLogger.warn("userId saved in SharedPreferences: $userId");
-      } 
+      }
 
       return true;
     } catch (e, st) {
@@ -70,13 +70,13 @@ class AuthService {
     required String email,
     required String password,
     required String gender,
-     required String userId
+    required String userId,
   }) async {
     try {
       final response = await _dio.post(
         "user-account/basic-info",
         data: {
-          "userId":userId,
+          "userId": userId,
           "full_name": fullName,
           "mobile": mobileNumber,
           "email": email,
@@ -84,7 +84,7 @@ class AuthService {
           "gender": gender,
         },
       );
-         AppLogger.success(response.data.toString());
+      AppLogger.success(response.data.toString());
       return response.data;
     } catch (e) {
       AppLogger.error("Basic Info ${e}");
@@ -92,40 +92,74 @@ class AuthService {
     }
   }
 
-Future<List<Map<String, dynamic>>> selectblock() async {
-  try {
-    final response = await _dio.get("block");
+    //Selected Block
+  Future<List<Map<String, dynamic>>> selectblock() async {
+    try {
+      final response = await _dio.get("block");
 
-    // Ensure proper typing
-    final List<dynamic> rawData = response.data["data"];
-    final blockData = rawData.map((e) => Map<String, dynamic>.from(e)).toList();
+      // Ensure proper typing
+      final List<dynamic> rawData = response.data["data"];
+      final blockData = rawData
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
 
-    // Print entire JSON nicely
-    final prettyJson = const JsonEncoder.withIndent('  ').convert(blockData);
-    print("========= Roads & Blocks =========");
-    print(prettyJson);
-  
+      // Print entire JSON nicely
+      final prettyJson = const JsonEncoder.withIndent('  ').convert(blockData);
 
-    
+      print(prettyJson);
 
-    return blockData;
-  } catch (e) {
-    AppLogger.error("SELECTBLOCK Error: $e");
-    return [];
+      return blockData;
+    } catch (e) {
+      AppLogger.error("SELECTBLOCK Error: $e");
+      return [];
+    }
   }
+
+ // Adress Details
+Future<Map<String, dynamic>?> adressdetails({
+  required Map<String, dynamic> body,
+}) async {
+  try {
+    final response = await _dio.post(
+      "user-account/address",
+      data: body, //  DIRECT BODY
+    );
+
+    AppLogger.success("ADDRESS RESPONSE  ${response.data}");
+    return response.data;
+  } catch (e) {
+    AppLogger.error("Address API Error  $e");
+    return null;
+  }
+}
+
+// Add Family Member
+Future<Map<String,dynamic>?> memberdetails({
+  required Map<String,dynamic> body,
+})async{
+    try{
+      final response = await _dio.post(
+        "user-account/add-family-member",
+        data:body
+        );
+        AppLogger.success("ADDRESS RESPONSE  ${response.data}");
+    return response.data;
+
+    }catch(e){
+          AppLogger.error("Address API Error  $e");
+    return null;
+    }
 }
 
 
   //Sign Up Adress Deatails
-//   Future<Map<String,dynamic>> accountdetails({
-//     required String addressType,
-//     required String city,
-//     required String building,
-//     required String aptNo
-// ,
-//   }) async{
+  //   Future<Map<String,dynamic>> accountdetails({
+  //     required String addressType,
+  //     required String city,
+  //     required String building,
+  //     required String aptNo
+  // ,
+  //   }) async{
 
-//   }
-
-
+  //   }
 }

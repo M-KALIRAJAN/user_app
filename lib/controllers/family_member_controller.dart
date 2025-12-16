@@ -7,6 +7,7 @@ class FamilyMemberController {
    final fullName = TextEditingController();
    final mobile = TextEditingController();
    final email = TextEditingController();
+   final password = TextEditingController();
    String?relation;
    String?gender;
 
@@ -14,6 +15,8 @@ class FamilyMemberController {
 
    String? validatefamilycount(String? value) =>
          value == null || value.isEmpty ? "Enter Family Count" :  null ;
+         String? validatepassword(String? value) => 
+            value == null || value.isEmpty ? "Enter Password" : null ;
     String? validatefullname(String? value) =>
            value == null || value.isEmpty ? "Enter Fulname" : null ;
     String? validatemobilenumber(String? value) {
@@ -23,14 +26,21 @@ class FamilyMemberController {
         return Validators.email(value);
     }
        
-       FamilyMemberModel getfamilymemberdata(){
-        return FamilyMemberModel(
-          relation: relation!,
-          
-            fullName: fullName.text,
-             mobileNumber: mobile.text,
-              email: email.text,
-               gender: gender!, 
-               familyCount: familyCount.text);
-       }
+
+      Map<String, dynamic> getApiFamilyMemberBody({
+    required String userId,
+    required Map<String, dynamic>? address,
+  }) {
+    return {
+      "userId": userId,
+      "familyCount": familyCount.text,
+      "fullName": fullName.text,
+      "relation": relation?.toLowerCase(),
+      "mobile": mobile.text,
+      "email": email.text,
+      "password": password.text,
+      "gender": gender?.toLowerCase(),
+      "address": address,
+    };
+  }
 }

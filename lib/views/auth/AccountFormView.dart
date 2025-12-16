@@ -27,28 +27,49 @@ class AccountFormView extends StatefulWidget {
 class _AccountFormViewState extends State<AccountFormView> {
   final controller = SignupController();
   final AuthService _basicInfo = AuthService();
+  bool _isLoading = false;
 
-  Future<void> submitBasicInfo(BuildContext context) async {
-    if (!widget.formKey.currentState!.validate()) return;
-    controller.saveToModel();
-    final data = controller.signupData!;
-    AppLogger.debug("User Basic Info : ${data.toJson().toString()}");
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString("userId");
-    try {
-      final response = await _basicInfo.basicInfo(
-        userId: userId!,
-        fullName: data.fullName,
-        mobileNumber: data.mobileNumber,
-        email: data.email,
-        password: data.password,
-        gender: data.gender,
-      );
-      if (response["message"] == "Basic info saved") {
-        widget.onNext();
-      }
-    } catch (e) {}
+Future<void> submitBasicInfo(BuildContext context) async {
+  if (!widget.formKey.currentState!.validate()) return;
+
+  bool showLoader = false;
+
+  // Start a delayed timer (e.g., 300ms)
+  Future.delayed(const Duration(milliseconds: 300), () {
+    if (!showLoader) return; // If API finished already, don't show
+    if (mounted) setState(() => _isLoading = true);
+  });
+
+  controller.saveToModel();
+  final data = controller.signupData!;
+  final prefs = await SharedPreferences.getInstance();
+  final userId = prefs.getString("userId");
+
+  try {
+    final response = await _basicInfo.basicInfo(
+      userId: userId!,
+      fullName: data.fullName,
+      mobileNumber: data.mobileNumber,
+      email: data.email,
+      password: data.password,
+      gender: data.gender,
+    );
+
+    // API finished
+    showLoader = false;
+
+    if (mounted) setState(() => _isLoading = false); // hide loader if shown
+    if (response["message"] == "Basic info saved") {
+      widget.onNext();
+    }
+  } catch (e) {
+    showLoader = false;
+    if (mounted) setState(() => _isLoading = false);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("Submit failed: $e")));
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +144,8 @@ class _AccountFormViewState extends State<AccountFormView> {
             text: "Continue",
             color: AppColors.btn_primery,
             width: double.infinity,
-
+          
+            isLoading: _isLoading,
             onPressed: () {
               submitBasicInfo(context);
             },

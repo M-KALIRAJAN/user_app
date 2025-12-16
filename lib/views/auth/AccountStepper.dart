@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mannai_user_app/controllers/address_controller.dart';
 import 'package:mannai_user_app/views/auth/AccountFormView.dart';
 import 'package:mannai_user_app/views/auth/AddMember.dart';
 import 'package:mannai_user_app/views/auth/individual/Address.dart';
@@ -18,6 +19,7 @@ class _AccountStepperState extends State<AccountStepper> {
   final _formKeyIndividual = GlobalKey<FormState>();
   final _formKeyAddress = GlobalKey<FormState>();
   final _formKeyAddMember = GlobalKey<FormState>();
+  final addressController = AddressController();
 
   @override
   Widget build(BuildContext context) {
@@ -57,15 +59,26 @@ class _AccountStepperState extends State<AccountStepper> {
                   ),
 
                 
-                  Address(
-                    accountType: widget.accountType,
-                    formKey: _formKeyAddress,
-                    onNext: () {
-                      if (_formKeyAddress.currentState!.validate()) {
-                        setState(() => _currentStep += 1);
-                      }
-                    },
-                  ),
+                Address(
+  accountType: widget.accountType,
+  formKey: _formKeyAddress,
+  controller: addressController,
+  onNext: () {
+    if (_formKeyAddress.currentState!.validate()) {
+      setState(() {
+        if (widget.accountType == "Family") {
+          _currentStep = 2; // go to Add Member
+        } else {
+          // Individual account → finish flow here
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Account created successfully")),
+          );
+        }
+      });
+    }
+  },
+),
+
 
                   // Step 3: Add Member (Family Only)
                   if (widget.accountType == "Family")

@@ -6,23 +6,77 @@ class AddressController {
   TextEditingController aptNo = TextEditingController();
   TextEditingController floor = TextEditingController();
 
-  // NEW fields
-  String? road; // selected road
-  String? block; // selected block
-  List<Map<String, dynamic>> blocksForSelectedRoad = []; // blocks for selected road
+  // Selected names
+  String? road;
+  String? block;
 
+  // Selected IDs
+  String? roadId;
+  String? blockId;
+
+  // Blocks for selected road
+  List<Map<String, dynamic>> blocksForSelectedRoad = [];
+
+  /// For debugging / local use
   Map<String, dynamic> getAddressData() {
     return {
-      "building": building.text,
+      "roadId": roadId,
+      "roadName": road,
+      "blockId": blockId,
+      "blockName": block,
       "city": city.text,
+      "building": building.text,
       "aptNo": aptNo.text,
       "floor": floor.text,
-      "road": road,
-      "block": block,
+    };
+  }
+  void clear() {
+    city.clear();
+    floor.clear();
+    building.clear();
+    aptNo.clear();
+    roadId = null;
+    blockId = null;
+  }
+  Map<String, dynamic> getOnlyAddressMap({
+    required String addressType,
+  }) {
+    return {
+      "city": city.text,
+      "addressType": addressType,
+      "floor": floor.text,
+      "building": building.text,
+      "aptNo": aptNo.text,
+      "roadId": roadId,
+      "blockId": blockId,
     };
   }
 
-  String? validateBuilding(String? val) => val?.isEmpty ?? true ? "Required" : null;
-  String? validateAptNo(String? val) => val?.isEmpty ?? true ? "Required" : null;
-  String? validateFloor(String? val) => val?.isEmpty ?? true ? "Required" : null;
+  Map<String, dynamic> getApiAddressBody({
+    required String userId,
+    required String addressType, // flat / villa / office
+  }) {
+    return {
+      "userId": userId,
+      "address": {
+        "addressType": addressType,
+        "city": city.text,
+        "building": building.text,
+        "aptNo": aptNo.text,
+        "floor": floor.text,
+        "roadId": roadId,
+        "blockId": blockId,
+      }
+    };
+  }
+
+  // Validators
+  String? validateBuilding(String? val) =>
+      (val == null || val.isEmpty) ? "Required" : null;
+
+  String? validateAptNo(String? val) =>
+      (val == null || val.isEmpty) ? "Required" : null;
+
+  String? validateFloor(String? val) =>
+      (val == null || val.isEmpty) ? "Required" : null;
 }

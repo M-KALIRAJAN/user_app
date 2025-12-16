@@ -3,13 +3,14 @@ import 'package:mannai_user_app/core/constants/app_consts.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color color;
   final Color textColor;
   final double height;
   final double borderRadius;
   final double width;
   final Widget? icon;
+  final bool isLoading;
 
   const AppButton({
     super.key,
@@ -21,6 +22,7 @@ class AppButton extends StatelessWidget {
     required this.width,
     this.borderRadius = 14,
     this.icon,
+    this.isLoading = false,
   });
 
   @override
@@ -28,47 +30,55 @@ class AppButton extends StatelessWidget {
     return SizedBox(
       width: width,
       height: height,
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          splashFactory: InkSplash.splashFactory, // smaller ripple
-          splashColor: Colors.white.withOpacity(0.25), // ripple color
-        ),
-        child: ElevatedButton(
-          clipBehavior: Clip.antiAlias, // IMPORTANT → full ripple clip
-          style: ElevatedButton.styleFrom(
-            backgroundColor: color,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(borderRadius),
-            ),
+      child: ElevatedButton(
+        onPressed: () {
+          if (!isLoading) {
+            onPressed?.call();
+          }
+        }, // ✅ ignore taps while loading
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color, // keep full color
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
-          onPressed: onPressed,
-          child: icon == null
-              ? Text(
-                  text,
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: AppFontSizes.medium,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    icon!,
-                    const SizedBox(width: 20),
-                    Text(
-                      text,
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
         ),
+        child: isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white, // spinner color
+                ),
+              )
+            : icon == null
+                ? Text(
+                    text,
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      icon!,
+                      const SizedBox(width: 10),
+                      Text(
+                        text,
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
       ),
     );
   }
 }
+ 
+

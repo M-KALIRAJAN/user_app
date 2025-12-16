@@ -36,6 +36,9 @@ class AppDropdown extends StatelessWidget {
             color: Colors.grey
           )
         ),
+          focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         filled: true,
         fillColor: Colors.white,
       ),
