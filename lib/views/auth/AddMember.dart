@@ -276,7 +276,6 @@ import 'package:mannai_user_app/views/auth/individual/Address.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:mannai_user_app/widgets/inputs/app_dropdown.dart';
 import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Addmember extends StatefulWidget {
   final String accountType;
@@ -299,6 +298,8 @@ class _AddmemberState extends State<Addmember> {
   final addressController = AddressController();
   final AuthService _authService = AuthService();
   bool _isAddress = false;
+  bool _isFamilyCountLocked = false;
+  bool _hideBottomButton = false;
   final GlobalKey<FormState> _addressFormKey = GlobalKey<FormState>();
 
   bool _isLoading = false;
@@ -323,7 +324,7 @@ class _AddmemberState extends State<Addmember> {
           ? addressController.getOnlyAddressMap(addressType: "flat")
           : null,
     );
-
+ AppLogger.success("body : $body");
     setState(() => _isLoading = true);
 
     try {
@@ -343,6 +344,9 @@ class _AddmemberState extends State<Addmember> {
 
       // If last member
       if (_currentMemberIndex == _totalMembers) {
+        setState(() {
+          _hideBottomButton = true;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("All members added successfully"),
@@ -380,19 +384,27 @@ class _AddmemberState extends State<Addmember> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Add ${widget.accountType} Member",
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
+                // Text(
+                //   "Add ${widget.accountType} Member",
+                //   style: const TextStyle(
+                //     fontSize: 22,
+                //     fontWeight: FontWeight.w600,
+                //   ),
+                // ),
+                if (_totalMembers > 0)
+                  Text(
+                    " Add ${widget.accountType}Member $_currentMemberIndex of $_totalMembers",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-
                 const SizedBox(height: 15),
 
                 TextFormField(
                   controller: controller.familyCount,
                   keyboardType: TextInputType.number,
+                  enabled: !_isFamilyCountLocked,
                   decoration: InputDecoration(
                     labelText: "Enter Family Count*",
                     border: OutlineInputBorder(
@@ -414,6 +426,7 @@ class _AddmemberState extends State<Addmember> {
                       setState(() {
                         _totalMembers = count;
                         _currentMemberIndex = 1;
+                        _isFamilyCountLocked = true;
                       });
                     }
                   },
@@ -421,14 +434,6 @@ class _AddmemberState extends State<Addmember> {
 
                 const SizedBox(height: 10),
 
-                // if (_totalMembers > 0)
-                //   Text(
-                //     "Member $_currentMemberIndex of $_totalMembers",
-                //     style: const TextStyle(
-                //       fontSize: 16,
-                //       fontWeight: FontWeight.w500,
-                //     ),
-                //   ),
                 const SizedBox(height: 15),
 
                 AppTextField(
@@ -531,15 +536,17 @@ class _AddmemberState extends State<Addmember> {
           ),
 
           const SizedBox(height: 25),
-
-          AppButton(
-            text: _currentMemberIndex < _totalMembers ? "Add Member" : "Finish",
-            isLoading: _isLoading,
-            onPressed: _addMember,
-            color: AppColors.btn_primery,
-            width: double.infinity,
-            height: 47,
-          ),
+          if (!_hideBottomButton)
+            AppButton(
+              text: _currentMemberIndex < _totalMembers
+                  ? "Add Member"
+                  : "Finish",
+              isLoading: _isLoading,
+              onPressed: _addMember,
+              color: AppColors.btn_primery,
+              width: double.infinity,
+              height: 47,
+            ),
         ],
       ),
     );

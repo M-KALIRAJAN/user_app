@@ -35,6 +35,7 @@ class Address extends StatefulWidget {
 class _AddressState extends State<Address> {
   String selected = "Flat";
   bool _isLoading = false;
+    bool _hideBottomButton = false;
   final AuthService _adressservice = AuthService();
   AddressController get controller => widget.controller;
   Future<void> familyAccount(BuildContext context) async {
@@ -43,7 +44,7 @@ class _AddressState extends State<Address> {
     final userId = await AppPreferences.getUserId();
 
     if (userId == null) {
-      debugPrint("❌ USER ID IS NULL");
+      debugPrint(" USER ID IS NULL");
       return;
     }
 
@@ -56,7 +57,7 @@ class _AddressState extends State<Address> {
 
     bool showLoader = false;
 
-    // Start a delayed timer for loader (300ms)
+   
     Future.delayed(const Duration(milliseconds: 300), () {
       if (!showLoader) return;
       if (mounted)
@@ -73,7 +74,7 @@ class _AddressState extends State<Address> {
       // API finished
       showLoader = false;
       if (mounted)
-        setState(() => _isLoading = false); // hide loader if it was shown
+        setState(() => _isLoading = false); 
 
       if (response != null) {
         debugPrint("✅ Address saved successfully");
@@ -81,6 +82,9 @@ class _AddressState extends State<Address> {
         if (widget.accountType == "Family") {
           widget.onNext?.call();
         } else {
+          setState(() {
+            _hideBottomButton = true;
+          });
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
@@ -103,7 +107,7 @@ class _AddressState extends State<Address> {
     } catch (e) {
       showLoader = false;
       if (mounted) setState(() => _isLoading = false);
-      debugPrint("❌ Address submit failed 👉 $e");
+      debugPrint(" Address submit failed  $e");
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Submit failed: $e")));
@@ -285,7 +289,8 @@ class _AddressState extends State<Address> {
           ),
 
           SizedBox(height: 20),
-          if (!widget.family) // If NOT coming from add member
+          if (!widget.family) 
+          if (!_hideBottomButton)
             AppButton(
               text: widget.accountType == "Family" ? "Continue" : "Sign In",
               isLoading: _isLoading,

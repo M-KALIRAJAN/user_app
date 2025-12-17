@@ -137,42 +137,86 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                         ),
                       ),
                       SizedBox(height: 15),
-                      SizedBox(
-                        height: 57,
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () {},
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Upload Gallery",
-                                style: TextStyle(color: AppColors.borderGrey),
-                              ),
-                              Container(
-                                height: 38,
-                                width: 38,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                  color: AppColors.borderGrey,
-                                ),
-                                child: Image.asset(
-                                  "assets/icons/upload.png",
+                      // SizedBox(
+                      //   height: 57,
+                      //   width: double.infinity,
+                      //   child: ElevatedButton(
+                      //     style: ElevatedButton.styleFrom(
+                      //       backgroundColor: Colors.white,
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(12),
+                      //       ),
+                      //     ),
+                      //     onPressed: () {},
+                      //     child: Row(
+                      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //       children: [
+                      //         const Text(
+                      //           "Upload Gallery",
+                      //           style: TextStyle(color: AppColors.borderGrey),
+                      //         ),
+                      //         Container(
+                      //           height: 38,
+                      //           width: 38,
+                      //           decoration: BoxDecoration(
+                      //             borderRadius: BorderRadius.circular(100),
+                      //             color: AppColors.borderGrey,
+                      //           ),
+                      //           child: Image.asset(
+                      //             "assets/icons/upload.png",
 
-                                  height: 15,
-                                  width: 15,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      //             height: 15,
+                      //             width: 15,
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+
+                         Row(
+                          children: [
+                             Container(
+                              height: 87,
+                               width: 88,
+                               decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: Color.fromRGBO(76, 149, 129, 100)
+                                
+                               ),
+                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                   Icon(Icons.add ,color: Colors.white,size: 35,),
+                                   Text("Add Media",style: TextStyle(color:Colors.white),)
+                                ],
+                               ),
+                             )
+                          ],
+                         ),
+              SizedBox(height: 15,),
+                         Container(
+                          height: 49,
+                          width: double.infinity,
+                           decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: Color.fromRGBO(76, 149, 129, 100)
+                                
+                               ),
+                               child: Row(
+                                children: [
+                                  Container(
+                                    height: 34,
+                                    width: 34,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      
+                                    ),
+                                  )
+                                ],
+                               ),
+                         )
+                      
                     ],
                   ),
                 ),

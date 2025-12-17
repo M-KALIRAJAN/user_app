@@ -1,4 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
@@ -8,7 +10,6 @@ import 'package:mannai_user_app/routing/app_router.dart';
 import 'package:mannai_user_app/services/auth_service.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:pinput/pinput.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Otp extends StatefulWidget {
   const Otp({super.key});
@@ -20,16 +21,109 @@ class Otp extends StatefulWidget {
 class _OtpState extends State<Otp> {
   final otpController = TextEditingController();
   final AuthService _authService = AuthService();
+  bool isOtpError = false;
+  bool isLoading = false;
+
+  int _secountleft = 60;
+  Timer? _timer;
+  bool _canResend = false;
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  void _showOtpError(String message) {
+    setState(() => isOtpError = true);
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> verifyOtp(BuildContext context) async {
+    final userId = await AppPreferences.getUserId();
+    final otp = otpController.text.trim();
+    AppLogger.success("*****************************************************");
+    setState(() => isLoading = true);
+
+    try {
+      final response = await _authService.OTPverify(otp: otp, userId: userId!);
+      AppLogger.success(
+        "*****************************************************",
+      );
+
+      if (response["message"] == "OTP verified successfully") {
+        context.push(RouteNames.accountcreated);
+      } else {
+        // Backend responded but status=false
+        _showOtpError(response["message"] ?? "Invalid OTP");
+      }
+    } on DioException catch (e) {
+      // Backend sent error response (like 400)
+      final errorResponse = e.response?.data;
+      final message = (errorResponse is Map && errorResponse["message"] != null)
+          ? errorResponse["message"]
+          : "Something went wrong";
+
+      _showOtpError(message);
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  final errorPinTheme = PinTheme(
+    width: 50,
+    height: 50,
+    textStyle: const TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: Colors.red,
+    ),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: Colors.red),
+    ),
+  );
 
   Future<void> sendOtp(BuildContext context) async {
-    // final prefs = await SharedPreferences.getInstance();
-    // final userId = prefs.getString("userId");
     final userId = await AppPreferences.getUserId();
-    final otp = otpController.text.trim().toString();
-    AppLogger.warn("otpo: $otp");
-    AppLogger.warn("otpo: $userId");
-    final response = await _authService.OTPverify(otp: otp, userId: userId!);
-    debugPrint("OTP verify response: $response");
+
+    setState(() {
+      isOtpError = false;
+      otpController.clear();
+    });
+
+    try {
+      final response = await _authService.SendOTP(userId: userId!);
+      AppLogger.success("Resend OTP response: $response");
+    } on DioException catch (e) {
+      final message = e.response?.data["message"] ?? "Failed to resend OTP";
+      _showOtpError(message);
+    }
+  }
+
+  void _startTimer() {
+    _secountleft = 60;
+    _canResend = false;
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secountleft == 0) {
+        timer.cancel();
+        setState(() => _canResend = true);
+      } else {
+        setState(() => _secountleft--);
+      }
+    });
   }
 
   @override
@@ -87,13 +181,42 @@ class _OtpState extends State<Otp> {
                       border: Border.all(color: AppColors.button_secondary),
                     ),
                     submittedPinTheme: defaultPinTheme.copyDecorationWith(
-                      border: BoxBorder.all(color: Colors.green),
+                      border: Border.all(color: Colors.green),
                     ),
+                    errorPinTheme: errorPinTheme,
+                    forceErrorState: isOtpError,
                     keyboardType: TextInputType.number,
-                    onCompleted: (value) {
-                      print("OTP: $value");
+                    onChanged: (value) {
+                      if (isOtpError) setState(() => isOtpError = false);
                     },
                   ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _canResend
+                      ? InkWell(
+                          onTap: () {
+                            _startTimer();
+                            sendOtp(context);
+                          },
+                          child: Text(
+                            "Resend OTP",
+                            style: TextStyle(
+                              color: AppColors.btn_primery,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          "Resend OTP in 00:${_secountleft.toString().padLeft(2, '0')}",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                 ],
               ),
 
@@ -102,8 +225,11 @@ class _OtpState extends State<Otp> {
                 child: AppButton(
                   text: "Sign In",
                   onPressed: () {
-                    context.push(RouteNames.accountcreated);
-                    sendOtp(context);
+                    if (otpController.text.length == 4) {
+                      verifyOtp(context);
+                    } else {
+                      _showOtpError("Please enter 4 digit OTP");
+                    }
                   },
                   color: AppColors.btn_primery,
                   width: double.infinity,

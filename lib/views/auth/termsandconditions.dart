@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
+import 'package:mannai_user_app/core/utils/logger.dart';
+import 'package:mannai_user_app/preferences/preferences.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
+import 'package:mannai_user_app/services/auth_service.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 
 class Termsandconditions extends StatefulWidget {
@@ -13,7 +16,26 @@ class Termsandconditions extends StatefulWidget {
 
 class _TermsandconditionsState extends State<Termsandconditions> {
   bool isChecked = false;
+  bool _isLoading = false;
+  AuthService _authService = AuthService();
+   Future<void> CompleteRegistration(BuildContext context)async{
+      setState(() => _isLoading = true);
+      try{
+     final userId = await AppPreferences.getUserId();
+       final response = await _authService.TermsAndSonditions(userId: userId!);
+        final responsesendotp = await _authService.SendOTP(userId: userId!);
+       AppLogger.success("CompleteRegistration : $response");
+         AppLogger.success("responsesendotp : $responsesendotp");
+       if(response != null && responsesendotp != null ){
+   context.push(RouteNames.opt);
+       }
+      }catch(e){
+        AppLogger.error("CompleteRegistration error: $e");
+      }finally {
+    setState(() => _isLoading = false);
+  }
 
+   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,8 +57,8 @@ class _TermsandconditionsState extends State<Termsandconditions> {
               ),
 
               const SizedBox(height: 8),
-              Divider()
-,   const SizedBox(height: 20),
+              Divider(),
+              const SizedBox(height: 20),
               Container(
                 height: 276,
                 width: 299,
@@ -126,9 +148,12 @@ There are many variations of passages of Lorem Ipsum available, but the majority
                 ),
                 child: AppButton(
                   text: "Complete Registration",
+                   isLoading: _isLoading,
                   onPressed: () {
-                    if(isChecked)
-                    context.push(RouteNames.opt);
+                    if (isChecked){
+                       CompleteRegistration(context);
+                    }
+                 
                   },
                   color: isChecked
                       ? AppColors.btn_primery

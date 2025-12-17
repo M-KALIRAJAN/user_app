@@ -45,14 +45,16 @@ class _UploadIdViewState extends State<UploadIdView> {
     // final prefs = await SharedPreferences.getInstance();
     // final userId = prefs.getString("userId");
      final userId = await AppPreferences.getUserId();
-    context.push(RouteNames.Terms);
-    final response = await _authService.uploadidproof(
+   
+    final response = await _authService.uploadIdProof(
       frontImage: frontImage!,
       backImage: backImage!,
-      userId: userId,
+      userId: userId!,
     );
-
-    if (response != null) {}
+  AppLogger.debug(response.toString());
+    if (response != null) {
+       context.push(RouteNames.Terms);
+    }
   }
 
   @override

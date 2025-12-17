@@ -129,7 +129,7 @@ class AuthService {
     try {
       final response = await _dio.post(
         "user-account/address",
-        data: body, //  DIRECT BODY
+        data: body, 
       );
 
       AppLogger.success("ADDRESS RESPONSE  ${response.data}");
@@ -158,52 +158,109 @@ class AuthService {
   }
 
   // Upload ID
-  Future<Map<String, dynamic>?> uploadidproof({
-    required File frontImage,
-    required File backImage,
-    String? userId,
-  }) async {
-    try {
-      final formData = FormData.fromMap({
-        "userId": userId,
-        "front_id": await MultipartFile.fromFile(
+Future<Map<String, dynamic>?> uploadIdProof({
+  required File frontImage,
+  required File backImage,
+  required String userId,
+}) async {
+  try {
+    final formData = FormData();
+  
+    formData.fields.add(
+      MapEntry("userId", userId),
+    );
+
+    formData.files.add(
+      MapEntry(
+        "idProof", 
+        await MultipartFile.fromFile(
           frontImage.path,
           filename: frontImage.path.split('/').last,
         ),
-        "back_id": await MultipartFile.fromFile(
+      ),
+    );
+    formData.files.add(
+      MapEntry(
+        "idProof",
+        await MultipartFile.fromFile(
           backImage.path,
           filename: backImage.path.split('/').last,
         ),
-      });
+      ),
+    );
 
-      AppLogger.warn("FROMDATA : $formData");
-      final responae = await _dio.post(
-        "user-account/upload-id",
-        data: formData,
-        options: Options(headers: {"Content-Type": "multipart/form-data"}),
-      );
-      return responae.data;
-    } catch (e) {
-      AppLogger.error("Upload proofe: $e");
+
+    for (var f in formData.fields) {
+      AppLogger.warn("FIELD → ${f.key}: ${f.value}");
     }
+    for (var f in formData.files) {
+      AppLogger.warn("FILE → ${f.key}: ${f.value.filename}");
+    }
+
+    final response = await _dio.post(
+      "user-account/upload-id",
+      data: formData,
+      options: Options(contentType: "multipart/form-data"),
+    );
+
+    return response.data;
+  } catch (e, st) {
+    AppLogger.error("Upload idProof error: $e\n$st");
+    return null;
+  }
+}
+
+
+
+
+  //Terms & Conditions 
+
+  Future<Map<String,dynamic>?> TermsAndSonditions({
+    required String userId
+  })async{
+     try{
+       final response = await _dio.post(
+        "user-account/terms-verify",
+        data: {
+          "userId":userId
+        }
+        );
+        return response.data;
+     }catch(e){
+      AppLogger.error("Terms & Conditions : $e");
+     }
   }
 
+  Future<Map<String,dynamic>?> SendOTP({
+     required String userId
+  })async{
+      try{
+       final response = await _dio.post(
+        "user-account/send-otp",
+        data: {
+          "userId":userId
+        }
+        );
+        return response.data;
+     }catch(e){
+      AppLogger.error("Terms & Conditions : $e");
+     }
+  }
   //OTP verfiy
-  Future<Map<String, dynamic>?> OTPverify({
-    required String otp,
-    required String userId,
-  }) async {
-    try {
-      final response = await _dio.post(
-        "user-account/verify-otp",
-        data: {"userId": userId, "otp": otp},
-      );
+Future<Map<String, dynamic>> OTPverify({
+  required String otp,
+  required String userId,
+}) async {
+  final response = await _dio.post(
+    "user-account/verify-otp",
+    data: {"userId": userId, "otp": otp},
+  );
 
-      return response.data;
-    } catch (e) {
-      AppLogger.error("OTP: $e");
-    }
-  }
+  // Return backend response as-is
+  return response.data;
+}
+
+
 
   //Login
   Future<Map<String, dynamic>?> LoginApi({
