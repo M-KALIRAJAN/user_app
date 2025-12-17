@@ -10,7 +10,7 @@ import 'package:mannai_user_app/services/auth_service.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:mannai_user_app/widgets/id_card.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 class UploadIdView extends StatefulWidget {
   const UploadIdView({super.key});
@@ -42,8 +42,7 @@ class _UploadIdViewState extends State<UploadIdView> {
     if (frontImage == null || backImage == null) {
       AppLogger.error("Front&Back images required");
     }
-    // final prefs = await SharedPreferences.getInstance();
-    // final userId = prefs.getString("userId");
+
      final userId = await AppPreferences.getUserId();
    
     final response = await _authService.uploadIdProof(

@@ -47,6 +47,8 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+
+
 		    <!-- ADD APP TRANSPORT SECURITY FOR HTTP -->
     <key>NSAppTransportSecurity</key>
     <dict>
@@ -55,6 +57,9 @@
     </dict>
 
 		    <!-- ADD YOUR PERMISSIONS HERE -->
+		<key>NSMicrophoneUsageDescription</key>
+<string>This app needs microphone access to record voice messages</string>
+
         <key>NSCameraUsageDescription</key>
         <string>We need camera access to take your ID card photo.</string>
 
