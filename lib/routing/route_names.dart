@@ -23,7 +23,7 @@ import 'package:mannai_user_app/views/screens/create_service_request.dart';
 final appRouter = GoRouter(
   initialLocation: RouteNames.splash,
   routes: [
-       GoRoute(
+    GoRoute(
       path: RouteNames.splash,
       builder: (context, state) => const CustomSplashScreen(),
     ),
@@ -63,19 +63,22 @@ final appRouter = GoRouter(
       path: RouteNames.welcome,
       builder: (context, state) => WelcomeView(),
     ),
-     GoRoute(
+    GoRoute(
       path: RouteNames.serviceRequestDetails,
-      builder: (context, state) => ServiceRequestDetails(),
+      builder: (context, state) {
+        final serviceData = state.extra as Map<String, dynamic>;
+        return ServiceRequestDetails(serviceData: serviceData);
+      },
     ),
 
-GoRoute(
-  name: RouteNames.stepper,  
-  path: RouteNames.stepper,   
-  builder: (context, state) {
-    final accountType = state.extra as String? ?? "Individual";
-    return AccountStepper(accountType: accountType);
-  },
-),
+    GoRoute(
+      name: RouteNames.stepper,
+      path: RouteNames.stepper,
+      builder: (context, state) {
+        final accountType = state.extra as String? ?? "Individual";
+        return AccountStepper(accountType: accountType);
+      },
+    ),
 
     GoRoute(
       path: RouteNames.servicerequestsubmitted,
@@ -90,11 +93,14 @@ GoRoute(
       builder: (context, state) => Accountcreated(),
     ),
     GoRoute(builder: (context, state) => Otp(), path: RouteNames.opt),
-    GoRoute(builder: (context, state) => EditProfile(), path: RouteNames.editprfoile),
+    GoRoute(
+      builder: (context, state) => EditProfile(),
+      path: RouteNames.editprfoile,
+    ),
     GoRoute(
       path: RouteNames.pointdetails,
       builder: (context, state) => PointDetails(),
-      ),
+    ),
     GoRoute(
       path: RouteNames.bottomnav,
       builder: (context, state) => const BottomNav(),

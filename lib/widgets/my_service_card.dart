@@ -1,18 +1,24 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
-import 'package:mannai_user_app/views/screens/service_request_details.dart';
+import 'package:mannai_user_app/core/network/dio_client.dart';
 
 class ServiceRequestCard extends StatelessWidget {
   final String title;
   final String date;
   final String description;
+  final String serviceStatus;
+  final String serviceLogo;
+  final VoidCallback onViewDetails;
 
   const ServiceRequestCard({
     super.key,
     required this.title,
     required this.date,
     required this.description,
+    required this.serviceStatus,
+    required this.serviceLogo,
+    required this.onViewDetails,
   });
 
   @override
@@ -28,6 +34,7 @@ class ServiceRequestCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
@@ -37,6 +44,14 @@ class ServiceRequestCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppColors.btn_primery,
+                    ),
+                    child: CachedNetworkImage(
+                      imageUrl: serviceLogo != null
+                          ? "${ImageBaseUrl.baseUrl}/${serviceLogo}"
+                          : "",
+                      height: 25,
+                      width: 25,
+                      fit: BoxFit.cover,
                     ),
                   ),
                   const SizedBox(width: 20),
@@ -59,6 +74,8 @@ class ServiceRequestCard extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 description,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
                 style: TextStyle(
                   fontSize: AppFontSizes.small,
                   color: AppColors.borderGrey,
@@ -70,13 +87,27 @@ class ServiceRequestCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppButton(
-                    text: "Resolved",
-                    onPressed: () {},
-                    color: AppColors.btn_primery,
-                    width: 125,
-                    height: 31,
+                  Container(
+                    height: 32,
+                    width: 135,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.btn_primery,
+                    ),
+                    child: Center(
+                      child: Text(
+                        serviceStatus,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
+
                   SizedBox(
                     height: 31,
                     width: 135,
@@ -90,15 +121,7 @@ class ServiceRequestCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const ServiceRequestDetails(),
-                          ),
-                        );
-                      },
+                      onPressed: onViewDetails,
                       child: Text(
                         "View Details",
                         style: TextStyle(color: AppColors.btn_primery),
