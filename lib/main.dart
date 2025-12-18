@@ -5,11 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import 'package:mannai_user_app/providers/theme_provider.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
+
 import 'package:mannai_user_app/routing/route_names.dart';
 
 
-/// 🔥 STEP 1: ADD THIS HERE (TOP LEVEL, NOT INSIDE CLASS)
+///  STEP 1: ADD THIS HERE (TOP LEVEL, NOT INSIDE CLASS)
 Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
@@ -18,16 +18,17 @@ Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  /// 🔥 STEP 2: INITIALIZE FIREBASE
+  ///  STEP 2: INITIALIZE FIREBASE
   await Firebase.initializeApp();
 
-  /// 🔥 STEP 3: REGISTER BACKGROUND HANDLER
+  ///  STEP 3: REGISTER BACKGROUND HANDLER
   FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
 
   /// Hive init
   await Hive.initFlutter();
   await Hive.openBox("aboutBox");
   await Hive.openBox("blockbox");
+  await Hive.openBox("profilebox");
 
   runApp(
     const ProviderScope(

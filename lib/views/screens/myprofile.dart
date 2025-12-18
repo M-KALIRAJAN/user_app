@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/views/screens/edit_profile.dart';
+import 'package:mannai_user_app/core/utils/logger.dart';
+import 'package:mannai_user_app/preferences/preferences.dart';
+import 'package:mannai_user_app/routing/app_router.dart';
+import 'package:mannai_user_app/services/profile_service.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
 import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
 
@@ -12,6 +18,42 @@ class Myprofile extends StatefulWidget {
 }
 
 class _MyprofileState extends State<Myprofile> {
+  ProfileService _profileService = ProfileService();
+  Map<String, dynamic>? basicData;
+  List addresses = [];
+  List familyMembers = [];
+  @override
+  void initState() {
+    super.initState();
+    profiledata();
+  }
+
+  Future<void> profiledata() async {
+    final String? userId = await AppPreferences.getUserId();
+    AppLogger.info("************************* $userId");
+
+    if (userId == null || userId.isEmpty) {
+      AppLogger.error("UserId is null or empty");
+      return;
+    }
+
+    final Map<String, dynamic>? profileResponse = await _profileService
+        .profileData(userId: userId);
+
+    if (profileResponse == null) {
+      AppLogger.error("Profile response is null");
+      return;
+    }
+
+    AppLogger.info("profiledata ${jsonEncode(profileResponse)}");
+
+    setState(() {
+      basicData = profileResponse['data'] as Map<String, dynamic>;
+      addresses = profileResponse["addresses"] as List;
+      familyMembers = profileResponse["familyMembers"] as List;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,8 +131,8 @@ class _MyprofileState extends State<Myprofile> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
+                            children: [
+                              const Text(
                                 "Welcome",
                                 style: TextStyle(
                                   color: Colors.white,
@@ -98,8 +140,9 @@ class _MyprofileState extends State<Myprofile> {
                                 ),
                               ),
                               Text(
-                                "Muhamad Musin!",
-                                style: TextStyle(
+                                basicData?['basicInfo']['fullName'] ??
+                                    "No Name",
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -112,10 +155,20 @@ class _MyprofileState extends State<Myprofile> {
 
                       InkWell(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => EditProfile()),
-                          );
+                          if (basicData != null) {
+                            final profileResponse = {
+                              "data": basicData,
+                              "addresses": addresses,
+                              "familyMembers": familyMembers,
+                            };
+
+                            context.push(
+                              RouteNames.editprfoile,
+                              extra: profileResponse,
+                            );
+                          } else {
+                            AppLogger.error("Profile data is null");
+                          }
                         },
 
                         child: Container(
@@ -151,7 +204,9 @@ class _MyprofileState extends State<Myprofile> {
                 const SizedBox(height: 5),
 
                 AppTextField(
-                  controller: TextEditingController(text: "Muhamad Musin"),
+                  controller: TextEditingController(
+                    text: basicData?['basicInfo']['fullName'] ?? "No Name",
+                  ),
                   readonly: true,
                   enabled: false,
                 ),
@@ -164,7 +219,7 @@ class _MyprofileState extends State<Myprofile> {
 
                 AppTextField(
                   controller: TextEditingController(
-                    text: "MuhamadMusin@gamil.com",
+                    text: basicData?['basicInfo']['email'],
                   ),
                   readonly: true,
                   enabled: false,
@@ -177,7 +232,9 @@ class _MyprofileState extends State<Myprofile> {
                 const SizedBox(height: 5),
 
                 AppTextField(
-                  controller: TextEditingController(text: "7656868798"),
+                  controller: TextEditingController(
+                    text: basicData?['basicInfo']['mobileNumber'],
+                  ),
                   readonly: true,
                   enabled: false,
                 ),
@@ -191,7 +248,11 @@ class _MyprofileState extends State<Myprofile> {
                 AppTextField(
                   minLines: 3,
                   maxLines: 5,
-                  controller: TextEditingController(text: "Madurai"),
+                  controller: TextEditingController(
+                    text: addresses.isNotEmpty
+                        ? addresses[0]['city'] ?? ""
+                        : "",
+                  ),
                   readonly: true,
                   enabled: false,
                 ),

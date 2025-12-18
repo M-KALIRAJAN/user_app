@@ -15,18 +15,21 @@ class AppCircleIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 38,
-      width: 38,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(50),
-      ),
-      child: IconButton(
-        icon: Icon(icon, color: iconcolor, size: 17),
-        onPressed: onPressed,
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(),
+    return InkWell(
+      onTap:onPressed ,
+      child: Container(
+        height: 38,
+        width: 38,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: IconButton(
+          icon: Icon(icon, color: iconcolor, size: 17),
+          onPressed: onPressed,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+        ),
       ),
     );
   }

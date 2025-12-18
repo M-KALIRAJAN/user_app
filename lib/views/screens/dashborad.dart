@@ -24,7 +24,8 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   @override
-  Map<String, dynamic>? services;
+List<Map<String, dynamic>> services = [];
+HomeViewService _homeViewService = HomeViewService();
   bool isLoading = true;
 
   @override
@@ -38,10 +39,10 @@ class _DashboardState extends State<Dashboard> {
     try {
       setState(() => isLoading = true);
 
-      final data = await HomeViewService().servicelists();
+      final data = await _homeViewService.servicelists();
 
       setState(() {
-        services = data;
+        services = data ;
         isLoading = false;
       });
     } catch (e) {
@@ -98,7 +99,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget build(BuildContext context) {
-    final serviceList = services?['data'] ?? [];
+ 
 
     return Scaffold(
       body: Container(
@@ -347,9 +348,9 @@ class _DashboardState extends State<Dashboard> {
                           )
                         : ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: serviceList.length,
+                           itemCount: services.length,
                             itemBuilder: (context, index) {
-                              final service = serviceList[index];
+                              final service = services[index];
 
                               return Padding(
                                 padding: const EdgeInsets.symmetric(

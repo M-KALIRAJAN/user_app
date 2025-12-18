@@ -1,9 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
+import 'package:mannai_user_app/core/utils/logger.dart';
+import 'package:mannai_user_app/services/home_view_service.dart';
+import 'package:mannai_user_app/services/request_service.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:record/record.dart';
@@ -26,14 +30,46 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
   List<XFile> selectedImages = [];
 
   final AudioRecorder _audioRecorder = AudioRecorder();
-
+  final AudioPlayer _audioPlayer = AudioPlayer();
   bool isRecording = false;
   String? recordedFilePath;
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  bool isPlaying = false;
 
   final TextEditingController descriptionController = TextEditingController();
+  RequestSerivices _requestSerivices = RequestSerivices();
+  HomeViewService _homeViewService = HomeViewService();
+  List<Map<String, dynamic>> issueList = [];
+  List<Map<String, dynamic>> serviceLst = [];
 
-  bool isPlaying = false;
+  String? selectedIssueId;
+  String? selectcategoryId;
+
+  @override
+  void initState() {
+    super.initState();
+    issuseList();
+    serviceList();
+  }
+
+  Future<void> issuseList() async {
+    final response = await _requestSerivices.IssuseList();
+    if (response != null) {
+      setState(() {
+        issueList = response;
+      });
+    }
+    AppLogger.debug("respose ${jsonEncode(response)}");
+  }
+
+  Future<void> serviceList() async {
+    final response = await _homeViewService.servicelists();
+    if (response != null) {
+      setState(() {
+        serviceLst = response;
+      });
+    }
+    AppLogger.debug("respose ${jsonEncode(response)}");
+  }
 
   @override
   void dispose() {
@@ -139,7 +175,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
     for (var image in selectedImages) {
       debugPrint(image.path);
     }
-
+    debugPrint("selectcategoryId $selectcategoryId");
     // Print recorded audio path
     debugPrint("Recorded Audio:");
     if (recordedFilePath != null) {
@@ -209,18 +245,17 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                           filled: true,
                           fillColor: Colors.white,
                         ),
-                        items: const [
-                          DropdownMenuItem(value: "Male", child: Text("Male")),
-                          DropdownMenuItem(
-                            value: "Female",
-                            child: Text("Female"),
-                          ),
-                          DropdownMenuItem(
-                            value: "Other",
-                            child: Text("Other"),
-                          ),
-                        ],
-                        onChanged: (value) {},
+                        items: serviceLst.map((isuse) {
+                          return DropdownMenuItem<String>(
+                            value: isuse["_id"],
+                            child: Text(isuse["name"]),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectcategoryId = value;
+                          });
+                        },
                       ),
                       SizedBox(height: 18),
                       Text(
@@ -232,26 +267,26 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                       ),
                       SizedBox(height: 15),
                       DropdownButtonFormField<String>(
+                        value: selectedIssueId,
                         decoration: InputDecoration(
-                          labelText: "Select Services*",
+                          labelText: "Select Issuse*",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           filled: true,
                           fillColor: Colors.white,
                         ),
-                        items: const [
-                          DropdownMenuItem(value: "Male", child: Text("Male")),
-                          DropdownMenuItem(
-                            value: "Female",
-                            child: Text("Female"),
-                          ),
-                          DropdownMenuItem(
-                            value: "Other",
-                            child: Text("Other"),
-                          ),
-                        ],
-                        onChanged: (value) {},
+                        items: issueList.map((issue) {
+                          return DropdownMenuItem<String>(
+                            value: issue['_id'],
+                            child: Text(issue['issue']),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedIssueId = value;
+                          });
+                        },
                       ),
                       SizedBox(height: 20),
                       TextField(
@@ -459,7 +494,11 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                             ],
                           ),
                         ),
+                 
                         SizedBox(height: 20),
+                      ],
+                   
+                          SizedBox(height: 20),
                         AppButton(
                           text: "Send Request",
                           onPressed: () {
@@ -468,11 +507,13 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                           color: AppColors.btn_primery,
                           width: double.infinity,
                         ),
-                        SizedBox(height: 20),
-                      ],
+                          SizedBox(height: 20),
                     ],
+                    
                   ),
+                  
                 ),
+
               ),
             ),
           ],

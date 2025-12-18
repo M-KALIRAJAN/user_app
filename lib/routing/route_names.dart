@@ -1,12 +1,12 @@
 import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
+import 'package:mannai_user_app/views/screens/edit_profile.dart';
 import 'package:mannai_user_app/views/screens/point_details.dart';
 import 'package:mannai_user_app/views/screens/service_request_details.dart';
 import 'package:mannai_user_app/widgets/dialogs/AccountCreated.dart';
 import 'package:mannai_user_app/views/auth/AccountStepper.dart';
 import 'package:mannai_user_app/views/auth/account_details.dart';
 import 'package:mannai_user_app/views/auth/account_verification.dart';
-
 import 'package:mannai_user_app/views/auth/login_view.dart';
 import 'package:mannai_user_app/views/auth/otp.dart';
 import 'package:mannai_user_app/views/auth/termsandconditions.dart';
@@ -90,7 +90,7 @@ GoRoute(
       builder: (context, state) => Accountcreated(),
     ),
     GoRoute(builder: (context, state) => Otp(), path: RouteNames.opt),
-
+    GoRoute(builder: (context, state) => EditProfile(), path: RouteNames.editprfoile),
     GoRoute(
       path: RouteNames.pointdetails,
       builder: (context, state) => PointDetails(),

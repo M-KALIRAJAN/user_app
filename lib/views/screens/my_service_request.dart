@@ -1,10 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/views/screens/service_request_details.dart';
+import 'package:mannai_user_app/core/utils/logger.dart';
+import 'package:mannai_user_app/services/my_service.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:mannai_user_app/widgets/my_service_card.dart';
 
 class MyServiceRequest extends StatefulWidget {
@@ -15,6 +15,27 @@ class MyServiceRequest extends StatefulWidget {
 }
 
 class _MyServiceRequestState extends State<MyServiceRequest> {
+     MyService _myService = MyService();
+        @override
+   void initState() {
+     super.initState();
+     myserviceslist();
+     
+   }
+
+     Future<void> myserviceslist()async{
+      AppLogger.warn("************************************");
+      try{
+     final response = await _myService.myallservices();
+     AppLogger.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+             AppLogger.warn("myserviceslist ${jsonEncode(response)}");
+      }catch(e){
+        AppLogger.error("MyServiceerr $e");
+      }
+        
+     }
+   
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
