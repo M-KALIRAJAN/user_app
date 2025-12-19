@@ -22,48 +22,45 @@ class _LoginViewState extends State<LoginView> {
   final controller = LoginController();
   final AuthService _authService = AuthService();
   bool isChecked = false;
-Future<void> Login(BuildContext context) async {
-  final loginData = controller.getLoginData();
+  Future<void> Login(BuildContext context) async {
+    final loginData = controller.getLoginData();
 
-  try {
-    final response = await _authService.LoginApi(
-      email: loginData.email,
-      password: loginData.password,
-    );
+    try {
+      final response = await _authService.LoginApi(
+        email: loginData.email,
+        password: loginData.password,
+      );
 
-    if (response != null && response['token'] != null) {
-      await AppPreferences.saveToken(response['token']);
-      context.push(RouteNames.bottomnav);
-    }
-  } on DioException catch (e) {
-    String errorMessage = "Login failed";
+      if (response != null && response['token'] != null) {
+        await AppPreferences.saveToken(response['token']);
+        await AppPreferences.saveAccountType(response['accountType']);
+        await AppPreferences.setLoggedIn(true);
+        context.push(RouteNames.bottomnav);
+      }
+    } on DioException catch (e) {
+      String errorMessage = "Login failed";
+    
+      if (e.response != null && e.response?.data != null) {
+        errorMessage = e.response?.data['message'] ?? errorMessage;
+      }
 
-    if (e.response != null && e.response?.data != null) {
-      errorMessage = e.response?.data['message'] ?? errorMessage;
-    }
+      //  SHOW ERROR IN UI
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+        );
 
-    // ✅ SHOW ERROR IN UI
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
+      AppLogger.error("Login UI error: $errorMessage");
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Something went wrong"),
           backgroundColor: Colors.red,
         ),
       );
-
-    AppLogger.error("Login UI error: $errorMessage");
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Something went wrong"),
-        backgroundColor: Colors.red,
-      ),
-    );
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {

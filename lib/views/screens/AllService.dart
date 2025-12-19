@@ -1,25 +1,25 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/widgets/app_back.dart';
-import 'package:mannai_user_app/views/screens/send_service_request.dart';
+import 'package:mannai_user_app/core/network/dio_client.dart';
+import 'package:mannai_user_app/providers/serviceProvider.dart';
+import 'package:mannai_user_app/routing/app_router.dart';
 
-class Allservice extends StatefulWidget {
+import 'package:mannai_user_app/widgets/app_back.dart';
+
+class Allservice extends ConsumerStatefulWidget {
   const Allservice({super.key});
 
   @override
-  State<Allservice> createState() => _AllserviceState();
+  ConsumerState<Allservice> createState() => _AllserviceState();
 }
 
-class _AllserviceState extends State<Allservice> {
-  final List<Map<String, String>> services = [
-    {"image": "assets/images/pluming.png", "title": "Plumbing Service"},
-    {"image": "assets/images/electric.png", "title": "Electric Service"},
-    {"image": "assets/images/electric.png", "title": "AC Service"},
-  ];
-
+class _AllserviceState extends ConsumerState<Allservice> {
   @override
   Widget build(BuildContext context) {
+    final services = ref.watch(serviceListProvider);
     return Scaffold(
       backgroundColor: AppColors.background_clr,
       body: SafeArea(
@@ -59,14 +59,21 @@ class _AllserviceState extends State<Allservice> {
                   ),
                   itemBuilder: (context, index) {
                     final service = services[index];
+                    final String name = service['name'] ?? '';
+                    final String serviceId = service['_id'] ?? "";
+                    final String? Image = service['serviceImage'];
 
                     return InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
-                        openServiceModal(
-                          context,
-                          service["title"]!,
-                          service["image"]!,
+                        context.push(
+                          RouteNames.sendservicerequest,
+                          extra: {
+                            'title': name,
+                            "imagePath":
+                                "${ImageBaseUrl.baseUrl}/${service['serviceImage']}",
+                                'serviceId': serviceId,
+                          },
                         );
                       },
                       child: Container(
@@ -84,15 +91,19 @@ class _AllserviceState extends State<Allservice> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
-                              service["image"]!,
-                              width: 90,
-                              height: 65,
-                              fit: BoxFit.contain,
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: CachedNetworkImage(
+                                imageUrl: "${ImageBaseUrl.baseUrl}/$Image",
+                                height: 80,
+                                width: 140,
+                                fit: BoxFit.cover,
+                              ),
                             ),
+
                             const SizedBox(height: 10),
                             Text(
-                              service["title"]!,
+                              name,
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -110,24 +121,6 @@ class _AllserviceState extends State<Allservice> {
           ],
         ),
       ),
-    );
-  }
-
-  // BOTTOM SHEET MODAL
-  void openServiceModal(BuildContext context, String title, String imagePath) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          expand: true,
-          initialChildSize: 1.0,
-          builder: (_, controller) {
-            return SendServiceRequest(title: title, imagePath: imagePath);
-          },
-        );
-      },
     );
   }
 }

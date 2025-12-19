@@ -7,6 +7,9 @@ class AppPreferences {
   static const String _tokenkey = "auth_token";
   static const  String _loginkey = "is_logged_in";
   static const String _userIdKey = "user_id";
+  static const String _accountTypekey ="accountType";
+   static const String _aboutSeenKey  = "about_seen";
+ 
 
   //----TOKEN---
 
@@ -48,6 +51,22 @@ class AppPreferences {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_loginkey) ?? false;
   }
+ 
+ //--- ABOUT SGREEN FLAG---
+
+ //save about seen
+
+ static Future<void> setAboutSeen(bool value) async{
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool(_aboutSeenKey, value);
+ }
+
+ //check about seen
+ static Future<bool> hasSeenAbout()async{
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getBool(_aboutSeenKey) ?? false ;
+ }
+
 
    // --- USER ID --- 
    
@@ -61,7 +80,16 @@ class AppPreferences {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userIdKey);
   }
-  
+
+  // --- Account Type ---- 
+   static Future<void> saveAccountType(String accountType)async{
+    final prefs = await SharedPreferences.getInstance();
+     prefs.setString(_accountTypekey, accountType);
+   }
+   static Future<String?> getaccountType()async{
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_accountTypekey);
+   }
 
   // --- LOGOUT (CLEAN EVERYTHING) ---
    static Future<void> clearAll() async {

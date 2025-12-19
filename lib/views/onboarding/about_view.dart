@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
+import 'package:mannai_user_app/preferences/preferences.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/views/auth/login_view.dart';
+
 import 'package:mannai_user_app/widgets/app_back.dart';
 import 'package:mannai_user_app/providers/onbording_provider.dart'; // <-- provider file
 
@@ -17,7 +18,11 @@ class AboutView extends ConsumerStatefulWidget {
 class _AboutViewState extends ConsumerState<AboutView> {
   final PageController _controller = PageController();
   int currentIndex = 0;
-
+  
+   Future<void> goToLogin() async{
+   await AppPreferences.setAboutSeen(true);
+   context.go(RouteNames.login);
+   }
   void nextPage(int total) {
     if (currentIndex < total - 1) {
       _controller.nextPage(
@@ -25,7 +30,8 @@ class _AboutViewState extends ConsumerState<AboutView> {
         curve: Curves.easeInOut,
       );
     } else {
-      context.go(RouteNames.login);
+      // context.go(RouteNames.login);
+      goToLogin();
     }
   }
 
@@ -86,7 +92,8 @@ class _AboutViewState extends ConsumerState<AboutView> {
                       ),
                       InkWell(
                         onTap: () {
-                           context.go(RouteNames.login);
+                          //  context.go(RouteNames.login);
+                          goToLogin();
                         },
                         child: Container(
                           height: 25,

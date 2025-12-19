@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mannai_user_app/preferences/preferences.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
 import 'dart:async';
 
@@ -19,7 +20,8 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   void initState() {
     super.initState();
     _initNotifications();   // 👈 ADD THIS
-    _goNext();
+   decideNavigation(context);
+
   }
   Future<void> _initNotifications() async {
     // 🔔 Ask notification permission (iOS + Android 13+)
@@ -33,12 +35,33 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     final token = await FirebaseMessaging.instance.getToken();
     debugPrint("FCM TOKEN: $token");
   }
-  void _goNext() {
-    Timer(const Duration(seconds: 2), () {
-      if (!mounted) return; // safety check
-      context.go(RouteNames.language);
-    });
-  }
+
+  
+  // void _goNext() {
+  //   Timer(const Duration(seconds: 2), () {
+  //     if (!mounted) return; // safety check
+  //     context.go(RouteNames.language);
+  //   });
+  // }
+
+  Future<void> decideNavigation (BuildContext context) async {
+    final bool isLoggedIn = await AppPreferences.isLoggedIn();
+    final bool hasSeenAbout = await AppPreferences.hasSeenAbout();
+
+    await Future.delayed(Duration(seconds: 2));
+context.go(RouteNames.language);
+    // if(!hasSeenAbout){
+    //    // FIRST TIME USER
+    //   context.go(RouteNames.language);
+    // } else if (isLoggedIn){
+    //    // Returning logged-in user with out click logout
+    //   context.push(RouteNames.bottomnav);
+    // } else{
+    //   // Returning logged-in user with  click logout
+    //   context.go(RouteNames.login);
+    // }
+  
+   }
 
   @override
   Widget build(BuildContext context) {

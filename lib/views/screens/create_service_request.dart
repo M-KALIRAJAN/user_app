@@ -10,6 +10,7 @@ import 'package:mannai_user_app/routing/app_router.dart';
 import 'package:mannai_user_app/services/home_view_service.dart';
 import 'package:mannai_user_app/services/request_service.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
+import 'package:mannai_user_app/widgets/app_date_picker.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:mannai_user_app/widgets/record_widget.dart';
 import 'package:record/record.dart';
@@ -54,8 +55,6 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
     super.initState();
     issuseList();
     serviceList();
-
-
   }
 
   Future<void> issuseList() async {
@@ -78,24 +77,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
     AppLogger.debug("respose ${jsonEncode(response)}");
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    DateTime today = DateTime.now();
 
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: today,
-      firstDate: DateTime(today.year, today.month, today.day), 
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate != null) {
-      String formattedDate = DateFormat("dd MMM yyyy").format(pickedDate);
-
-      setState(() {
-        _dateController.text = formattedDate;
-      });
-    }
-  }
 
   Future<bool> requestMicPermission() async {
     try {
@@ -364,17 +346,13 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      TextField(
+                     
+                      AppDatePicker(
                         controller: _dateController,
-                        readOnly: true,
-                        onTap: () => _selectDate(context),
-                        decoration: InputDecoration(
-                          labelText: "Select Date",
-                          suffixIcon: Icon(Icons.calendar_today),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                        label: "Select Date",
+                        onDateSelected: (date) {
+                          print("Selected Date: $date");
+                        },
                       ),
                       SizedBox(height: 18),
                       Text(

@@ -1,24 +1,55 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
+import 'package:mannai_user_app/core/utils/logger.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
+import 'package:mannai_user_app/services/request_service.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
+import 'package:mannai_user_app/widgets/app_date_picker.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SendServiceRequest extends StatefulWidget {
   final String title;
+  final String serviceId;
   final String? imagePath;
 
-  const SendServiceRequest({super.key, required this.title, this.imagePath});
+  const SendServiceRequest({
+    super.key,
+    required this.title,
+    this.imagePath,
+    required this.serviceId,
+  });
 
   @override
   State<SendServiceRequest> createState() => _SendServiceRequestState();
 }
 
 class _SendServiceRequestState extends State<SendServiceRequest> {
+  final TextEditingController _dateController = TextEditingController();
+  List<Map<String, dynamic>> issueList = [];
+  RequestSerivices _requestSerivices = RequestSerivices();
+  String? selectedIssueId;
+  @override
+  void initState() {
+    super.initState();
+    issuseList();
+  }
+
+  Future<void> issuseList() async {
+    final response = await _requestSerivices.IssuseList();
+    if (response != null) {
+      setState(() {
+        issueList = response;
+      });
+    }
+    AppLogger.debug("respose ${jsonEncode(response)}");
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget imageShimmer() {
@@ -110,10 +141,27 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        AppTextField(
-                          controller: TextEditingController(
-                            text: "Select an Issuse",
+                        DropdownButtonFormField<String>(
+                          value: selectedIssueId,
+                          decoration: InputDecoration(
+                            labelText: "Select Issuse*",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
                           ),
+                          items: issueList.map((issue) {
+                            return DropdownMenuItem<String>(
+                              value: issue['_id'],
+                              child: Text(issue['issue']),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedIssueId = value;
+                            });
+                          },
                         ),
                         const SizedBox(height: 15),
 
@@ -140,6 +188,24 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                           ),
                         ),
 
+                        const SizedBox(height: 22),
+                        Text(
+                          "Perfered Date",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+
+                        SizedBox(height: 10),
+
+                        AppDatePicker(
+                          controller: _dateController,
+                          label: "Select Date",
+                          onDateSelected: (date) {
+                            print("Selected Date: $date");
+                          },
+                        ),
                         const SizedBox(height: 22),
 
                         const Text(

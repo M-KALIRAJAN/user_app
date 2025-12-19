@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
 import 'package:mannai_user_app/core/network/dio_client.dart';
-import 'package:mannai_user_app/core/utils/logger.dart';
+
 import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/services/home_view_service.dart';
+
 import 'package:mannai_user_app/views/screens/AddPointBottomSheet.dart';
 import 'package:mannai_user_app/views/screens/send_service_request.dart';
 import 'package:mannai_user_app/widgets/RecentActivity.dart';
@@ -26,16 +26,13 @@ class Dashboard extends ConsumerStatefulWidget {
 
 class _DashboardState extends ConsumerState<Dashboard> {
   @override
-
   bool isLoading = true;
 
   @override
   @override
   void initState() {
     super.initState();
-  
   }
-
 
   Widget serviceShimmerItem() {
     return Padding(
@@ -84,9 +81,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
     );
   }
 
-  Widget build(BuildContext context ) {
- 
- final services = ref.watch(serviceListProvider);
+  Widget build(BuildContext context) {
+    final services = ref.watch(serviceListProvider);
     return Scaffold(
       body: Container(
         width: double.infinity, // fills the screen width
@@ -322,66 +318,72 @@ class _DashboardState extends ConsumerState<Dashboard> {
                     ],
                   ),
                   SizedBox(height: 5),
-           
 
-SizedBox(
-  height: 105,
-  child: services.isEmpty
-      ? ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: 5,
-          itemBuilder: (_, __) => serviceShimmerItem(),
-        )
-      : ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: services.length,
-          itemBuilder: (context, index) {
-            final service = services[index];
-            final String name = service['name'] ?? '';
-            final String? logo = service['serviceLogo'];
-
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                children: [
-                  InkWell(
-                    onTap: (){
-                      Navigator.push(
-                         context, 
-                         MaterialPageRoute( 
-                          builder: (_) => SendServiceRequest(
-                             title: name, 
-                             imagePath: service['serviceImage'] != null ? "${ImageBaseUrl.baseUrl}/${service['serviceImage']}" : null, ), ), );
-                    },
-                    child: AppCard(
-                      width: 70,
-                      height: 70,
-                      child: logo != null
-                          ? Image.network(
-                              "${ImageBaseUrl.baseUrl}/$logo",
-                              fit: BoxFit.cover,
-                            )
-                          : const Icon(Icons.miscellaneous_services),
-                    ),
-                  ),
                   SizedBox(
-                    width: 80,
-                    child: Text(
-                      name,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-),
+                    height: 105,
+                    child: services.isEmpty
+                        ? ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: 5,
+                            itemBuilder: (_, __) => serviceShimmerItem(),
+                          )
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: services.length,
+                            itemBuilder: (context, index) {
+                              final service = services[index];
+                              final String name = service['name'] ?? '';
+                              final String serviceId = service['_id'] ?? "";
+                              final String? logo = service['serviceLogo'];
 
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                child: Column(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        context.push(
+                                          RouteNames.sendservicerequest,
+                                          extra: {
+                                            'title': name,
+                                            "imagePath":
+                                                "${ImageBaseUrl.baseUrl}/${service['serviceImage']}",
+                                            'serviceId': serviceId,
+                                          },
+                                        );
+                                      },
+                                      child: AppCard(
+                                        width: 70,
+                                        height: 70,
+                                        child: logo != null
+                                            ? Image.network(
+                                                "${ImageBaseUrl.baseUrl}/$logo",
+                                                fit: BoxFit.cover,
+                                              )
+                                            : const Icon(
+                                                Icons.miscellaneous_services,
+                                              ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 80,
+                                      child: Text(
+                                        name,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                  ),
 
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),

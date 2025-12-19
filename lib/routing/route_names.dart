@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
 import 'package:mannai_user_app/views/screens/edit_profile.dart';
 import 'package:mannai_user_app/views/screens/point_details.dart';
+import 'package:mannai_user_app/views/screens/send_service_request.dart';
 import 'package:mannai_user_app/views/screens/service_request_details.dart';
 import 'package:mannai_user_app/widgets/dialogs/AccountCreated.dart';
 import 'package:mannai_user_app/views/auth/AccountStepper.dart';
@@ -109,6 +110,23 @@ final appRouter = GoRouter(
       path: RouteNames.pointdetails,
       builder: (context, state) => PointDetails(),
     ),
+    GoRoute(
+      path: RouteNames.pointdetails,
+      builder: (context, state) => PointDetails(),
+    ),
+GoRoute(
+  path: RouteNames.sendservicerequest,
+  builder: (context, state) {
+    final data = state.extra as Map<String, dynamic>;
+
+    return SendServiceRequest(
+      title: data['title'],
+      imagePath: data['imagePath'],
+       serviceId: data['serviceId'],
+    );
+  },
+),
+
     GoRoute(
       path: RouteNames.bottomnav,
       builder: (context, state) => const BottomNav(),
