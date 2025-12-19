@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/views/onboarding/welcome_view.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
 
 class LanguangeView extends StatefulWidget {
@@ -13,6 +12,7 @@ class LanguangeView extends StatefulWidget {
 }
 
 class _LanguangeViewState extends State<LanguangeView> {
+    bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,11 +73,15 @@ class _LanguangeViewState extends State<LanguangeView> {
                         const SizedBox(height: 25),
                         AppButton(
                           text: "عربي",
-                          onPressed: () {
+                          onPressed: ()async {
+                             setState(() => _isLoading = true); 
+                            await Future.delayed(const Duration(seconds: 3));
+                            if (!mounted) return; //  safety check
                             context.go(RouteNames.welcome);
                           },
                           color: AppColors.button_secondary,
                           width: double.infinity,
+                          isLoading:_isLoading
                         ),
 
                         const SizedBox(height: 10),

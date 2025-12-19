@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
+
 
 class AppButton extends StatelessWidget {
   final String text;

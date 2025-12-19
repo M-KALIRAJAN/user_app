@@ -248,6 +248,7 @@ import 'package:mannai_user_app/core/constants/app_consts.dart';
 import 'package:mannai_user_app/core/network/dio_client.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
 import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ServiceRequestDetails extends StatelessWidget {
   final Map<String, dynamic> serviceData;
@@ -256,38 +257,84 @@ class ServiceRequestDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     /// TIMELINE DATA (MAP BASED)
+    final timestamps = serviceData["statusTimestamps"];
+    final bool technicianAccepted = serviceData["technicianAccepted"] == true;
+    final String serviceStatus = serviceData["serviceStatus"];
+    final technician = serviceData["technicianId"];
+    String _getStatus({required bool completed, required bool current}) {
+      if (completed) return "completed";
+      if (current) return "current";
+      return "pending";
+    }
+
     final List<Map<String, dynamic>> steps = [
       {
-        "title": "Requested Submitted",
+        "title": "Request Submitted",
         "description": "Your service request has been successfully submitted.",
-        "time": serviceData["statusTimestamps"]["submitted"],
-        "status": "completed",
+        "time": timestamps["submitted"],
+        "status": _getStatus(
+          completed: timestamps["submitted"] != null,
+          current: false,
+        ),
       },
       {
         "title": "Processing Request",
         "description": "Our team is reviewing the details of your request.",
-        "time": serviceData["statusTimestamps"]["processing"],
-        "status": "completed",
+        "time": timestamps["accepted"],
+        "status": _getStatus(
+          completed: technicianAccepted,
+          current: !technicianAccepted,
+        ),
       },
       {
         "title": "Technician Assigned",
         "description": "A technician has been assigned to your request.",
-        "time": serviceData["statusTimestamps"]["assigned"],
-        "status": "current",
+        "time": timestamps["technicianAssigned"],
+        "status": _getStatus(
+          completed: timestamps["technicianAssigned"] != null,
+          current:
+              technicianAccepted && timestamps["technicianAssigned"] == null,
+        ),
+        "technician": technicianAccepted ? technician : null,
       },
       {
         "title": "Service In Progress",
         "description": "Technician is on the way to your location.",
-        "time": serviceData["statusTimestamps"]["inProgress"],
-        "status": "current",
+        "time": timestamps["inProgress"],
+        "status": _getStatus(
+          completed: serviceStatus == "inProgress",
+          current: serviceStatus != "completed",
+        ),
       },
       {
         "title": "Service Completed",
         "description": "Service has been successfully completed.",
-        "time": serviceData["statusTimestamps"]["completed"],
-        "status": "pending",
+        "time": timestamps["completed"],
+        "status": _getStatus(
+          completed: timestamps["completed"] != null,
+          current: false,
+        ),
       },
     ];
+
+    Widget ImageShimmer() {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey.shade300,
+          highlightColor: Colors.grey.shade100,
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 80,
+                decoration: BoxDecoration(color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background_clr,
@@ -298,10 +345,12 @@ class ServiceRequestDetails extends StatelessWidget {
             Stack(
               children: [
                 CachedNetworkImage(
-                  imageUrl:
-                      "${ImageBaseUrl.baseUrl}/${serviceData["serviceId"]["serviceImage"]}",
+                  imageUrl: serviceData["serviceId"]["serviceImage"] != null
+                      ? "${ImageBaseUrl.baseUrl}/${serviceData["serviceId"]["serviceImage"]}"
+                      : "",
                   fit: BoxFit.cover,
                   width: double.infinity,
+                  placeholder: (context, url) => ImageShimmer(),
                   height: 220,
                 ),
                 Positioned(
@@ -583,7 +632,7 @@ class _TimelineTile extends StatelessWidget {
                   : null,
             ),
             if (!isLast)
-              Container(width: 2, height: 70, color: Colors.grey.shade300),
+              Container(width: 2, height: data["technician"] != null ? 110: 70, color: Colors.grey.shade300),
           ],
         ),
         const SizedBox(width: 14),
@@ -627,6 +676,28 @@ class _TimelineTile extends StatelessWidget {
                 data["description"],
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
+              if (data["technician"] != null) ...[
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 16,
+                      backgroundImage: CachedNetworkImageProvider(
+                        "${ImageBaseUrl.baseUrl}/${data["technician"]["image"]}",
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      "${data["technician"]["firstName"]} ${data["technician"]["lastName"]}",
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+
               if (data["time"] != null) ...[
                 const SizedBox(height: 6),
                 Text(

@@ -33,7 +33,7 @@ class _MyServiceRequestState extends State<MyServiceRequest> {
     AppLogger.warn("************************************");
     try {
       final response = await _myService.myallservices();
-      AppLogger.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+   
       AppLogger.warn("myserviceslist ${jsonEncode(response)}");
       if (response != null) {
         setState(() {

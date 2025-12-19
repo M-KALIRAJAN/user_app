@@ -28,7 +28,7 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox("aboutBox");
   await Hive.openBox("blockbox");
-  await Hive.openBox("profilebox");
+  await Hive.openBox("servicesBox");
 
   runApp(
     const ProviderScope(

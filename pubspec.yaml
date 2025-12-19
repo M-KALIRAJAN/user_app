@@ -49,6 +49,7 @@ dependencies:
   path_provider: ^2.1.5
   audioplayers: ^6.5.1
   permission_handler_platform_interface: ^4.3.0
+  intl: ^0.20.2
 
 # -----------------------------------------------------------------------------
 # 🛠 Dev Dependencies
@@ -63,21 +64,7 @@ dev_dependencies:
 # 🚀 Native Splash Screen Configuration
 #    ❗ MUST BE AT TOP LEVEL, NOT UNDER "flutter:"
 # -----------------------------------------------------------------------------
-# flutter_native_splash:
-#   color: "#0D5F48" # Background color
-#   image: assets/icons/logo.png # Your splash logo
-#   android: true
-#   ios: true
 
-  # Optional: Custom settings
-  # android_gravity: center
-  # ios_content_mode: scaleAspectFit
-
-  # Required for Android 12+ splash
-  # android_12:
-  #   image: assets/icons/logo.png
-  #   color: "#0D5F48"
-  #   icon_background_color: "#0D5F48"
 
 # -----------------------------------------------------------------------------
 # 🎨 Flutter Assets & Fonts

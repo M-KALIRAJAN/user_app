@@ -273,8 +273,10 @@ Future<Map<String, dynamic>> OTPverify({
         data: {"email": email, "password": password},
       );
       return response.data;
-    } catch (e) {
-      AppLogger.error("Login: $e");
+    } on DioException catch(e){
+       AppLogger.error("Login ${e.response?.statusCode}");
+    AppLogger.error("Login ${e.response?.data}");
+     throw e;
     }
   }
 }

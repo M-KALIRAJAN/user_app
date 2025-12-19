@@ -6,17 +6,18 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
 import 'package:mannai_user_app/core/utils/logger.dart';
+import 'package:mannai_user_app/routing/app_router.dart';
 import 'package:mannai_user_app/services/home_view_service.dart';
 import 'package:mannai_user_app/services/request_service.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
+import 'package:mannai_user_app/widgets/record_widget.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:record/record.dart';
-
 import 'dart:async';
+import 'package:intl/intl.dart';
 
 class CreateServiceRequest extends StatefulWidget {
   const CreateServiceRequest({super.key});
@@ -28,27 +29,33 @@ class CreateServiceRequest extends StatefulWidget {
 class _CreateServiceRequestState extends State<CreateServiceRequest> {
   final ImagePicker _picker = ImagePicker();
   List<XFile> selectedImages = [];
+  bool isChecked = false;
 
-  final AudioRecorder _audioRecorder = AudioRecorder();
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool isRecording = false;
   String? recordedFilePath;
   bool isPlaying = false;
 
   final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   RequestSerivices _requestSerivices = RequestSerivices();
   HomeViewService _homeViewService = HomeViewService();
+
   List<Map<String, dynamic>> issueList = [];
   List<Map<String, dynamic>> serviceLst = [];
-
+  bool _isLoading = false;
   String? selectedIssueId;
   String? selectcategoryId;
+  StreamSubscription? _playerCompleteSub;
+  StreamSubscription? _playerStateSub;
 
   @override
   void initState() {
     super.initState();
     issuseList();
     serviceList();
+
+
   }
 
   Future<void> issuseList() async {
@@ -71,11 +78,23 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
     AppLogger.debug("respose ${jsonEncode(response)}");
   }
 
-  @override
-  void dispose() {
-    descriptionController.dispose();
-    _audioRecorder.dispose();
-    super.dispose();
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime today = DateTime.now();
+
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: today,
+      firstDate: DateTime(today.year, today.month, today.day), 
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      String formattedDate = DateFormat("dd MMM yyyy").format(pickedDate);
+
+      setState(() {
+        _dateController.text = formattedDate;
+      });
+    }
   }
 
   Future<bool> requestMicPermission() async {
@@ -94,63 +113,66 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
     }
   }
 
-  Future<void> startRecording() async {
-    final hasPermission = await requestMicPermission();
+  // Future<void> startRecording() async {
+  //   final hasPermission = await requestMicPermission();
 
-    if (!hasPermission) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Microphone permission required")),
-      );
-      return;
-    }
+  //   if (!hasPermission) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Microphone permission required")),
+  //     );
+  //     return;
+  //   }
 
-    final dir = await getApplicationDocumentsDirectory();
-    final path =
-        '${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+  //   final dir = await getApplicationDocumentsDirectory();
+  //   final path =
+  //       '${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
-    await _audioRecorder.start(
-      RecordConfig(
-        encoder: AudioEncoder.aacLc,
-        bitRate: 128000,
-        sampleRate: 44100,
-      ),
-      path: path,
-    );
+  //   await _audioRecorder.start(
+  //     RecordConfig(
+  //       encoder: AudioEncoder.aacLc,
+  //       bitRate: 128000,
+  //       sampleRate: 44100,
+  //     ),
+  //     path: path,
+  //   );
 
-    setState(() {
-      isRecording = true;
-      recordedFilePath = path;
-    });
-  }
+  //   setState(() {
+  //     isRecording = true;
+  //     recordedFilePath = path;
+  //   });
+  // }
 
-  Future<void> stopRecording() async {
-    final path = await _audioRecorder.stop();
+  // Future<void> stopRecording() async {
+  //   final path = await _audioRecorder.stop();
 
-    setState(() {
-      isRecording = false;
-      recordedFilePath = path;
-    });
-  }
+  //   await _audioPlayer.stop();
+  //   setState(() {
+  //     isRecording = false;
+  //     recordedFilePath = path;
+  //     isPlaying = false;
+  //   });
+  // }
 
   Future<void> playPauseVoice() async {
     if (recordedFilePath == null) return;
 
     if (isPlaying) {
       await _audioPlayer.pause();
+      setState(() => isPlaying = false);
     } else {
+      await _audioPlayer.stop(); //  VERY IMPORTANT (reset previous audio)
       await _audioPlayer.play(DeviceFileSource(recordedFilePath!));
-    }
-
-    setState(() => isPlaying = !isPlaying);
-  }
-
-  Future<void> VoiceRecord() async {
-    if (isRecording) {
-      await stopRecording();
-    } else {
-      await startRecording();
+      setState(() => isPlaying = true);
     }
   }
+
+  // Future<void> VoiceRecord() async {
+  //   if (isRecording) {
+  //     await stopRecording();
+  //   } else {
+  //     await startRecording();
+  //   }
+  // }
 
   Future<void> pickImage(ImageSource source) async {
     final XFile? image = await _picker.pickImage(
@@ -165,23 +187,50 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
     }
   }
 
-  Future<void> SendRequest() async {
-    //Print description
-    debugPrint("Description:");
-    debugPrint(descriptionController.text);
+  @override
+  void dispose() {
+    descriptionController.dispose();
+    _dateController.dispose();
 
-    // Print selected images paths
-    debugPrint("Selected Images:");
-    for (var image in selectedImages) {
-      debugPrint(image.path);
+    _playerCompleteSub?.cancel();
+    _playerStateSub?.cancel();
+
+    super.dispose();
+  }
+
+  Future<void> SendRequest() async {
+    if (selectcategoryId == null || selectedIssueId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select service & issue")),
+      );
+      return;
     }
-    debugPrint("selectcategoryId $selectcategoryId");
-    // Print recorded audio path
-    debugPrint("Recorded Audio:");
-    if (recordedFilePath != null) {
-      debugPrint(recordedFilePath!);
-    } else {
-      debugPrint("No audio recorded");
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AppLogger.warn("**************************************88");
+      AppLogger.warn("selectcategoryId $selectcategoryId");
+      final response = await _requestSerivices.createServiceRequestes(
+        serviceId: selectcategoryId!,
+        issuesId: selectedIssueId!,
+        feedback: descriptionController.text,
+        scheduleService: _dateController.text,
+        immediateAssistance: isChecked,
+        images: selectedImages.map((e) => File(e.path)).toList(),
+        voiceFile: recordedFilePath != null ? File(recordedFilePath!) : null,
+      );
+      AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
+      if (mounted) setState(() => _isLoading = false);
+      if (response != null) {
+        context.push(RouteNames.requestcreatesucess);
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Something went wrong")));
+      }
+    } catch (e) {
+      AppLogger.error(" $e");
     }
   }
 
@@ -308,6 +357,27 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
 
                       SizedBox(height: 18),
                       Text(
+                        "Perfered Date",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        controller: _dateController,
+                        readOnly: true,
+                        onTap: () => _selectDate(context),
+                        decoration: InputDecoration(
+                          labelText: "Select Date",
+                          suffixIcon: Icon(Icons.calendar_today),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 18),
+                      Text(
                         "Media Upload (optional)",
                         style: TextStyle(
                           fontSize: 18,
@@ -327,7 +397,8 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                             if (index == selectedImages.length) {
                               return InkWell(
                                 onTap: () {
-                                  pickImage(ImageSource.camera); // or gallery
+                                  // pickImage(ImageSource.camera); // or gallery
+                                  showImagePickerSheet(context);
                                 },
                                 child: Container(
                                   width: 88,
@@ -408,57 +479,63 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                       ),
 
                       SizedBox(height: 15),
-                      Container(
-                        height: 49,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Color.fromRGBO(76, 149, 129, 100),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: GestureDetector(
-                            onTap: VoiceRecord,
-                            child: Container(
-                              height: 49,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: isRecording
-                                    ? const Color.fromARGB(255, 8, 101, 42)
-                                    : Color.fromRGBO(76, 149, 129, 1),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    isRecording ? Icons.stop : Icons.mic,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    isRecording
-                                        ? "Recording... "
-                                        : "Record Voice",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  if (isRecording)
-                                    const Icon(
-                                      Icons.circle,
-                                      color: Colors.white,
-                                      size: 12,
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                      // Container(
+                      //   height: 49,
+                      //   width: double.infinity,
+                      //   decoration: BoxDecoration(
+                      //     borderRadius: BorderRadius.circular(12),
+                      //     color: Color.fromRGBO(76, 149, 129, 100),
+                      //   ),
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(8.0),
+                      //     child: GestureDetector(
+                      //       onTap: VoiceRecord,
+                      //       child: Container(
+                      //         height: 49,
+                      //         width: double.infinity,
+                      //         decoration: BoxDecoration(
+                      //           borderRadius: BorderRadius.circular(12),
+                      //           color: isRecording
+                      //               ? const Color.fromARGB(255, 8, 101, 42)
+                      //               : Color.fromRGBO(76, 149, 129, 1),
+                      //         ),
+                      //         padding: const EdgeInsets.symmetric(
+                      //           horizontal: 12,
+                      //         ),
+                      //         child: Row(
+                      //           children: [
+                      //             Icon(
+                      //               isRecording ? Icons.stop : Icons.mic,
+                      //               color: Colors.white,
+                      //             ),
+                      //             const SizedBox(width: 10),
+                      //             Text(
+                      //               isRecording
+                      //                   ? "Recording... "
+                      //                   : "Record Voice",
+                      //               style: const TextStyle(
+                      //                 color: Colors.white,
+                      //                 fontSize: 16,
+                      //               ),
+                      //             ),
+                      //             const Spacer(),
+                      //             if (isRecording)
+                      //               const Icon(
+                      //                 Icons.circle,
+                      //                 color: Colors.white,
+                      //                 size: 12,
+                      //               ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      SizedBox(height: 15),
+                      RecordWidget(
+                        onRecordComplete: (file) {
+                          recordedFilePath = file?.path;
+                        },
                       ),
 
                       if (recordedFilePath != null && !isRecording) ...[
@@ -494,31 +571,76 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                             ],
                           ),
                         ),
-                 
-                        SizedBox(height: 20),
-                      ],
-                   
-                          SizedBox(height: 20),
-                        AppButton(
-                          text: "Send Request",
-                          onPressed: () {
-                            SendRequest();
-                          },
-                          color: AppColors.btn_primery,
-                          width: double.infinity,
-                        ),
-                          SizedBox(height: 20),
-                    ],
-                    
-                  ),
-                  
-                ),
 
+                        SizedBox(height: 15),
+                      ],
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: isChecked,
+                            activeColor: AppColors.btn_primery,
+                            checkColor: Colors.white,
+                            onChanged: (bool? newValue) {
+                              setState(() {
+                                isChecked = newValue!;
+                              });
+                            },
+                          ),
+                          Text("Need immitated Asstience"),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      AppButton(
+                        text: "Send Request",
+                        onPressed: () {
+                          SendRequest();
+                        },
+                        isLoading: _isLoading,
+                        color: AppColors.btn_primery,
+                        width: double.infinity,
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void showImagePickerSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Camera"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text("Gallery"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

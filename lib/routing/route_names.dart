@@ -19,6 +19,7 @@ import 'package:mannai_user_app/views/screens/AllService.dart';
 import 'package:mannai_user_app/views/screens/CustomSplashScreen.dart';
 import 'package:mannai_user_app/views/screens/ServiceRequest.dart';
 import 'package:mannai_user_app/views/screens/create_service_request.dart';
+import 'package:mannai_user_app/widgets/dialogs/RequestCreateSucess.dart';
 
 final appRouter = GoRouter(
   initialLocation: RouteNames.splash,
@@ -30,6 +31,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouteNames.language,
       builder: (context, state) => const LanguangeView(),
+    ), GoRoute(
+      path: RouteNames.language,
+      builder: (context, state) => const LanguangeView(),
+    ),
+     GoRoute(
+      path: RouteNames.requestcreatesucess,
+      builder: (context, state) => const Requestcreatesucess(),
     ),
     GoRoute(
       path: RouteNames.login,

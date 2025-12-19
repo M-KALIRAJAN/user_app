@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mannai_user_app/controllers/login_controller.dart';
@@ -21,30 +22,48 @@ class _LoginViewState extends State<LoginView> {
   final controller = LoginController();
   final AuthService _authService = AuthService();
   bool isChecked = false;
-  Future<void> Login(BuildContext context) async {
-    // Get login data from controller
-    final loginData = controller.getLoginData();
-    AppLogger.success("loginData : ${loginData.email}");
-    AppLogger.success("loginData : ${loginData.password}");
-      
-    try {
-      final response = await _authService.LoginApi(
-        email: loginData.email,
-        password: loginData.password,
-      );
-    
-      if(response != null && response['token'] != null ){
-         final String token = response['token'];
-           await AppPreferences.saveToken(token);
-        context.push(RouteNames.bottomnav);
-      }
-      AppLogger.info("loginData$response");
-    } catch (e) {
-      AppLogger.error("Login: $e");
+Future<void> Login(BuildContext context) async {
+  final loginData = controller.getLoginData();
+
+  try {
+    final response = await _authService.LoginApi(
+      email: loginData.email,
+      password: loginData.password,
+    );
+
+    if (response != null && response['token'] != null) {
+      await AppPreferences.saveToken(response['token']);
+      context.push(RouteNames.bottomnav);
+    }
+  } on DioException catch (e) {
+    String errorMessage = "Login failed";
+
+    if (e.response != null && e.response?.data != null) {
+      errorMessage = e.response?.data['message'] ?? errorMessage;
     }
 
-  
+    // ✅ SHOW ERROR IN UI
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+    AppLogger.error("Login UI error: $errorMessage");
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Something went wrong"),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {

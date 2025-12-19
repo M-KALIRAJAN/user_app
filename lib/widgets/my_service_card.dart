@@ -43,7 +43,7 @@ class ServiceRequestCard extends StatelessWidget {
                     width: 48,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.btn_primery,
+                      color: serviceStatus == "submitted" ? AppColors.btn_primery:  serviceStatus == "paymentInProgress" ? const Color.fromARGB(255, 192, 200, 184): null,
                     ),
                     child: CachedNetworkImage(
                       imageUrl: serviceLogo != null
@@ -92,7 +92,7 @@ class ServiceRequestCard extends StatelessWidget {
                     width: 135,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: AppColors.btn_primery,
+                      color: serviceStatus == "submitted" ? AppColors.btn_primery:  serviceStatus == "paymentInProgress" ? const Color.fromARGB(255, 192, 200, 184): null,
                     ),
                     child: Center(
                       child: Text(

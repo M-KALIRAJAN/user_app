@@ -19,5 +19,6 @@ class RouteNames {
     static const String  pointdetails = '/pointdetails';
     static const String serviceRequestDetails = '/serviceRequestDetails';
     static const String editprfoile = '/editprfoile';
+    static const String requestcreatesucess = '/requestcreatesucess';
 
 }

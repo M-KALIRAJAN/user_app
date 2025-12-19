@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
 
 class ServiceRequestCardShimmer extends StatelessWidget {
   const ServiceRequestCardShimmer({super.key});

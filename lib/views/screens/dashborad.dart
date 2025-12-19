@@ -1,3 +1,5 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mannai_user_app/providers/serviceProvider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'package:flutter/material.dart';
@@ -14,42 +16,26 @@ import 'package:mannai_user_app/widgets/app_card.dart';
 import 'package:mannai_user_app/widgets/pie_chart.dart';
 import 'package:mannai_user_app/widgets/request_cart.dart';
 
-class Dashboard extends StatefulWidget {
+class Dashboard extends ConsumerStatefulWidget {
   final Function(int) onTabChange;
   const Dashboard({super.key, required this.onTabChange});
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  ConsumerState<Dashboard> createState() => _DashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _DashboardState extends ConsumerState<Dashboard> {
   @override
-List<Map<String, dynamic>> services = [];
-HomeViewService _homeViewService = HomeViewService();
+
   bool isLoading = true;
 
   @override
   @override
   void initState() {
     super.initState();
-    fetchServices();
+  
   }
 
-  Future<void> fetchServices() async {
-    try {
-      setState(() => isLoading = true);
-
-      final data = await _homeViewService.servicelists();
-
-      setState(() {
-        services = data ;
-        isLoading = false;
-      });
-    } catch (e) {
-      AppLogger.error("Service API error: $e");
-      setState(() => isLoading = false);
-    }
-  }
 
   Widget serviceShimmerItem() {
     return Padding(
@@ -98,9 +84,9 @@ HomeViewService _homeViewService = HomeViewService();
     );
   }
 
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context ) {
  
-
+ final services = ref.watch(serviceListProvider);
     return Scaffold(
       body: Container(
         width: double.infinity, // fills the screen width
@@ -336,78 +322,66 @@ HomeViewService _homeViewService = HomeViewService();
                     ],
                   ),
                   SizedBox(height: 5),
-                  SizedBox(
-                    height: 105,
-                    child: isLoading
-                        ? ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 5,
-                            itemBuilder: (context, index) {
-                              return serviceShimmerItem();
-                            },
-                          )
-                        : ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                           itemCount: services.length,
-                            itemBuilder: (context, index) {
-                              final service = services[index];
+           
 
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                ),
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => SendServiceRequest(
-                                          title: service['name'],
-                                          imagePath:
-                                              service['serviceImage'] != null
-                                              ? "${ImageBaseUrl.baseUrl}/${service['serviceImage']}"
-                                              : null,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Column(
-                                    children: [
-                                      AppCard(
-                                        width: 70,
-                                        height: 70,
+SizedBox(
+  height: 105,
+  child: services.isEmpty
+      ? ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: 5,
+          itemBuilder: (_, __) => serviceShimmerItem(),
+        )
+      : ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: services.length,
+          itemBuilder: (context, index) {
+            final service = services[index];
+            final String name = service['name'] ?? '';
+            final String? logo = service['serviceLogo'];
 
-                                        child: service['serviceLogo'] != null
-                                            ? Image.network(
-                                                "${ImageBaseUrl.baseUrl}/${service['serviceLogo']}",
-                                                width: 70,
-                                                height: 70,
-                                                fit: BoxFit.cover,
-                                              )
-                                            : Icon(
-                                                Icons.miscellaneous_services,
-                                                size: 40,
-                                              ),
-                                      ),
-
-                                      SizedBox(
-                                        width: 80,
-                                        child: Text(
-                                          service['name'],
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
+                children: [
+                  InkWell(
+                    onTap: (){
+                      Navigator.push(
+                         context, 
+                         MaterialPageRoute( 
+                          builder: (_) => SendServiceRequest(
+                             title: name, 
+                             imagePath: service['serviceImage'] != null ? "${ImageBaseUrl.baseUrl}/${service['serviceImage']}" : null, ), ), );
+                    },
+                    child: AppCard(
+                      width: 70,
+                      height: 70,
+                      child: logo != null
+                          ? Image.network(
+                              "${ImageBaseUrl.baseUrl}/$logo",
+                              fit: BoxFit.cover,
+                            )
+                          : const Icon(Icons.miscellaneous_services),
+                    ),
                   ),
+                  SizedBox(
+                    width: 80,
+                    child: Text(
+                      name,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+),
+
 
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
