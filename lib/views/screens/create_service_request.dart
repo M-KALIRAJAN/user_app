@@ -12,13 +12,13 @@ import 'package:mannai_user_app/services/request_service.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
 import 'package:mannai_user_app/widgets/app_date_picker.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
+import 'package:mannai_user_app/widgets/media_upload_widget.dart';
 import 'package:mannai_user_app/widgets/record_widget.dart';
-import 'package:record/record.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
-import 'package:intl/intl.dart';
+
 
 class CreateServiceRequest extends StatefulWidget {
   const CreateServiceRequest({super.key});
@@ -364,97 +364,18 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                       ),
                       SizedBox(height: 15),
 
-                      SizedBox(
-                        height: 90,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: selectedImages.length + 1,
-                          separatorBuilder: (_, __) => SizedBox(width: 10),
-                          itemBuilder: (context, index) {
-                            // ADD MEDIA BUTTON
-                            if (index == selectedImages.length) {
-                              return InkWell(
-                                onTap: () {
-                                  // pickImage(ImageSource.camera); // or gallery
-                                  showImagePickerSheet(context);
-                                },
-                                child: Container(
-                                  width: 88,
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromRGBO(
-                                      76,
-                                      149,
-                                      129,
-                                      1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
-                                      Icon(
-                                        Icons.add,
-                                        color: Colors.white,
-                                        size: 35,
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        "Add Media",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }
+                    MediaUploadWidget(
+  images: selectedImages,
+  onAddTap: () {
+    showImagePickerSheet(context);
+  },
+  onRemoveTap: (index) {
+    setState(() {
+      selectedImages.removeAt(index);
+    });
+  },
+),
 
-                            return Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.file(
-                                    File(selectedImages[index].path),
-                                    width: 88,
-                                    height: 88,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-
-                                Positioned(
-                                  top: 4,
-                                  right: 4,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        selectedImages.removeAt(index);
-                                      });
-                                    },
-                                    child: CircleAvatar(
-                                      radius: 12,
-                                      backgroundColor: Colors.white,
-                                      child: Icon(
-                                        Icons.close,
-                                        size: 16,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                Positioned.fill(
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.remove_red_eye,
-                                      color: Colors.white.withOpacity(0.8),
-                                      size: 26,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
 
                       SizedBox(height: 15),
                       // Container(
@@ -567,6 +488,8 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                           Text("Need immitated Asstience"),
                         ],
                       ),
+
+
                       SizedBox(height: 10),
                       AppButton(
                         text: "Send Request",

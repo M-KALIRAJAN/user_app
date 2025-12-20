@@ -75,7 +75,7 @@ class _LanguangeViewState extends State<LanguangeView> {
                           text: "عربي",
                           onPressed: ()async {
                              setState(() => _isLoading = true); 
-                            await Future.delayed(const Duration(seconds: 3));
+                            await Future.delayed(const Duration(seconds: 1));
                             if (!mounted) return; //  safety check
                             context.go(RouteNames.welcome);
                           },

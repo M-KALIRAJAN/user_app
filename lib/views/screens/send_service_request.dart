@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mannai_user_app/core/constants/app_consts.dart';
 import 'package:mannai_user_app/core/utils/logger.dart';
 import 'package:mannai_user_app/routing/app_router.dart';
@@ -10,8 +12,14 @@ import 'package:mannai_user_app/services/request_service.dart';
 import 'package:mannai_user_app/widgets/app_back.dart';
 import 'package:mannai_user_app/widgets/app_date_picker.dart';
 import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
-import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
+import 'package:mannai_user_app/widgets/media_upload_widget.dart';
+import 'package:mannai_user_app/widgets/record_widget.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:mannai_user_app/widgets/record_widget.dart';
+
+import 'package:permission_handler/permission_handler.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'dart:async';
 
 class SendServiceRequest extends StatefulWidget {
   final String title;
@@ -32,12 +40,51 @@ class SendServiceRequest extends StatefulWidget {
 class _SendServiceRequestState extends State<SendServiceRequest> {
   final TextEditingController _dateController = TextEditingController();
   List<Map<String, dynamic>> issueList = [];
+  final ImagePicker _picker = ImagePicker();
+  List<XFile> selectedImages = [];
+  bool _isLoading = false;
   RequestSerivices _requestSerivices = RequestSerivices();
+  final TextEditingController descriptionController = TextEditingController();
   String? selectedIssueId;
+  bool isChecked = false;
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  bool isRecording = false;
+  String? recordedFilePath;
+  bool isPlaying = false;
+
   @override
   void initState() {
     super.initState();
     issuseList();
+  }
+
+  Future<void> playPauseVoice() async {
+    if (recordedFilePath == null) return;
+
+    if (isPlaying) {
+      await _audioPlayer.pause();
+      setState(() => isPlaying = false);
+    } else {
+      await _audioPlayer.stop(); //  VERY IMPORTANT (reset previous audio)
+      await _audioPlayer.play(DeviceFileSource(recordedFilePath!));
+      setState(() => isPlaying = true);
+    }
+  }
+
+  Future<bool> requestMicPermission() async {
+    try {
+      final status = await Permission.microphone.status;
+
+      if (status.isGranted) {
+        return true;
+      }
+
+      final result = await Permission.microphone.request();
+      return result.isGranted;
+    } catch (e) {
+      debugPrint("Permission error: $e");
+      return false;
+    }
   }
 
   Future<void> issuseList() async {
@@ -48,6 +95,49 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
       });
     }
     AppLogger.debug("respose ${jsonEncode(response)}");
+  }
+
+  Future<void> pickImage(ImageSource source) async {
+    final XFile? image = await _picker.pickImage(
+      source: source,
+      imageQuality: 80,
+    );
+
+    if (image != null) {
+      setState(() {
+        selectedImages.add(image);
+      });
+    }
+  }
+
+  Future<void> SendRequest() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      AppLogger.warn("**************************************88");
+      AppLogger.warn("selectcategoryId $widget.serviceId");
+      final response = await _requestSerivices.createServiceRequestes(
+        serviceId: widget.serviceId!,
+        issuesId: selectedIssueId!,
+        feedback: descriptionController.text,
+        scheduleService: _dateController.text,
+        immediateAssistance: isChecked,
+        images: selectedImages.map((e) => File(e.path)).toList(),
+        voiceFile: recordedFilePath != null ? File(recordedFilePath!) : null,
+      );
+      AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
+      if (mounted) setState(() => _isLoading = false);
+      if (response != null) {
+        context.push(RouteNames.requestcreatesucess);
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Something went wrong")));
+      }
+    } catch (e) {
+      AppLogger.error(" $e");
+    }
   }
 
   @override
@@ -167,21 +257,16 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
 
                         // DESCRIPTION FIELD
                         TextField(
+                          controller: descriptionController,
                           minLines: 5,
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
                           decoration: InputDecoration(
                             labelText: "Describe your issue…",
-                            labelStyle: const TextStyle(
-                              color: AppColors.borderGrey,
-                            ),
                             alignLabelWithHint: true,
-                            contentPadding: const EdgeInsets.all(14),
+                            contentPadding: EdgeInsets.all(14),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: AppColors.borderGrey,
-                              ),
                             ),
                             filled: true,
                             fillColor: Colors.white,
@@ -219,80 +304,85 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                         const SizedBox(height: 14),
 
                         // UPLOAD BUTTON
-                        SizedBox(
-                          height: 48,
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(
-                                color: Color.fromRGBO(135, 137, 147, 100),
-                                width: 1.2,
-                              ),
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
+                        MediaUploadWidget(
+                          images: selectedImages,
+                          onAddTap: () {
+                            showImagePickerSheet(context);
+                          },
+                          onRemoveTap: (index) {
+                            setState(() {
+                              selectedImages.removeAt(index);
+                            });
+                          },
+                        ),
+
+                        const SizedBox(height: 15),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: isChecked,
+                              activeColor: AppColors.btn_primery,
+                              checkColor: Colors.white,
+                              onChanged: (bool? newValue) {
+                                setState(() {
+                                  isChecked = newValue!;
+                                });
+                              },
                             ),
-                            onPressed: () {},
+                            Text("Need immitated Asstience"),
+                          ],
+                        ),
+                        RecordWidget(
+                          onRecordComplete: (file) {
+                            recordedFilePath = file?.path;
+                          },
+                        ),
+                        SizedBox(height: 15),
+                        if (recordedFilePath != null && !isRecording) ...[
+                           Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  "Upload Gallery",
-                                  style: TextStyle(
-                                    color: AppColors.borderGrey,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500,
+                                IconButton(
+                                  icon: Icon(
+                                    isPlaying ? Icons.pause : Icons.play_arrow,
                                   ),
+                                  onPressed: playPauseVoice,
                                 ),
-                                Container(
-                                  height: 38,
-                                  width: 38,
-                                  decoration: const BoxDecoration(
-                                    color: Color.fromRGBO(135, 137, 147, 100),
-                                    shape: BoxShape.circle,
+                                const Text("Recorded Voice"),
+                                const Spacer(),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
                                   ),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.file_upload_outlined,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      recordedFilePath = null;
+                                      isPlaying = false;
+                                    });
+                                  },
                                 ),
                               ],
                             ),
                           ),
-                        ),
 
-                        const SizedBox(height: 35),
-
+                          SizedBox(height: 15),
+                        ],
+                        SizedBox(height: 15),
                         // ACTION BUTTONS
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            AppButton(
-                              text: "Cancel",
-                              onPressed: () => context.pop(),
-                              color: AppColors.button_secondary,
-                              width: 120,
-                              height: 50,
-                            ),
-                            AppButton(
-                              text: "Submit",
-                              onPressed: () {
-                                context.push(
-                                  RouteNames.servicerequestsubmitted,
-                                );
-                              },
-                              color: AppColors.btn_primery,
-                              width: 170,
-                              height: 50,
-                            ),
-                          ],
+                        AppButton(
+                          text: "Send Request",
+                          onPressed: () {
+                            SendRequest();
+                          },
+                          isLoading: _isLoading,
+                          color: AppColors.btn_primery,
+                          width: double.infinity,
                         ),
 
                         const SizedBox(height: 30),
@@ -305,6 +395,39 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
           ),
         ),
       ),
+    );
+  }
+
+  void showImagePickerSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Camera"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text("Gallery"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

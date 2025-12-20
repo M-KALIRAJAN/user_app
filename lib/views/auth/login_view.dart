@@ -20,9 +20,20 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final controller = LoginController();
+  String? emailError;
+  String? passwordError;
+
+  bool _obscure = true;
+
   final AuthService _authService = AuthService();
   bool isChecked = false;
   Future<void> Login(BuildContext context) async {
+    // clear old errors
+    setState(() {
+      emailError = null;
+      passwordError = null;
+    });
+
     final loginData = controller.getLoginData();
 
     try {
@@ -35,30 +46,28 @@ class _LoginViewState extends State<LoginView> {
         await AppPreferences.saveToken(response['token']);
         await AppPreferences.saveAccountType(response['accountType']);
         await AppPreferences.setLoggedIn(true);
+
         context.push(RouteNames.bottomnav);
       }
     } on DioException catch (e) {
-      String errorMessage = "Login failed";
-    
       if (e.response != null && e.response?.data != null) {
-        errorMessage = e.response?.data['message'] ?? errorMessage;
+        final message = e.response?.data['message'];
+
+        setState(() {
+          // decide where to show error
+          if (message.toString().toLowerCase().contains('email')) {
+            emailError = message;
+          } else if (message.toString().toLowerCase().contains('password')) {
+            passwordError = message;
+          } else {
+            passwordError = "Invalid email or password";
+          }
+        });
       }
-
-      //  SHOW ERROR IN UI
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
-        );
-
-      AppLogger.error("Login UI error: $errorMessage");
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Something went wrong"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      setState(() {
+        passwordError = "Something went wrong";
+      });
     }
   }
 
@@ -86,22 +95,6 @@ class _LoginViewState extends State<LoginView> {
                   child: IntrinsicHeight(
                     child: Column(
                       children: [
-                        /// ---- TOP AREA ----
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          child: Row(
-                            children: [
-                              AppCircleIconButton(
-                                icon: Icons.arrow_back,
-                                onPressed: () => Navigator.pop(context),
-                              ),
-                            ],
-                          ),
-                        ),
-
                         const SizedBox(height: 65),
 
                         Center(
@@ -141,25 +134,52 @@ class _LoginViewState extends State<LoginView> {
 
                                 const SizedBox(height: 25),
 
-                                AppTextField(
+                                TextFormField(
                                   controller: controller.email,
-                                  label: "Email Address",
                                   keyboardType: TextInputType.emailAddress,
-                                  validator: (value) =>
-                                      controller.validateEmail(value),
+                                  decoration: InputDecoration(
+                                    labelText: "Email Address",
+                                    errorText:
+                                        emailError, // API error shows here
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      // borderSide: const BorderSide(color: Colors.green, width: 2),
+                                    ),
+                                  ),
                                 ),
 
                                 const SizedBox(height: 15),
-
-                                AppTextField(
-                                  controller: controller.password,
-                                  label: "Password",
-                                  isPassword: true,
-                                  validator: (value) =>
-                                      controller.validatePassword(value),
-                                ),
-
                                 const SizedBox(height: 10),
+                                TextFormField(
+                                  controller: controller.password,
+                                  obscureText: _obscure,
+                                  decoration: InputDecoration(
+                                    labelText: "Password",
+                                    errorText: passwordError, //  API error here
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      // borderSide: const BorderSide(color: Colors.green, width: 2),
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscure
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _obscure = !_obscure;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
 
                                 Row(
                                   mainAxisAlignment:
@@ -169,8 +189,8 @@ class _LoginViewState extends State<LoginView> {
                                       children: [
                                         Checkbox(
                                           value: isChecked,
-                                          checkColor: AppColors.btn_primery,
-                                          activeColor: Colors.white,
+                                          checkColor: Colors.white,
+                                          activeColor: AppColors.btn_primery,
                                           onChanged: (v) {
                                             setState(() => isChecked = v!);
                                           },
