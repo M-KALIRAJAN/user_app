@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
-import 'package:mannai_user_app/services/onbording_service.dart';
+import 'package:nadi_user_app/services/onbording_service.dart';
 
 final onbordingServiceProvider = Provider((ref) {
   return OnbordingService();

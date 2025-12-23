@@ -3,17 +3,15 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/core/network/dio_client.dart';
-import 'package:mannai_user_app/core/utils/logger.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/services/onbording_service.dart';
-import 'package:mannai_user_app/views/languagetoggle.dart';
-import 'package:mannai_user_app/views/logoanimation.dart';
-import 'package:mannai_user_app/views/onboarding/BottomCurveClipper.dart';
-import 'package:mannai_user_app/views/onboarding/about_view.dart';
-
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/network/dio_client.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/services/onbording_service.dart';
+import 'package:nadi_user_app/views/languagetoggle.dart';
+import 'package:nadi_user_app/views/logoanimation.dart';
+import 'package:nadi_user_app/views/onboarding/BottomCurveClipper.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class WelcomeView extends StatefulWidget {
   const WelcomeView({super.key});
@@ -78,7 +76,6 @@ class _WelcomeViewState extends State<WelcomeView> {
                 ),
 
                 Positioned(top: 50, right: 20, child: LanguageView()),
-
                 Positioned(
                   bottom: -110,
                   child: SizedBox(

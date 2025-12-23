@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/preferences/preferences.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';

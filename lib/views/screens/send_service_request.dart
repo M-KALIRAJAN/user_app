@@ -5,17 +5,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/core/utils/logger.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/services/request_service.dart';
-import 'package:mannai_user_app/widgets/app_back.dart';
-import 'package:mannai_user_app/widgets/app_date_picker.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
-import 'package:mannai_user_app/widgets/media_upload_widget.dart';
-import 'package:mannai_user_app/widgets/record_widget.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/services/request_service.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
+import 'package:nadi_user_app/widgets/app_date_picker.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/widgets/media_upload_widget.dart';
+import 'package:nadi_user_app/widgets/record_widget.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:mannai_user_app/widgets/record_widget.dart';
+
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -220,9 +220,7 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                                 )
                               : imageShimmer(),
                         ),
-
                         const SizedBox(height: 25),
-
                         const Text(
                           "Issue  Details",
                           style: TextStyle(
@@ -254,7 +252,6 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                           },
                         ),
                         const SizedBox(height: 15),
-
                         // DESCRIPTION FIELD
                         TextField(
                           controller: descriptionController,

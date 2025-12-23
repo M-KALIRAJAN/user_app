@@ -1,26 +1,27 @@
 import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/views/screens/edit_profile.dart';
-import 'package:mannai_user_app/views/screens/point_details.dart';
-import 'package:mannai_user_app/views/screens/send_service_request.dart';
-import 'package:mannai_user_app/views/screens/service_request_details.dart';
-import 'package:mannai_user_app/widgets/dialogs/AccountCreated.dart';
-import 'package:mannai_user_app/views/auth/AccountStepper.dart';
-import 'package:mannai_user_app/views/auth/account_details.dart';
-import 'package:mannai_user_app/views/auth/account_verification.dart';
-import 'package:mannai_user_app/views/auth/login_view.dart';
-import 'package:mannai_user_app/views/auth/otp.dart';
-import 'package:mannai_user_app/views/auth/termsandconditions.dart';
-import 'package:mannai_user_app/views/auth/upload_id_view.dart';
-import 'package:mannai_user_app/views/bottomnav.dart';
-import 'package:mannai_user_app/views/onboarding/about_view.dart';
-import 'package:mannai_user_app/views/onboarding/languange_view.dart';
-import 'package:mannai_user_app/views/onboarding/welcome_view.dart';
-import 'package:mannai_user_app/views/screens/AllService.dart';
-import 'package:mannai_user_app/views/screens/CustomSplashScreen.dart';
-import 'package:mannai_user_app/views/screens/ServiceRequest.dart';
-import 'package:mannai_user_app/views/screens/create_service_request.dart';
-import 'package:mannai_user_app/widgets/dialogs/RequestCreateSucess.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/views/auth/forgotpassword.dart';
+import 'package:nadi_user_app/views/screens/edit_profile.dart';
+import 'package:nadi_user_app/views/screens/point_details.dart';
+import 'package:nadi_user_app/views/screens/send_service_request.dart';
+import 'package:nadi_user_app/views/screens/service_request_details.dart';
+import 'package:nadi_user_app/widgets/dialogs/AccountCreated.dart';
+import 'package:nadi_user_app/views/auth/AccountStepper.dart';
+import 'package:nadi_user_app/views/auth/account_details.dart';
+import 'package:nadi_user_app/views/auth/account_verification.dart';
+import 'package:nadi_user_app/views/auth/login_view.dart';
+import 'package:nadi_user_app/views/auth/otp.dart';
+import 'package:nadi_user_app/views/auth/termsandconditions.dart';
+import 'package:nadi_user_app/views/auth/upload_id_view.dart';
+import 'package:nadi_user_app/views/bottomnav.dart';
+import 'package:nadi_user_app/views/onboarding/about_view.dart';
+import 'package:nadi_user_app/views/onboarding/languange_view.dart';
+import 'package:nadi_user_app/views/onboarding/welcome_view.dart';
+import 'package:nadi_user_app/views/screens/AllService.dart';
+import 'package:nadi_user_app/views/screens/CustomSplashScreen.dart';
+import 'package:nadi_user_app/views/screens/ServiceRequest.dart';
+import 'package:nadi_user_app/views/screens/create_service_request.dart';
+import 'package:nadi_user_app/widgets/dialogs/RequestCreateSucess.dart';
 
 final appRouter = GoRouter(
   initialLocation: RouteNames.splash,
@@ -33,8 +34,8 @@ final appRouter = GoRouter(
       path: RouteNames.language,
       builder: (context, state) => const LanguangeView(),
     ), GoRoute(
-      path: RouteNames.language,
-      builder: (context, state) => const LanguangeView(),
+      path: RouteNames.forgotpassword,
+      builder: (context, state) => const Forgotpassword(),
     ),
      GoRoute(
       path: RouteNames.requestcreatesucess,

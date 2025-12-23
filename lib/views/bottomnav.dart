@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/views/screens/chats_view.dart';
-import 'package:mannai_user_app/views/screens/my_service_request.dart';
-import 'package:mannai_user_app/views/screens/myprofile.dart';
-import 'package:mannai_user_app/views/screens/settings_view.dart';
-import 'package:mannai_user_app/widgets/HomeTabNavigator%20.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/views/screens/chats_view.dart';
+import 'package:nadi_user_app/views/screens/my_service_request.dart';
+import 'package:nadi_user_app/views/screens/myprofile.dart';
+import 'package:nadi_user_app/views/screens/settings_view.dart';
+import 'package:nadi_user_app/widgets/HomeTabNavigator%20.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});

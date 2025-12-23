@@ -1,100 +1,71 @@
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppPreferences {
-
-  // keys
-  static const String _tokenkey = "auth_token";
-  static const  String _loginkey = "is_logged_in";
+  // ================== KEYS ==================
+  static const String _tokenKey = "auth_token";
+  static const String _loginKey = "is_logged_in";
   static const String _userIdKey = "user_id";
-  static const String _accountTypekey ="accountType";
-   static const String _aboutSeenKey  = "about_seen";
- 
 
-  //----TOKEN---
+  static const String _aboutSeenKey = "about_seen";
 
-  // Save token
-  static Future<void> saveToken(String token) async{
+
+
+  // ================== TOKEN ==================
+  static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenkey, token);
-  }
-  // Get token
-  static Future<String>getToken() async{
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenkey) ??  '';
-  }
-  // Remove token 
-    static Future<void> clearToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenkey);
+    await prefs.setString(_tokenKey, token);
   }
 
-  // --- LOGIN FLAG --- 
-   
-   // * App Open
-          // Login flag = true na
-           // direct Home 
- // *App restart after kill 
-         //  App close pannirukaar
-         // Reopen pannaar
-  //LoginFlag  = Door open / close status  
-  //
+  static Future<String> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_tokenKey) ?? '';
+  }
 
+  static Future<void> clearToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tokenKey);
+  }
 
-  // Set login status
+  // ================== LOGIN FLAG ==================
   static Future<void> setLoggedIn(bool value) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_loginkey, value);
-  } 
-  // Check login status
+    await prefs.setBool(_loginKey, value);
+  }
+
   static Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_loginkey) ?? false;
+    return prefs.getBool(_loginKey) ?? false;
   }
- 
- //--- ABOUT SGREEN FLAG---
 
- //save about seen
+  // ================== ABOUT SCREEN ==================
+  static Future<void> setAboutSeen(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_aboutSeenKey, value);
+  }
 
- static Future<void> setAboutSeen(bool value) async{
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setBool(_aboutSeenKey, value);
- }
+  static Future<bool> hasSeenAbout() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_aboutSeenKey) ?? false;
+  }
 
- //check about seen
- static Future<bool> hasSeenAbout()async{
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getBool(_aboutSeenKey) ?? false ;
- }
-
-
-   // --- USER ID --- 
-   
-   // saveUserId
-     static Future<void> saveUserId(String userId) async {
+  // ================== USER ID ==================
+  static Future<void> saveUserId(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userIdKey, userId);
   }
-  //getUserId
-   static Future<String?> getUserId() async {
+
+  static Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userIdKey);
   }
 
-  // --- Account Type ---- 
-   static Future<void> saveAccountType(String accountType)async{
-    final prefs = await SharedPreferences.getInstance();
-     prefs.setString(_accountTypekey, accountType);
-   }
-   static Future<String?> getaccountType()async{
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_accountTypekey);
-   }
 
-  // --- LOGOUT (CLEAN EVERYTHING) ---
-   static Future<void> clearAll() async {
+
+
+
+  // ================== LOGOUT / CLEAR ==================
+  static Future<void> clearAll() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
   }
-    
 }

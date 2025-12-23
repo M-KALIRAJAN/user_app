@@ -8,7 +8,7 @@
 
     
     <application
-        android:label="mannai_user_app"
+        android:label="Nadi User"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

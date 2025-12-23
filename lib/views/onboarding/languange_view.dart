@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class LanguangeView extends StatefulWidget {
   const LanguangeView({super.key});
@@ -62,17 +62,19 @@ class _LanguangeViewState extends State<LanguangeView> {
                         const SizedBox(height: 30),
 
                         AppButton(
-                          text: "English",
+                           text: "عربي",
                           onPressed: () {
-                            context.go(RouteNames.accountverfy);
+                            // context.go(RouteNames.accountverfy);
+                             _showLanguageInProcessDialog(context);
                           },
                           color: AppColors.btn_primery,
                           width: double.infinity,
                         ),
 
                         const SizedBox(height: 25),
+                       
                         AppButton(
-                          text: "عربي",
+                          text: "English",
                           onPressed: ()async {
                              setState(() => _isLoading = true); 
                             await Future.delayed(const Duration(seconds: 1));
@@ -107,4 +109,34 @@ class _LanguangeViewState extends State<LanguangeView> {
       ),
     );
   }
+  void _showLanguageInProcessDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // user must tap OK
+    builder: (context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        title: const Text(
+          "Language",
+          textAlign: TextAlign.center,
+        ),
+        content: const Text(
+          "Arabic language is in process",
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 }

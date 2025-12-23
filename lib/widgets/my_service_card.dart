@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/core/network/dio_client.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/network/dio_client.dart';
 
 class ServiceRequestCard extends StatelessWidget {
   final String title;

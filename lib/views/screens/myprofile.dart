@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/core/utils/logger.dart';
-import 'package:mannai_user_app/preferences/preferences.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/services/profile_service.dart';
-import 'package:mannai_user_app/widgets/app_back.dart';
-import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/services/profile_service.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
+import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
 
 class Myprofile extends StatefulWidget {
   const Myprofile({super.key});
@@ -191,72 +191,74 @@ class _MyprofileState extends State<Myprofile> {
             ),
           ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
-
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Full Name",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 5),
-
-                AppTextField(
-                  controller: TextEditingController(
-                    text: basicData?['basicInfo']['fullName'] ?? "No Name",
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+            
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Full Name",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
-                  readonly: true,
-                  enabled: false,
-                ),
-                const SizedBox(height: 15),
-                const Text(
-                  "Email Adress",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 5),
-
-                AppTextField(
-                  controller: TextEditingController(
-                    text: basicData?['basicInfo']['email'],
+                  const SizedBox(height: 5),
+            
+                  AppTextField(
+                    controller: TextEditingController(
+                      text: basicData?['basicInfo']['fullName'] ?? "No Name",
+                    ),
+                    readonly: true,
+                    enabled: false,
                   ),
-                  readonly: true,
-                  enabled: false,
-                ),
-                const SizedBox(height: 15),
-                const Text(
-                  "Phone Number",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 5),
-
-                AppTextField(
-                  controller: TextEditingController(
-                    text: basicData?['basicInfo']['mobileNumber'],
+                  const SizedBox(height: 15),
+                  const Text(
+                    "Email Adress",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
-                  readonly: true,
-                  enabled: false,
-                ),
-                const SizedBox(height: 15),
-                const Text(
-                  "Adress",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 5),
-
-                AppTextField(
-                  minLines: 3,
-                  maxLines: 5,
-                  controller: TextEditingController(
-                    text: addresses.isNotEmpty
-                        ? addresses[0]['city'] ?? ""
-                        : "",
+                  const SizedBox(height: 5),
+            
+                  AppTextField(
+                    controller: TextEditingController(
+                      text: basicData?['basicInfo']['email'],
+                    ),
+                    readonly: true,
+                    enabled: false,
                   ),
-                  readonly: true,
-                  enabled: false,
-                ),
-              ],
+                  const SizedBox(height: 15),
+                  const Text(
+                    "Phone Number",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 5),
+            
+                  AppTextField(
+                    controller: TextEditingController(
+                      text: basicData?['basicInfo']['mobileNumber'],
+                    ),
+                    readonly: true,
+                    enabled: false,
+                  ),
+                  const SizedBox(height: 15),
+                  const Text(
+                    "Adress",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 5),
+            
+                  AppTextField(
+                    minLines: 3,
+                    maxLines: 5,
+                    controller: TextEditingController(
+                      text: addresses.isNotEmpty
+                          ? addresses[0]['city'] ?? ""
+                          : "",
+                    ),
+                    readonly: true,
+                    enabled: false,
+                  ),
+                ],
+              ),
             ),
           ),
         ],

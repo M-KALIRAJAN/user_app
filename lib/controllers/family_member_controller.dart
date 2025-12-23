@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mannai_user_app/core/utils/validators.dart';
-import 'package:mannai_user_app/models/family_member_model.dart';
+import 'package:nadi_user_app/core/utils/validators.dart';
+
 
 class FamilyMemberController {
    final familyCount = TextEditingController();

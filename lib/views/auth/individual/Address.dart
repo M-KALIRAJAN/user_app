@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/controllers/address_controller.dart';
+import 'package:nadi_user_app/controllers/address_controller.dart';
 
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/preferences/preferences.dart';
-import 'package:mannai_user_app/providers/auth_Provider.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/services/auth_service.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
-import 'package:mannai_user_app/widgets/inputs/app_dropdown.dart';
-import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/providers/auth_Provider.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/services/auth_service.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/widgets/inputs/app_dropdown.dart';
+import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Address extends StatefulWidget {
@@ -186,7 +186,7 @@ class _AddressState extends State<Address> {
           SizedBox(height: 17),
           AppTextField(
             controller: controller.city,
-            label: "Enter Your ity/Area",
+            label: "Enter Your city/Area",
           ),
           SizedBox(height: 17),
           AppTextField(
@@ -216,77 +216,140 @@ class _AddressState extends State<Address> {
           ),
           SizedBox(height: 17),
 
+          // Consumer(
+          //   builder: (context, ref, child) {
+          //     final roadsAsync = ref.watch(getBlockProvider);
+
+          //     return roadsAsync.when(
+          //       data: (roads) {
+          //         final roadNames = roads
+          //             .map((r) => r['name'] as String)
+          //             .toList();
+
+          //         return Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+
+          //                // Block Dropdown
+          //             AppDropdown(
+          //               label: "Select Your Block*",
+          //               items: controller.blocksForSelectedRoad
+          //                   .map((b) => b['name'] as String)
+          //                   .toList(),
+          //               value: controller.block,
+          //               onChanged: (val) {
+          //                 setState(() {
+          //                   final selectedBlock = controller
+          //                       .blocksForSelectedRoad
+          //                       .firstWhere((b) => b['name'] == val);
+
+          //                   controller.block = selectedBlock['name']; // name
+          //                   controller.blockId = selectedBlock['_id']; //  id
+          //                 });
+          //               },
+
+          //               validator: (val) =>
+          //                   val == null ? "Please select a block" : null,
+          //             ),
+          //             // Road Dropdown
+          //             AppDropdown(
+          //               label: "Select Your Road*",
+          //               items: roadNames,
+          //               value: controller.road,
+          //               onChanged: (val) {
+          //                 setState(() {
+          //                   final selectedRoad = roads.firstWhere(
+          //                     (r) => r['name'] == val,
+          //                   );
+
+          //                   controller.road = selectedRoad['name']; //  name
+          //                   controller.roadId =
+          //                       selectedRoad['_id']; //  ID FIXED
+
+          //                   controller.block = null;
+          //                   controller.blockId = null;
+
+          //                   controller.blocksForSelectedRoad =
+          //                       List<Map<String, dynamic>>.from(
+          //                         selectedRoad['blocks'],
+          //                       );
+          //                 });
+          //               },
+          //               validator: (val) =>
+          //                   val == null ? "Please select a road" : null,
+          //             ),
+
+          //             SizedBox(height: 15),
+                   
+          //           ],
+          //         );
+          //       },
+          //       loading: () => const CircularProgressIndicator(),
+          //       error: (e, _) => Text("Failed to load roads/blocks: $e"),
+          //     );
+          //   },
+          // ),
           Consumer(
-            builder: (context, ref, child) {
-              final roadsAsync = ref.watch(getBlockProvider);
+  builder: (context, ref, child) {
+    final blockAsync = ref.watch(getBlockProvider);
 
-              return roadsAsync.when(
-                data: (roads) {
-                  final roadNames = roads
-                      .map((r) => r['name'] as String)
-                      .toList();
+    return blockAsync.when(
+      data: (blocks) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// BLOCK FIRST
+            AppDropdown(
+              label: "Select Your Block*",
+              items: blocks.map((b) => b['name'] as String).toList(),
+              value: controller.block,
+              onChanged: (val) {
+                setState(() {
+                  final block =
+                      blocks.firstWhere((b) => b['name'] == val);
+                  controller.block = block['name'];
+                  controller.blockId = block['_id'];
+                  controller.road = null;
+                  controller.roadId = null;
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Road Dropdown
-                      AppDropdown(
-                        label: "Select Your Road*",
-                        items: roadNames,
-                        value: controller.road,
-                        onChanged: (val) {
-                          setState(() {
-                            final selectedRoad = roads.firstWhere(
-                              (r) => r['name'] == val,
-                            );
+                  controller.roadsForSelectedBlock =
+                      List<Map<String, dynamic>>.from(block['roads']);
+                });
+              },
+              validator: (val) =>
+                  val == null ? "Please select a block" : null,
+            ),
 
-                            controller.road = selectedRoad['name']; // ✅ name
-                            controller.roadId =
-                                selectedRoad['_id']; // ✅ ID FIXED
+            SizedBox(height: 15),
 
-                            controller.block = null;
-                            controller.blockId = null;
+            /// ROAD SECOND
+            AppDropdown(
+              label: "Select Your Road*",
+              items: controller.roadsForSelectedBlock
+                  .map((r) => r['name'] as String)
+                  .toList(),
+              value: controller.road,
+              onChanged: (val) {
+                setState(() {
+                  final road =
+                      controller.roadsForSelectedBlock
+                          .firstWhere((r) => r['name'] == val);
 
-                            controller.blocksForSelectedRoad =
-                                List<Map<String, dynamic>>.from(
-                                  selectedRoad['blocks'],
-                                );
-                          });
-                        },
-                        validator: (val) =>
-                            val == null ? "Please select a road" : null,
-                      ),
-
-                      SizedBox(height: 15),
-                      // Block Dropdown
-                      AppDropdown(
-                        label: "Select Your Block*",
-                        items: controller.blocksForSelectedRoad
-                            .map((b) => b['name'] as String)
-                            .toList(),
-                        value: controller.block,
-                        onChanged: (val) {
-                          setState(() {
-                            final selectedBlock = controller
-                                .blocksForSelectedRoad
-                                .firstWhere((b) => b['name'] == val);
-
-                            controller.block = selectedBlock['name']; // name
-                            controller.blockId = selectedBlock['_id']; //  id
-                          });
-                        },
-
-                        validator: (val) =>
-                            val == null ? "Please select a block" : null,
-                      ),
-                    ],
-                  );
-                },
-                loading: () => const CircularProgressIndicator(),
-                error: (e, _) => Text("Failed to load roads/blocks: $e"),
-              );
-            },
-          ),
+                  controller.road = road['name'];
+                  controller.roadId = road['_id'];
+                });
+              },
+              validator: (val) =>
+                  val == null ? "Please select a road" : null,
+            ),
+          ],
+        );
+      },
+      loading: () => const CircularProgressIndicator(),
+      error: (e, _) => Text("Failed to load blocks: $e"),
+    );
+  },
+),
 
           SizedBox(height: 20),
           if (!widget.family) 

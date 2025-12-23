@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/providers/theme_provider.dart';
-import 'package:mannai_user_app/widgets/app_back.dart';
+import 'package:go_router/go_router.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/providers/theme_provider.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
 
 class SettingsView extends ConsumerStatefulWidget {
   const SettingsView({super.key});
@@ -87,6 +90,16 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _logout(BuildContext context) async {
+  // Clear all local storage
+  await AppPreferences.clearAll();
+
+  // Optional: reset theme to system
+  ref.read(themeProvider.notifier).changeTheme(ThemeMode.system);
+
+    context.go(RouteNames.login);
+}
+
     return Scaffold(
       backgroundColor: AppColors.background_clr,
       body: SafeArea(
@@ -294,7 +307,9 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                 child: settingItem(
                   text: "Log Out",
                   icon: Image.asset("assets/icons/logout.png"),
-                  onTap: () {},
+                  onTap: () {
+                    _logout(context);
+                  },
                 ),
               ),
             ),

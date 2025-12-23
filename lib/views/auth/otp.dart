@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/core/utils/logger.dart';
-import 'package:mannai_user_app/preferences/preferences.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/services/auth_service.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/services/auth_service.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:pinput/pinput.dart';
 
 class Otp extends StatefulWidget {
@@ -48,36 +48,50 @@ class _OtpState extends State<Otp> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  Future<void> verifyOtp(BuildContext context) async {
-    final userId = await AppPreferences.getUserId();
-    final otp = otpController.text.trim();
-    AppLogger.success("*****************************************************");
-    setState(() => isLoading = true);
+Future<void> verifyOtp(BuildContext context) async {
+  final userId = await AppPreferences.getUserId();
+  final otp = otpController.text.trim();
 
-    try {
-      final response = await _authService.OTPverify(otp: otp, userId: userId!);
+  setState(() => isLoading = true);
+
+  try {
+    final response =
+        await _authService.OTPverify(otp: otp, userId: userId!);
+
+    if (response["message"] == "OTP verified successfully") {
+
+      // ✅ Call second API only after OTP success
+      final Map<String, dynamic>? completeuseraccount =
+          await _authService.CompleteuserAccount(userId: userId);
+
       AppLogger.success(
-        "*****************************************************",
+        "completeuseraccount: $completeuseraccount",
       );
 
-      if (response["message"] == "OTP verified successfully") {
-        context.push(RouteNames.accountcreated);
-      } else {
-        // Backend responded but status=false
-        _showOtpError(response["message"] ?? "Invalid OTP");
+      // ✅ Null & key safety check
+      if (completeuseraccount != null &&
+          completeuseraccount.containsKey('token')) {
+        await AppPreferences.saveToken(
+          completeuseraccount['token'],
+        );
       }
-    } on DioException catch (e) {
-      // Backend sent error response (like 400)
-      final errorResponse = e.response?.data;
-      final message = (errorResponse is Map && errorResponse["message"] != null)
-          ? errorResponse["message"]
-          : "Something went wrong";
 
-      _showOtpError(message);
-    } finally {
-      setState(() => isLoading = false);
+      context.push(RouteNames.accountcreated);
+    } else {
+      _showOtpError(response["message"] ?? "Invalid OTP");
     }
+  } on DioException catch (e) {
+    final errorResponse = e.response?.data;
+    final message =
+        (errorResponse is Map && errorResponse["message"] != null)
+            ? errorResponse["message"]
+            : "Something went wrong";
+
+    _showOtpError(message);
+  } finally {
+    setState(() => isLoading = false);
   }
+}
 
   final errorPinTheme = PinTheme(
     width: 50,
@@ -94,22 +108,37 @@ class _OtpState extends State<Otp> {
     ),
   );
 
-  Future<void> sendOtp(BuildContext context) async {
-    final userId = await AppPreferences.getUserId();
+Future<void> sendOtp(BuildContext context) async {
+  final userId = await AppPreferences.getUserId();
 
-    setState(() {
-      isOtpError = false;
-      otpController.clear();
-    });
+  setState(() {
+    isOtpError = false;
+    otpController.clear();
+  });
 
-    try {
-      final response = await _authService.SendOTP(userId: userId!);
-      AppLogger.success("Resend OTP response: $response");
-    } on DioException catch (e) {
-      final message = e.response?.data["message"] ?? "Failed to resend OTP";
-      _showOtpError(message);
+  try {
+    final response = await _authService.SendOTP(userId: userId!);
+    AppLogger.success("Resend OTP response: $response");
+
+    if (response != null && response['otp'] != null) {
+      final otp = response['otp'].toString();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Your OTP is: $otp"),
+          backgroundColor: AppColors.button_secondary,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    } else {
+      _showOtpError("OTP not received");
     }
+  } on DioException catch (e) {
+    final message = e.response?.data["message"] ?? "Failed to resend OTP";
+    _showOtpError(message);
   }
+}
+
 
   void _startTimer() {
     _secountleft = 60;

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 
-import 'package:mannai_user_app/providers/theme_provider.dart';
+import 'package:nadi_user_app/providers/theme_provider.dart';
 
-import 'package:mannai_user_app/routing/route_names.dart';
+import 'package:nadi_user_app/routing/route_names.dart';
 
 
 ///  STEP 1: ADD THIS HERE (TOP LEVEL, NOT INSIDE CLASS)

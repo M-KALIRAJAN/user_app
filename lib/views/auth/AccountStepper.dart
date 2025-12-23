@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mannai_user_app/controllers/address_controller.dart';
-import 'package:mannai_user_app/views/auth/AccountFormView.dart';
-import 'package:mannai_user_app/views/auth/AddMember.dart';
-import 'package:mannai_user_app/views/auth/individual/Address.dart';
+import 'package:nadi_user_app/controllers/address_controller.dart';
+import 'package:nadi_user_app/views/auth/AccountFormView.dart';
+import 'package:nadi_user_app/views/auth/AddMember.dart';
+import 'package:nadi_user_app/views/auth/individual/Address.dart';
 
 class AccountStepper extends StatefulWidget {
   final String accountType; // "Individual" or "Family"

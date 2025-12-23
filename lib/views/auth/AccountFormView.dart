@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mannai_user_app/controllers/signup_controller.dart';
-import 'package:mannai_user_app/core/utils/logger.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/preferences/preferences.dart';
-import 'package:mannai_user_app/services/auth_service.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
-import 'package:mannai_user_app/widgets/inputs/app_dropdown.dart';
-import 'package:mannai_user_app/widgets/inputs/app_text_field.dart';
+import 'package:nadi_user_app/controllers/signup_controller.dart';
 
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/services/auth_service.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/widgets/inputs/app_dropdown.dart';
+import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountFormView extends StatefulWidget {
   final String accountType;
@@ -59,8 +60,10 @@ Future<void> submitBasicInfo(BuildContext context) async {
     // API finished
     showLoader = false;
 
-    if (mounted) setState(() => _isLoading = false); // hide loader if shown
+    if (mounted) setState(() => _isLoading = false); 
     if (response["message"] == "Basic info saved") {
+          final prefs = await SharedPreferences.getInstance();
+    // await prefs.setString("user_name", data.name);
       widget.onNext();
     }
   } catch (e) {
@@ -114,7 +117,7 @@ Future<void> submitBasicInfo(BuildContext context) async {
           // Gender
           AppDropdown(
             label: "Gender*",
-            items: ["Male", "Female", "Oter"],
+            items: ["Male", "Female"],
             value: controller.gender,
             onChanged: (val) {
               setState(() => controller.gender = val);

@@ -21,5 +21,6 @@ class RouteNames {
     static const String editprfoile = '/editprfoile';
     static const String requestcreatesucess = '/requestcreatesucess';
     static const String sendservicerequest = '/sendservicerequest';
+ static const String forgotpassword = '/forgotpassword';
 
 }

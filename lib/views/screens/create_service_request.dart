@@ -4,21 +4,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/core/utils/logger.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/services/home_view_service.dart';
-import 'package:mannai_user_app/services/request_service.dart';
-import 'package:mannai_user_app/widgets/app_back.dart';
-import 'package:mannai_user_app/widgets/app_date_picker.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
-import 'package:mannai_user_app/widgets/media_upload_widget.dart';
-import 'package:mannai_user_app/widgets/record_widget.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/services/home_view_service.dart';
+import 'package:nadi_user_app/services/request_service.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
+import 'package:nadi_user_app/widgets/app_date_picker.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/widgets/media_upload_widget.dart';
+import 'package:nadi_user_app/widgets/record_widget.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
-
 
 class CreateServiceRequest extends StatefulWidget {
   const CreateServiceRequest({super.key});
@@ -49,12 +48,13 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
   String? selectcategoryId;
   StreamSubscription? _playerCompleteSub;
   StreamSubscription? _playerStateSub;
-
+ Timer? timer;
   @override
   void initState() {
     super.initState();
     issuseList();
     serviceList();
+
   }
 
   Future<void> issuseList() async {
@@ -76,8 +76,6 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
     }
     AppLogger.debug("respose ${jsonEncode(response)}");
   }
-
-
 
   Future<bool> requestMicPermission() async {
     try {
@@ -180,41 +178,70 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
     super.dispose();
   }
 
-  Future<void> SendRequest() async {
-    if (selectcategoryId == null || selectedIssueId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select service & issue")),
-      );
-      return;
-    }
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      AppLogger.warn("**************************************88");
-      AppLogger.warn("selectcategoryId $selectcategoryId");
-      final response = await _requestSerivices.createServiceRequestes(
-        serviceId: selectcategoryId!,
-        issuesId: selectedIssueId!,
-        feedback: descriptionController.text,
-        scheduleService: _dateController.text,
-        immediateAssistance: isChecked,
-        images: selectedImages.map((e) => File(e.path)).toList(),
-        voiceFile: recordedFilePath != null ? File(recordedFilePath!) : null,
-      );
-      AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
-      if (mounted) setState(() => _isLoading = false);
-      if (response != null) {
-        context.push(RouteNames.requestcreatesucess);
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Something went wrong")));
-      }
-    } catch (e) {
-      AppLogger.error(" $e");
-    }
+Future<void> SendRequest() async {
+  if (selectcategoryId == null || selectedIssueId == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Please select service & issue")),
+    );
+    return;
   }
+
+  setState(() => _isLoading = true);
+
+  try {
+    final response = await _requestSerivices.createServiceRequestes(
+      serviceId: selectcategoryId!,
+      issuesId: selectedIssueId!,
+      feedback: descriptionController.text,
+      scheduleService: _dateController.text,
+      immediateAssistance: isChecked,
+      images: selectedImages.map((e) => File(e.path)).toList(),
+    );
+
+    AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
+
+    if (!mounted) return;
+
+    setState(() => _isLoading = false);
+
+    if (response != null) {
+      final message = response['message'] ?? "Something went wrong";
+
+      // ✅ SUCCESS
+      if (message == "Service created successfully") {
+        context.push(RouteNames.requestcreatesucess);
+      }
+      // ❌ ERROR FROM API (ACCOUNT NOT VERIFIED etc.)
+      else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else {
+      //  NULL RESPONSE
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Something went wrong. Please try again."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } catch (e) {
+    setState(() => _isLoading = false);
+    AppLogger.error("SendRequest error: $e");
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Unexpected error occurred"),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -346,7 +373,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                         ),
                       ),
                       SizedBox(height: 10),
-                     
+
                       AppDatePicker(
                         controller: _dateController,
                         label: "Select Date",
@@ -364,18 +391,17 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                       ),
                       SizedBox(height: 15),
 
-                    MediaUploadWidget(
-  images: selectedImages,
-  onAddTap: () {
-    showImagePickerSheet(context);
-  },
-  onRemoveTap: (index) {
-    setState(() {
-      selectedImages.removeAt(index);
-    });
-  },
-),
-
+                      MediaUploadWidget(
+                        images: selectedImages,
+                        onAddTap: () {
+                          showImagePickerSheet(context);
+                        },
+                        onRemoveTap: (index) {
+                          setState(() {
+                            selectedImages.removeAt(index);
+                          });
+                        },
+                      ),
 
                       SizedBox(height: 15),
                       // Container(
@@ -433,46 +459,12 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                       SizedBox(height: 15),
                       RecordWidget(
                         onRecordComplete: (file) {
-                          recordedFilePath = file?.path;
+                          setState(() {
+                            recordedFilePath = file?.path;
+                          });
                         },
                       ),
 
-                      if (recordedFilePath != null && !isRecording) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  isPlaying ? Icons.pause : Icons.play_arrow,
-                                ),
-                                onPressed: playPauseVoice,
-                              ),
-                              const Text("Recorded Voice"),
-                              const Spacer(),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    recordedFilePath = null;
-                                    isPlaying = false;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(height: 15),
-                      ],
                       Row(
                         children: [
                           Checkbox(
@@ -488,7 +480,6 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                           Text("Need immitated Asstience"),
                         ],
                       ),
-
 
                       SizedBox(height: 10),
                       AppButton(

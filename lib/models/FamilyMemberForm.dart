@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mannai_user_app/controllers/address_controller.dart';
-import 'package:mannai_user_app/controllers/family_member_controller.dart';
+import 'package:nadi_user_app/controllers/address_controller.dart';
+import 'package:nadi_user_app/controllers/family_member_controller.dart';
 
 class FamilyMemberForm {
   final FamilyMemberController memberController;

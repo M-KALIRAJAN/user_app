@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:mannai_user_app/core/utils/validators.dart';
-import 'package:mannai_user_app/models/login_model.dart';
+import 'package:nadi_user_app/core/utils/validators.dart';
+import 'package:nadi_user_app/models/login_model.dart';
 
 /// Controller for login page
 class LoginController {

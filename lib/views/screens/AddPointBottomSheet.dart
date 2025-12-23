@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class AddPointBottomSheetContent extends StatelessWidget {
   const AddPointBottomSheetContent({super.key});

@@ -1,20 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mannai_user_app/providers/serviceProvider.dart';
+import 'package:nadi_user_app/providers/serviceProvider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/core/network/dio_client.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/network/dio_client.dart';
 
-import 'package:mannai_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
 
-import 'package:mannai_user_app/views/screens/AddPointBottomSheet.dart';
-import 'package:mannai_user_app/views/screens/send_service_request.dart';
-import 'package:mannai_user_app/widgets/RecentActivity.dart';
-import 'package:mannai_user_app/widgets/app_card.dart';
-import 'package:mannai_user_app/widgets/pie_chart.dart';
-import 'package:mannai_user_app/widgets/request_cart.dart';
+import 'package:nadi_user_app/views/screens/AddPointBottomSheet.dart';
+
+import 'package:nadi_user_app/widgets/RecentActivity.dart';
+import 'package:nadi_user_app/widgets/app_card.dart';
+import 'package:nadi_user_app/widgets/pie_chart.dart';
+import 'package:nadi_user_app/widgets/request_cart.dart';
 
 class Dashboard extends ConsumerStatefulWidget {
   final Function(int) onTabChange;
@@ -27,12 +28,23 @@ class Dashboard extends ConsumerStatefulWidget {
 class _DashboardState extends ConsumerState<Dashboard> {
   @override
   bool isLoading = true;
-
-  @override
+  String userName = ""; 
   @override
   void initState() {
     super.initState();
+    _loadUserName();
   }
+  Future<void> _loadUserName() async {
+  final prefs = await SharedPreferences.getInstance();
+  final name = prefs.getString("user_name"); // same key you saved
+
+  if (mounted) {
+    setState(() {
+      userName = name ?? "User"; // fallback if null
+    });
+  }
+}
+
 
   Widget serviceShimmerItem() {
     return Padding(
@@ -515,7 +527,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Recent Ativity",
+                            "Recent Activity",
                             style: TextStyle(
                               fontSize: AppFontSizes.medium,
                               fontWeight: FontWeight.w600,

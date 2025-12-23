@@ -1,4 +1,4 @@
-name: mannai_user_app
+name: nadi_user_app
 description: "A new Flutter project."
 publish_to: "none"
 
@@ -18,18 +18,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # iOS-style icons
   cupertino_icons: ^1.0.8
-
-  # Router / Navigation
   go_router: ^17.0.0
-
-  # Logger
   logger: ^2.6.2
-
-  # Native splash screen
-  # flutter_native_splash: ^2.4.7
-
   dotted_border: ^3.1.0
   pinput: ^6.0.1
   pie_chart: ^5.4.0
@@ -50,6 +41,7 @@ dependencies:
   audioplayers: ^6.5.1
   permission_handler_platform_interface: ^4.3.0
   intl: ^0.20.2
+  flutter_launcher_icons: ^0.14.4
 
 # -----------------------------------------------------------------------------
 # 🛠 Dev Dependencies
@@ -61,10 +53,12 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 # -----------------------------------------------------------------------------
-# 🚀 Native Splash Screen Configuration
-#    ❗ MUST BE AT TOP LEVEL, NOT UNDER "flutter:"
+# 🚀 APP LAUNCHER ICON CONFIGURATION  ✅ (ADDED)
 # -----------------------------------------------------------------------------
-
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo/logo.png"
 
 # -----------------------------------------------------------------------------
 # 🎨 Flutter Assets & Fonts
@@ -72,26 +66,14 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # Image & icon folders
   assets:
     - assets/images/
     - assets/logo/logo.png
     - assets/icons/
 
-  # ---------------------------------------------------------------------------
-  # ✨ Custom Fonts (You will add here later)
-  #
-  # Example:
-  #
   fonts:
     - family: Poppins
       fonts:
         - asset: assets/fonts/Poppins-Regular.ttf
         - asset: assets/fonts/Poppins-Medium.ttf
           weight: 500
-
-  #
-  # After adding fonts, run:
-  # flutter clean
-  # flutter pub get
-  # ---------------------------------------------------------------------------

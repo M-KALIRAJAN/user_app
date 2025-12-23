@@ -1,6 +1,6 @@
   
 import 'package:dio/dio.dart';
-import 'package:mannai_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
 class DioClient {
   static final Dio dio = Dio(
     BaseOptions(

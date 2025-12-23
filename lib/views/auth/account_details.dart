@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/services/auth_service.dart';
-import 'package:mannai_user_app/widgets/app_back.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/services/auth_service.dart';
+import 'package:nadi_user_app/widgets/app_back.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class AccountDetails extends StatefulWidget {
   const AccountDetails({super.key});
@@ -18,12 +18,12 @@ class _AccountDetailsState extends State<AccountDetails> {
   @override
   void initState() {
     super.initState();
-    _loadAccoundtype();
+    // _loadAccoundtype();
   }
 
-  Future<void> _loadAccoundtype() async {
-    await _authService.acountype();
-  }
+  // Future<void> _loadAccoundtype() async {
+  //   await _authService.acountype();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -76,27 +76,18 @@ class _AccountDetailsState extends State<AccountDetails> {
                   // In your AccountDetails widget
                   AppButton(
                     text: "Individual Account",
-                    icon: Image.asset(
-                      "assets/icons/person.png",
-                      height: 26,
-                      width: 26,
-                    ),
+                    icon: Image.asset("assets/icons/person.png", height: 40),
                     color: AppColors.btn_primery,
                     width: double.infinity,
                     onPressed: () async {
-                      final res = await _authService.selectIndividualAccount();
+                      final res = await _authService.selectAccount(
+                        accountTypeId: "693175af976ca992c877f99d", // INDIVIDUAL
+                      );
+
                       if (res) {
-                        // userId is stored, navigate to next screen
                         context.pushNamed(
                           RouteNames.stepper,
                           extra: "Individual",
-                        );
-                      } else {
-                        // API failed or userId not found
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Failed to select account"),
-                          ),
                         );
                       }
                     },
@@ -113,22 +104,18 @@ class _AccountDetailsState extends State<AccountDetails> {
                   ),
 
                   const SizedBox(height: 27),
-
                   AppButton(
                     text: "Family Account",
                     icon: Image.asset("assets/icons/persons.png", height: 40),
                     color: AppColors.btn_primery,
                     width: double.infinity,
-                    onPressed: () async{
-                      // context.push(RouteNames.bottomnav);
-                      // context.pushNamed(RouteNames.stepper, extra: "Family");
-                       final res = await _authService.selectIndividualAccount();
+                    onPressed: () async {
+                      final res = await _authService.selectAccount(
+                        accountTypeId: "693175a0976ca992c877f99b", // FAMILY
+                      );
+
                       if (res) {
-                        // userId is stored, navigate to next screen
-                        context.pushNamed(
-                          RouteNames.stepper,
-                          extra: "Family",
-                        );
+                        context.pushNamed(RouteNames.stepper, extra: "Family");
                       }
                     },
                   ),

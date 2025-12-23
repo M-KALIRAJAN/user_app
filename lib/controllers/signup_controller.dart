@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mannai_user_app/models/SignupModel.dart';
+import 'package:nadi_user_app/models/SignupModel.dart';
 
-import 'package:mannai_user_app/core/utils/validators.dart';
+import 'package:nadi_user_app/core/utils/validators.dart';
 
 class SignupController {
   // Text controllers
@@ -35,7 +35,7 @@ class SignupController {
 
   String? validateMobile(String? v) {
     if (v == null || v.isEmpty) return "Enter mobile number";
-    if (v.length != 10) return "Mobile must be 10 digits";
+    if (v.length != 8) return "Mobile must be 8 digits";
     if (!RegExp(r'^[0-9]+$').hasMatch(v)) return "Only digits allowed";
     return null;
   }

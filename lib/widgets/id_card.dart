@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
 
 class IdCardSection extends StatelessWidget {
   final String title;

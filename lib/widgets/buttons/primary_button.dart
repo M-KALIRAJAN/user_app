@@ -35,7 +35,7 @@ class AppButton extends StatelessWidget {
           if (!isLoading) {
             onPressed?.call();
           }
-        }, // ✅ ignore taps while loading
+        }, //  ignore taps while loading
         style: ElevatedButton.styleFrom(
           backgroundColor: color, // keep full color
           shape: RoundedRectangleBorder(
@@ -44,8 +44,8 @@ class AppButton extends StatelessWidget {
         ),
         child: isLoading
             ? const SizedBox(
-                width: 24,
-                height: 24,
+                width: 25,
+                height: 25,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   color: Colors.white, // spinner color

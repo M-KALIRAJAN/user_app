@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:mannai_user_app/core/network/dio_client.dart';
-import 'package:mannai_user_app/core/utils/logger.dart';
-import 'package:mannai_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/core/network/dio_client.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -14,22 +14,7 @@ class AuthService {
   Future<List<Map<String?, dynamic>>?> acountype() async {
     try {
       final response = await _dio.get("account-type");
-      if (response.statusCode == 200 && response.data != null) {
-        final dataList = List<Map<String, dynamic>>.from(response.data["data"]);
-        AppLogger.debug("dataList $dataList");
-        final prefs = await SharedPreferences.getInstance();
-        for (var account in dataList) {
-          if (account["type"] == "FA") {
-            await prefs.setString("family_id", account["_id"]);
-
-            await prefs.setString("family_name", account["name"]);
-          } else if (account["type"] == "IA") {
-            await prefs.setString("individual_id", account["_id"]);
-            await prefs.setString("individual_name", account["name"]);
-          }
-        }
-        return dataList;
-      }
+    
     } catch (e, st) {
       AppLogger.error("Account type API error: $e\n$st");
       return null;
@@ -37,38 +22,66 @@ class AuthService {
   }
 
   //selectIndividualAccount
-  Future<bool> selectIndividualAccount() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final accountTypeId = prefs.getString("individual_id");
-      AppLogger.warn("individualId $accountTypeId");
+  // Future<bool> selectIndividualAccount() async {
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final accountTypeId = prefs.getString("individual_id");
+  //     AppLogger.warn("individualId $accountTypeId");
 
-      if (accountTypeId == null) return false;
+  //     if (accountTypeId == null) return false;
 
-      final response = await _dio.post(
-        "user-account/",
-        data: {"accountTypeId": accountTypeId},
-      );
+  //     final response = await _dio.post(
+  //       "user-account/",
+  //       data: {"accountTypeId": accountTypeId},
+  //     );
 
-      AppLogger.debug("selectIndividualAccount response: ${response.data}");
+  //     AppLogger.debug("selectIndividualAccount response: ${response.data}");
 
-      // Extract userId from response and store in SharedPreferences
-      final userId = response.data["userId"].toString();
-      if (userId != null) {
-        // await prefs.setString("userId", userId);
+  //     // Extract userId from response and store in SharedPreferences
+  //     final userId = response.data["userId"].toString();
+  //     if (userId != null) {
+  //       // await prefs.setString("userId", userId);
 
-        //  Store via AppPreferences
-        await AppPreferences.saveUserId(userId);
+  //       //  Store via AppPreferences
+  //       await AppPreferences.saveUserId(userId);
 
-        AppLogger.warn("userId saved in SharedPreferences: $userId");
-      }
+  //       AppLogger.warn("userId saved in SharedPreferences: $userId");
+  //     }
 
-      return true;
-    } catch (e, st) {
-      AppLogger.error("Account type API error: $e\n$st");
-      return false;
+  //     return true;
+  //   } catch (e, st) {
+  //     AppLogger.error("Account type API error: $e\n$st");
+  //     return false;
+  //   }
+  // }
+  Future<bool> selectAccount({
+  required String accountTypeId,
+}) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    AppLogger.warn("accountTypeId: $accountTypeId");
+    final response = await _dio.post(
+      "user-account/",
+      data: {
+        "accountTypeId": accountTypeId,
+      },
+    );
+
+    AppLogger.debug("selectAccount response: ${response.data}");
+
+    final userId = response.data["userId"]?.toString();
+    if (userId != null) {
+      await AppPreferences.saveUserId(userId);
+      AppLogger.warn("userId saved: $userId");
     }
+
+    return true;
+  } catch (e, st) {
+    AppLogger.error("Account type API error: $e\n$st");
+    return false;
   }
+}
+
 
   // Sign Up Basic INFO
   Future<Map<String?, dynamic>> basicInfo({
@@ -158,6 +171,8 @@ class AuthService {
   }
 
   // Upload ID
+
+
 Future<Map<String, dynamic>?> uploadIdProof({
   required File frontImage,
   required File backImage,
@@ -165,20 +180,19 @@ Future<Map<String, dynamic>?> uploadIdProof({
 }) async {
   try {
     final formData = FormData();
-  
-    formData.fields.add(
-      MapEntry("userId", userId),
-    );
+
+    formData.fields.add(MapEntry("userId", userId));
 
     formData.files.add(
       MapEntry(
-        "idProof", 
+        "idProof",
         await MultipartFile.fromFile(
           frontImage.path,
           filename: frontImage.path.split('/').last,
         ),
       ),
     );
+
     formData.files.add(
       MapEntry(
         "idProof",
@@ -189,14 +203,6 @@ Future<Map<String, dynamic>?> uploadIdProof({
       ),
     );
 
-
-    for (var f in formData.fields) {
-      AppLogger.warn("FIELD → ${f.key}: ${f.value}");
-    }
-    for (var f in formData.files) {
-      AppLogger.warn("FILE → ${f.key}: ${f.value.filename}");
-    }
-
     final response = await _dio.post(
       "user-account/upload-id",
       data: formData,
@@ -204,11 +210,23 @@ Future<Map<String, dynamic>?> uploadIdProof({
     );
 
     return response.data;
+  } on DioException catch (e) {
+    /// 🔥 BACKEND ERROR MESSAGE
+    final message =
+        e.response?.data?["message"] ??
+        e.response?.data?["error"] ??
+        "Upload failed";
+
+    AppLogger.error("Upload idProof DioError: $message");
+
+    /// Pass readable error to UI
+    throw Exception(message);
   } catch (e, st) {
     AppLogger.error("Upload idProof error: $e\n$st");
-    return null;
+    throw Exception("Something went wrong");
   }
 }
+
 
 
 
@@ -230,6 +248,31 @@ Future<Map<String, dynamic>?> uploadIdProof({
       AppLogger.error("Terms & Conditions : $e");
      }
   }
+  //  Complete User Account
+Future<Map<String, dynamic>?> CompleteuserAccount({
+  required String userId,
+}) async {
+  try {
+    final response = await _dio.post(
+      "user-account/complete",
+      data: {
+        "userId": userId,
+      },
+    );
+
+    // ✅ LOG OUTPUT
+    AppLogger.success(
+      "CompleteuserAccount response: ${response.data}",
+    );
+
+    return response.data;
+  } catch (e) {
+    AppLogger.error("CompleteuserAccount error: $e");
+    return null;
+  }
+}
+
+
 
   Future<Map<String,dynamic>?> SendOTP({
      required String userId

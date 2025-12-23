@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mannai_user_app/core/constants/app_consts.dart';
-import 'package:mannai_user_app/core/utils/logger.dart';
-import 'package:mannai_user_app/preferences/preferences.dart';
-import 'package:mannai_user_app/routing/app_router.dart';
-import 'package:mannai_user_app/services/auth_service.dart';
-import 'package:mannai_user_app/widgets/buttons/primary_button.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/routing/app_router.dart';
+import 'package:nadi_user_app/services/auth_service.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class Termsandconditions extends StatefulWidget {
   const Termsandconditions({super.key});
@@ -22,12 +22,25 @@ class _TermsandconditionsState extends State<Termsandconditions> {
       setState(() => _isLoading = true);
       try{
      final userId = await AppPreferences.getUserId();
+     
        final response = await _authService.TermsAndSonditions(userId: userId!);
+       
         final responsesendotp = await _authService.SendOTP(userId: userId!);
        AppLogger.success("CompleteRegistration : $response");
          AppLogger.success("responsesendotp : $responsesendotp");
        if(response != null && responsesendotp != null ){
-   context.push(RouteNames.opt);
+          final otp = responsesendotp['otp'].toString();
+          ///  SHOW SNACKBAR
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Your OTP is: $otp"),
+          backgroundColor: AppColors.button_secondary,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    Future.delayed(const Duration(seconds: 1), () {
+        context.push(RouteNames.opt);
+      });
        }
       }catch(e){
         AppLogger.error("CompleteRegistration error: $e");

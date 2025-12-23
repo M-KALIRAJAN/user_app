@@ -5,17 +5,13 @@ class AddressController {
   TextEditingController city = TextEditingController();
   TextEditingController aptNo = TextEditingController();
   TextEditingController floor = TextEditingController();
+String? block;
+String? blockId;
 
-  // Selected names
-  String? road;
-  String? block;
+String? road;
+String? roadId;
 
-  // Selected IDs
-  String? roadId;
-  String? blockId;
-
-  // Blocks for selected road
-  List<Map<String, dynamic>> blocksForSelectedRoad = [];
+List<Map<String, dynamic>> roadsForSelectedBlock = [];
 
   /// For debugging / local use
   Map<String, dynamic> getAddressData() {

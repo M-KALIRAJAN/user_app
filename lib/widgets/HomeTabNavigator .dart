@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mannai_user_app/views/screens/dashborad.dart';
-import 'package:mannai_user_app/views/screens/point_details.dart';
+import 'package:nadi_user_app/views/screens/dashborad.dart';
+import 'package:nadi_user_app/views/screens/point_details.dart';
 
 
 class HomeTabNavigator extends StatelessWidget {

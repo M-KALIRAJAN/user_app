@@ -1,7 +1,7 @@
 
 
-import 'package:mannai_user_app/core/network/dio_client.dart';
-import 'package:mannai_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/core/network/dio_client.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
 
 class OnbordingService {
  final _dio = DioClient.dio;
