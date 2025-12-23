@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/request_service.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
@@ -129,7 +130,14 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
       AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
       if (mounted) setState(() => _isLoading = false);
       if (response != null) {
-        context.push(RouteNames.requestcreatesucess);
+         final message = response['message'] ;
+            if (message == "Service created successfully") {
+          context.push(RouteNames.requestcreatesucess);
+        }
+        //  ERROR FROM API (ACCOUNT NOT VERIFIED etc.)
+        else {
+          SnackbarHelper.showError(context, message);
+        }
       } else {
         ScaffoldMessenger.of(
           context,

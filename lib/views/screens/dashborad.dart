@@ -2,16 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nadi_user_app/providers/serviceProvider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
-
 import 'package:nadi_user_app/routing/app_router.dart';
-
 import 'package:nadi_user_app/views/screens/AddPointBottomSheet.dart';
-
 import 'package:nadi_user_app/widgets/RecentActivity.dart';
 import 'package:nadi_user_app/widgets/app_card.dart';
 import 'package:nadi_user_app/widgets/pie_chart.dart';
@@ -28,23 +24,23 @@ class Dashboard extends ConsumerStatefulWidget {
 class _DashboardState extends ConsumerState<Dashboard> {
   @override
   bool isLoading = true;
-  String userName = ""; 
+  String userName = "";
   @override
   void initState() {
     super.initState();
     _loadUserName();
   }
+
   Future<void> _loadUserName() async {
-  final prefs = await SharedPreferences.getInstance();
-  final name = prefs.getString("user_name"); // same key you saved
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString("user_name"); // same key you saved
 
-  if (mounted) {
-    setState(() {
-      userName = name ?? "User"; // fallback if null
-    });
+    if (mounted) {
+      setState(() {
+        userName = name ?? "User"; // fallback if null
+      });
+    }
   }
-}
-
 
   Widget serviceShimmerItem() {
     return Padding(
@@ -97,8 +93,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
     final services = ref.watch(serviceListProvider);
     return Scaffold(
       body: Container(
-        width: double.infinity, // fills the screen width
-        height: double.infinity, // fills the screen height
+        width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/images/background_img.png"),

@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/home_view_service.dart';
 import 'package:nadi_user_app/services/request_service.dart';
@@ -14,7 +14,6 @@ import 'package:nadi_user_app/widgets/app_date_picker.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/media_upload_widget.dart';
 import 'package:nadi_user_app/widgets/record_widget.dart';
-
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
@@ -48,13 +47,12 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
   String? selectcategoryId;
   StreamSubscription? _playerCompleteSub;
   StreamSubscription? _playerStateSub;
- Timer? timer;
+  Timer? timer;
   @override
   void initState() {
     super.initState();
     issuseList();
     serviceList();
-
   }
 
   Future<void> issuseList() async {
@@ -178,70 +176,64 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
     super.dispose();
   }
 
-Future<void> SendRequest() async {
-  if (selectcategoryId == null || selectedIssueId == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Please select service & issue")),
-    );
-    return;
-  }
+  Future<void> SendRequest() async {
+    if (selectcategoryId == null || selectedIssueId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select service & issue")),
+      );
+      return;
+    }
 
-  setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
-  try {
-    final response = await _requestSerivices.createServiceRequestes(
-      serviceId: selectcategoryId!,
-      issuesId: selectedIssueId!,
-      feedback: descriptionController.text,
-      scheduleService: _dateController.text,
-      immediateAssistance: isChecked,
-      images: selectedImages.map((e) => File(e.path)).toList(),
-    );
+    try {
+      final response = await _requestSerivices.createServiceRequestes(
+        serviceId: selectcategoryId!,
+        issuesId: selectedIssueId!,
+        feedback: descriptionController.text,
+        scheduleService: _dateController.text,
+        immediateAssistance: isChecked,
+        images: selectedImages.map((e) => File(e.path)).toList(),
+      );
 
-    AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
+      AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
 
-    if (response != null) {
-      final message = response['message'] ?? "Something went wrong";
+      if (response != null) {
+        final message = response['message'];
 
-      // ✅ SUCCESS
-      if (message == "Service created successfully") {
-        context.push(RouteNames.requestcreatesucess);
-      }
-      // ❌ ERROR FROM API (ACCOUNT NOT VERIFIED etc.)
-      else {
+        //  SUCCESS
+        if (message == "Service created successfully") {
+          context.push(RouteNames.requestcreatesucess);
+        }
+        //  ERROR FROM API (ACCOUNT NOT VERIFIED etc.)
+        else {
+          SnackbarHelper.showError(context, message);
+        }
+      } else {
+        //  NULL RESPONSE
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
+          const SnackBar(
+            content: Text("Something went wrong. Please try again."),
             backgroundColor: Colors.red,
           ),
         );
       }
-    } else {
-      //  NULL RESPONSE
+    } catch (e) {
+      setState(() => _isLoading = false);
+      AppLogger.error("SendRequest error: $e");
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Something went wrong. Please try again."),
+          content: Text("Unexpected error occurred"),
           backgroundColor: Colors.red,
         ),
       );
     }
-  } catch (e) {
-    setState(() => _isLoading = false);
-    AppLogger.error("SendRequest error: $e");
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Unexpected error occurred"),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
-}
-
 
   @override
   Widget build(BuildContext context) {

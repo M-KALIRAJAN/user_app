@@ -31,49 +31,40 @@ class _AccountFormViewState extends State<AccountFormView> {
   final AuthService _basicInfo = AuthService();
   bool _isLoading = false;
 
-Future<void> submitBasicInfo(BuildContext context) async {
-  if (!widget.formKey.currentState!.validate()) return;
+  Future<void> submitBasicInfo(BuildContext context) async {
+    if (!widget.formKey.currentState!.validate()) return;
 
-  bool showLoader = false;
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) setState(() => _isLoading = true);
+    });
 
-  // Start a delayed timer (e.g., 300ms)
-  Future.delayed(const Duration(milliseconds: 300), () {
-    if (!showLoader) return; // If API finished already, don't show
-    if (mounted) setState(() => _isLoading = true);
-  });
+    controller.saveToModel();
+    final data = controller.signupData!;
 
-  controller.saveToModel();
-  final data = controller.signupData!;
-   // Get userId via AppPreferences
-  final userId = await AppPreferences.getUserId();
+    final userId = await AppPreferences.getUserId();
 
-  try {
-    final response = await _basicInfo.basicInfo(
-      userId: userId!,
-      fullName: data.fullName,
-      mobileNumber: data.mobileNumber,
-      email: data.email,
-      password: data.password,
-      gender: data.gender,
-    );
-
-    // API finished
-    showLoader = false;
-
-    if (mounted) setState(() => _isLoading = false); 
-    if (response["message"] == "Basic info saved") {
-          final prefs = await SharedPreferences.getInstance();
-    // await prefs.setString("user_name", data.name);
-      widget.onNext();
+    try {
+      final response = await _basicInfo.basicInfo(
+        userId: userId!,
+        fullName: data.fullName,
+        mobileNumber: data.mobileNumber,
+        email: data.email,
+        password: data.password,
+        gender: data.gender,
+      );
+      if (mounted) setState(() => _isLoading = false);
+      if (response["message"] == "Basic info saved") {
+        final prefs = await SharedPreferences.getInstance();
+        // await prefs.setString("user_name", data.name);
+        widget.onNext();
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Submit failed: $e")));
     }
-  } catch (e) {
-    showLoader = false;
-    if (mounted) setState(() => _isLoading = false);
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("Submit failed: $e")));
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +139,7 @@ Future<void> submitBasicInfo(BuildContext context) async {
             text: "Continue",
             color: AppColors.btn_primery,
             width: double.infinity,
-          
+
             isLoading: _isLoading,
             onPressed: () {
               submitBasicInfo(context);

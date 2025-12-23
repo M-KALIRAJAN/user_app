@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
@@ -31,13 +32,8 @@ class _TermsandconditionsState extends State<Termsandconditions> {
        if(response != null && responsesendotp != null ){
           final otp = responsesendotp['otp'].toString();
           ///  SHOW SNACKBAR
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Your OTP is: $otp"),
-          backgroundColor: AppColors.button_secondary,
-          duration: const Duration(seconds: 4),
-        ),
-      );
+        SnackbarHelper.ShowSuccess(context, otp);
+     
     Future.delayed(const Duration(seconds: 1), () {
         context.push(RouteNames.opt);
       });

@@ -11,7 +11,6 @@ import 'package:nadi_user_app/services/my_service.dart';
 import 'package:nadi_user_app/widgets/ServiceRequestCardShimmer.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/my_service_card.dart';
-import 'package:shimmer/shimmer.dart';
 
 class MyServiceRequest extends StatefulWidget {
   const MyServiceRequest({super.key});
@@ -29,15 +28,16 @@ class _MyServiceRequestState extends State<MyServiceRequest> {
   void initState() {
     super.initState();
     myserviceslist();
-      timer = Timer.periodic(const Duration(seconds: 10), (_) {
-    myserviceslist();
-  });
+    timer = Timer.periodic(const Duration(seconds: 10), (_) {
+      myserviceslist();
+    });
   }
+
   @override
-void dispose() {
-  timer?.cancel();
-  super.dispose();
-}
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
 
   Future<void> myserviceslist() async {
     AppLogger.warn("************************************");
@@ -45,7 +45,7 @@ void dispose() {
       final response = await _myService.myallservices();
       if (!mounted) return;
       AppLogger.warn("myserviceslist ${jsonEncode(response)}");
-       setState(() {
+      setState(() {
         MyServices = response ?? [];
         isLoading = false;
       });
@@ -94,12 +94,12 @@ void dispose() {
             Divider(),
 
             Expanded(
-              child:  isLoading
-      ? ListView.builder(
-          itemCount: 6,
-          itemBuilder: (context, index) =>
-              const ServiceRequestCardShimmer(),
-        )
+              child: isLoading
+                  ? ListView.builder(
+                      itemCount: 6,
+                      itemBuilder: (context, index) =>
+                          const ServiceRequestCardShimmer(),
+                    )
                   : MyServices.isEmpty
                   ? const Center(child: Text("No Service Requests Found"))
                   : ListView.builder(
@@ -114,11 +114,10 @@ void dispose() {
                           serviceLogo:
                               service["serviceId"]['serviceLogo'] ?? "",
                           onViewDetails: () {
-                           
                             context.push(
                               RouteNames.serviceRequestDetails,
-                              extra: service
-                              );
+                              extra: service,
+                            );
                           },
                         );
                       },
@@ -129,5 +128,4 @@ void dispose() {
       ),
     );
   }
-
 }
