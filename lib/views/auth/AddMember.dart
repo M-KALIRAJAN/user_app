@@ -269,6 +269,7 @@ import 'package:nadi_user_app/controllers/address_controller.dart';
 import 'package:nadi_user_app/controllers/family_member_controller.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
@@ -347,13 +348,8 @@ class _AddmemberState extends State<Addmember> {
         setState(() {
           _hideBottomButton = true;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("All members added successfully"),
-            backgroundColor: AppColors.button_secondary,
-            duration: Duration(seconds: 2),
-          ),
-        );
+        
+        SnackbarHelper.ShowSuccess(context, "All members added successfully");
 
         // Delay slightly so user sees the snackbar
         Future.delayed(const Duration(seconds: 1), () {

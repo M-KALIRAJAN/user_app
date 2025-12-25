@@ -20,16 +20,13 @@ import 'dart:async';
 
 class CreateServiceRequest extends StatefulWidget {
   const CreateServiceRequest({super.key});
-
   @override
   State<CreateServiceRequest> createState() => _CreateServiceRequestState();
 }
-
 class _CreateServiceRequestState extends State<CreateServiceRequest> {
   final ImagePicker _picker = ImagePicker();
   List<XFile> selectedImages = [];
   bool isChecked = false;
-
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool isRecording = false;
   String? recordedFilePath;

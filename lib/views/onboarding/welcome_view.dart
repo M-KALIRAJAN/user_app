@@ -1,13 +1,9 @@
-import 'dart:convert';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
-import 'package:nadi_user_app/core/network/dio_client.dart';
-import 'package:nadi_user_app/core/utils/logger.dart';
+
 import 'package:nadi_user_app/routing/app_router.dart';
-import 'package:nadi_user_app/services/onbording_service.dart';
+
 import 'package:nadi_user_app/views/languagetoggle.dart';
 import 'package:nadi_user_app/views/logoanimation.dart';
 import 'package:nadi_user_app/views/onboarding/BottomCurveClipper.dart';
@@ -21,25 +17,7 @@ class WelcomeView extends StatefulWidget {
 }
 
 class _WelcomeViewState extends State<WelcomeView> {
-  // String? welcomeUrl;
-  @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   
-  // }
-
-  // void welocomelogo() async {
-  //   final welcomeLogo = await OnbordingService().loading();
-  //   AppLogger.warn(jsonEncode(welcomeLogo));
-  //   if (welcomeLogo != null && welcomeLogo["data"] != null) {
-  //     setState(() {
-  //       String fileName = welcomeLogo["data"]["image"];
-  //       welcomeUrl = "${ImageBaseUrl.baseUrl}$fileName";
-  //     });
-  //   }
-  // }
-
+ 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -76,19 +54,14 @@ class _WelcomeViewState extends State<WelcomeView> {
                 ),
                 Positioned(top: 50, right: 20, child: LanguageView()),
                 Positioned(
-                  bottom: -110,
-                  child: SizedBox(
-                    height: 270,
-                    width: 480,
-                    child: 
-                         Image.asset(
-                            "assets/images/logo.png",
-                            fit: BoxFit.contain,
-                            height: 150,
-                            width: 150,
-                            
-                          )
-                       
+                  bottom: -150,
+                  left: 0,
+                  right: 0,
+                  child: Image.asset(
+                    "assets/images/logo.png",
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    height: 370,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ],

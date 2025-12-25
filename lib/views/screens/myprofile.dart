@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
@@ -24,6 +23,11 @@ class _MyprofileState extends State<Myprofile> {
   List addresses = [];
   List familyMembers = [];
   File? profileImage;
+  TextEditingController nameCtrl = TextEditingController();
+  TextEditingController emailCtrl = TextEditingController();
+  TextEditingController phoneCtrl = TextEditingController();
+  TextEditingController addressCtrl = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -53,7 +57,26 @@ class _MyprofileState extends State<Myprofile> {
       basicData = profileResponse['data'] as Map<String, dynamic>;
       addresses = profileResponse["addresses"] as List;
       familyMembers = profileResponse["familyMembers"] as List;
+      nameCtrl.text = basicData?['basicInfo']['fullName']?.toString() ?? "";
+
+      emailCtrl.text = basicData?['basicInfo']['email']?.toString() ?? "";
+
+      phoneCtrl.text =
+          basicData?['basicInfo']['mobileNumber']?.toString() ?? "";
+
+      addressCtrl.text = addresses.isNotEmpty
+          ? addresses[0]['city']?.toString() ?? ""
+          : "";
     });
+  }
+
+  @override
+  void dispose() {
+    nameCtrl.dispose();
+    emailCtrl.dispose();
+    phoneCtrl.dispose();
+    addressCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -197,78 +220,81 @@ class _MyprofileState extends State<Myprofile> {
               ],
             ),
           ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 25,
+                ),
 
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Full Name",
 
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Full Name",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 5),
-
-                  AppTextField(
-                    controller: TextEditingController(
-                      text:
-                          basicData?['basicInfo']['fullName']?.toString() ??
-                          "No Name",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    readonly: true,
-                    enabled: false,
-                  ),
-                  const SizedBox(height: 15),
-                  const Text(
-                    "Email Adress",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 5),
+                    const SizedBox(height: 5),
 
-                  AppTextField(
-                    controller: TextEditingController(
-                      text: basicData?['basicInfo']['email']?.toString() ?? "",
+                    AppTextField(
+                      controller: nameCtrl,
+                      readonly: true,
+                      enabled: false,
                     ),
-                    readonly: true,
-                    enabled: false,
-                  ),
-                  const SizedBox(height: 15),
-                  const Text(
-                    "Phone Number",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 5),
+                    const SizedBox(height: 15),
+                    const Text(
+                      "Email Adress",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
 
-                  AppTextField(
-                    controller: TextEditingController(
-                      text:
-                          basicData?['basicInfo']['mobileNumber']?.toString() ??
-                          "",
+                    AppTextField(
+                      controller: emailCtrl,
+                      readonly: true,
+                      enabled: false,
                     ),
-                    readonly: true,
-                    enabled: false,
-                  ),
-                  const SizedBox(height: 15),
-                  const Text(
-                    "Adress",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 5),
+                    const SizedBox(height: 15),
+                    const Text(
+                      "Phone Number",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
 
-                  AppTextField(
-                    minLines: 3,
-                    maxLines: 5,
-                    controller: TextEditingController(
-                      text: addresses.isNotEmpty
-                          ? addresses[0]['city']?.toString() ?? ""
-                          : "",
+                    AppTextField(
+                      controller: phoneCtrl,
+                      readonly: true,
+                      enabled: false,
                     ),
-                    readonly: true,
-                    enabled: false,
-                  ),
-                ],
+                    const SizedBox(height: 15),
+                    const Text(
+                      "Adress",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+
+                    AppTextField(
+                      minLines: 3,
+                      maxLines: 5,
+                      controller: addressCtrl,
+                      readonly: true,
+                      enabled: false,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

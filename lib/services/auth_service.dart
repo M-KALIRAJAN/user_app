@@ -147,10 +147,10 @@ class AuthService {
 
       AppLogger.success("ADDRESS RESPONSE  ${response.data}");
       return response.data;
-    } catch (e) {
-      AppLogger.error("Address API Error  $e");
-      return null;
-    }
+    } on DioException catch(e){
+      AppLogger.error("Login ${e.response?.statusCode}");
+    AppLogger.error("Login ${e.response?.data}");
+  }
   }
 
   // Add Family Member
@@ -164,12 +164,11 @@ class AuthService {
       );
       AppLogger.success("ADDRESS RESPONSE  ${response.data}");
       return response.data;
-    } catch (e) {
-      AppLogger.error("Address API Error  $e");
-      return null;
-    }
+    } on DioException catch(e){
+      AppLogger.error("Login ${e.response?.statusCode}");
+    AppLogger.error("Login ${e.response?.data}");
   }
-
+  }
   // Upload ID
 
 

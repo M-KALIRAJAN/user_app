@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppPreferences {
@@ -8,9 +9,37 @@ class AppPreferences {
   static const String _aboutSeenKey = "about_seen";
   static const String _accounttypekey = "account_type";
   static const String _namekey = "name";
- static const String _phonenumberkey = "phonenumber";
+  static const String _phonenumberkey = "phonenumber";
 
+  static const String _rememberMeKey = "remember_me";
+  static const String _rememberEmailkey = "remember_email";
+  // --- Remember Flag --
+  static Future<void> setRememberMe(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_rememberMeKey, value);
+  }
 
+  static Future<bool> isRemeberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_rememberMeKey) ?? false;
+  }
+
+  static Future<void> saveRemeberEmail(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_rememberEmailkey, email);
+  }
+
+  static Future<String?> getRememberEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_rememberEmailkey);
+  }
+
+  // clear remember data
+  static Future<void> clearRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_rememberEmailkey);
+    await prefs.setBool(_rememberMeKey, false);
+  }
 
   // ================== TOKEN ==================
   static Future<void> saveToken(String token) async {
@@ -60,47 +89,46 @@ class AppPreferences {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userIdKey);
   }
-// --- Phone Number ---- 
+  // --- Phone Number ----
 
-static Future<void> savephonenumber(String value)async{
-  final prefs =await SharedPreferences.getInstance();
-  await prefs.setString(_phonenumberkey, value);
-}
+  static Future<void> savephonenumber(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_phonenumberkey, value);
+  }
 
-static Future<String?> getphonenumber() async{
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString(_phonenumberkey);
-}
+  static Future<String?> getphonenumber() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_phonenumberkey);
+  }
   // ---- ACCOUNT TYPE ----
 
- // save account type 
- static Future<void>saveAccountType(String accountType) async{
-   final prefs = await SharedPreferences.getInstance();
-   await prefs.setString(_accounttypekey, accountType);
- }
+  // save account type
+  static Future<void> saveAccountType(String accountType) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_accounttypekey, accountType);
+  }
 
- // get accounttype
- static Future<String?> getaccounttype() async{
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString(_accounttypekey);
- }
+  // get accounttype
+  static Future<String?> getaccounttype() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_accounttypekey);
+  }
 
-
-
-
-// ---- User Name --
-  static Future<void> saveusername(String name)async{
+  // ---- User Name --
+  static Future<void> saveusername(String name) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_namekey, name);
   }
 
-  static Future<String?> getusername()async{
+  static Future<String?> getusername() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_namekey);
   }
 
   static Future<void> clearAll() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    // await prefs.clear();
+    await prefs.remove(_tokenKey);
+    await prefs.setBool(_loginKey, false);
   }
 }

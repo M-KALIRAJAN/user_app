@@ -95,7 +95,7 @@
 //                   child: Column(
 //                     children: [
 //                       const SizedBox(height: 65),
-                  
+
 //                       Center(
 //                         child: Image.asset(
 //                           "assets/icons/logo.png",
@@ -103,9 +103,9 @@
 //                           width: 152,
 //                         ),
 //                       ),
-                  
+
 //                       const SizedBox(height: 40),
-                  
+
 //                       Expanded(
 //                         child: Container(
 //                           width: double.infinity,
@@ -117,12 +117,12 @@
 //                             ),
 //                           ),
 //                           padding: const EdgeInsets.all(20),
-                  
+
 //                           child: Column(
 //                             crossAxisAlignment: CrossAxisAlignment.start,
 //                             children: [
 //                               const SizedBox(height: 20),
-                  
+
 //                               const Text(
 //                                 "Welcome!",
 //                                 style: TextStyle(
@@ -130,9 +130,9 @@
 //                                   fontWeight: FontWeight.bold,
 //                                 ),
 //                               ),
-                  
+
 //                               const SizedBox(height: 25),
-                  
+
 //                               TextFormField(
 //                                 controller: controller.email,
 //                                 keyboardType: TextInputType.emailAddress,
@@ -149,7 +149,7 @@
 //                                   ),
 //                                 ),
 //                               ),
-                  
+
 //                               const SizedBox(height: 15),
 //                               const SizedBox(height: 10),
 //                               TextFormField(
@@ -179,7 +179,7 @@
 //                                   ),
 //                                 ),
 //                               ),
-                  
+
 //                               Row(
 //                                 mainAxisAlignment:
 //                                     MainAxisAlignment.spaceBetween,
@@ -210,9 +210,9 @@
 //                                   ),
 //                                 ],
 //                               ),
-                  
+
 //                               SizedBox(height: 20),
-                  
+
 //                               Row(
 //                                 children: [
 //                                   Expanded(
@@ -239,7 +239,7 @@
 //                                   ),
 //                                 ],
 //                               ),
-                  
+
 //                               const SizedBox(height: 20),
 //                             ],
 //                           ),
@@ -256,7 +256,6 @@
 //     );
 //   }
 // }
-
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -285,6 +284,24 @@ class _LoginViewState extends State<LoginView> {
 
   String? emailError;
   String? passwordError;
+  @override
+  void initState() {
+    super.initState();
+    _loadRememberMe();
+  }
+
+  Future<void> _loadRememberMe() async {
+    final remember = await AppPreferences.isRemeberMe();
+    if (remember) {
+      final email = await AppPreferences.getRememberEmail();
+      if (email != null) {
+        controller.email.text = email;
+      }
+      setState(() {
+        isChecked = true;
+      });
+    }
+  }
 
   Future<void> login(BuildContext context) async {
     setState(() {
@@ -299,12 +316,19 @@ class _LoginViewState extends State<LoginView> {
         email: loginData.email,
         password: loginData.password,
       );
-        print(" loginData: $response");
+      print(" loginData: $response");
 
       if (response != null && response['token'] != null) {
         await AppPreferences.saveToken(response['token']);
         await AppPreferences.setLoggedIn(true);
-       await AppPreferences.saveAccountType(response['accountType']);
+        await AppPreferences.saveAccountType(response['accountType']);
+        //  REMEMBER ME LOGIC
+        if (isChecked) {
+          await AppPreferences.setRememberMe(true);
+          await AppPreferences.saveRemeberEmail(loginData.email);
+        } else {
+          await AppPreferences.clearRememberMe();
+        }
         context.go(RouteNames.bottomnav);
       }
     } on DioException catch (e) {
@@ -323,174 +347,169 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  final height = MediaQuery.of(context).size.height;
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
 
-  return Scaffold(
-    resizeToAvoidBottomInset: false,
-    body: Stack(
-      children: [
-        // BACKGROUND IMAGE
-        Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/images/back.png"),
-              fit: BoxFit.cover,
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          // BACKGROUND IMAGE
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/back.png"),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
 
-        SafeArea(
-          child: Column(
-            children: [
-              SizedBox(height: height * 0.07),
+          SafeArea(
+            child: Column(
+              children: [
+                SizedBox(height: height * 0.07),
 
-              /// LOGO
-              Image.asset(
-                "assets/icons/logo.png",
-                height: 140,
-              ),
+                /// LOGO
+                Image.asset("assets/icons/logo.png", height: 140),
 
-              SizedBox(height: height * 0.10),
+                SizedBox(height: height * 0.10),
 
-              /// FORM
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+                /// FORM
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
                     ),
-                  ),
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      20,
-                      20,
-                      20,
-                      MediaQuery.of(context).viewInsets.bottom + 20,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Welcome!",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        const SizedBox(height: 25),
-
-                        TextFormField(
-                          controller: controller.email,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            labelText: "Email Address",
-                            errorText: emailError,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.fromLTRB(
+                        20,
+                        20,
+                        20,
+                        MediaQuery.of(context).viewInsets.bottom + 20,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Welcome!",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
 
-                        const SizedBox(height: 15),
+                          const SizedBox(height: 25),
 
-                        TextFormField(
-                          controller: controller.password,
-                          obscureText: _obscure,
-                          decoration: InputDecoration(
-                            labelText: "Password",
-                            errorText: passwordError,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscure
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: () {
-                                setState(() => _obscure = !_obscure);
-                              },
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        Wrap(
-                          alignment: WrapAlignment.spaceBetween,
-                          runSpacing: 5,
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Checkbox(
-                                  value: isChecked,
-                                  activeColor: AppColors.btn_primery,
-                                  onChanged: (v) =>
-                                      setState(() => isChecked = v!),
-                                ),
-                                const Text("Remember me"),
-                              ],
-                            ),
-                            TextButton(
-                              onPressed: () =>
-                                   context.push(RouteNames.forgotpassword),
-                              child: const Text(
-                                "Forgot Password?",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.btn_primery,
-                                ),
+                          TextFormField(
+                            controller: controller.email,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              labelText: "Email Address",
+                              errorText: emailError,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: AppButton(
-                                text: "Sign Up",
-                                width: 59,
-                                color: AppColors.button_secondary,
-                                height: 50,
+                          ),
+
+                          const SizedBox(height: 15),
+
+                          TextFormField(
+                            controller: controller.password,
+                            obscureText: _obscure,
+                            decoration: InputDecoration(
+                              labelText: "Password",
+                              errorText: passwordError,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () {
+                                  setState(() => _obscure = !_obscure);
+                                },
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          Wrap(
+                            alignment: WrapAlignment.spaceBetween,
+                            runSpacing: 5,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Checkbox(
+                                    value: isChecked,
+                                    activeColor: AppColors.btn_primery,
+                                    onChanged: (v) =>
+                                        setState(() => isChecked = v!),
+                                  ),
+                                  const Text("Remember me"),
+                                ],
+                              ),
+                              TextButton(
                                 onPressed: () =>
-                                    context.push(RouteNames.Account),
+                                    context.push(RouteNames.forgotpassword),
+                                child: const Text(
+                                  "Forgot Password?",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.btn_primery,
+                                  ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: AppButton(
-                                text: "Sign In",
-                                width: 59,
-                                color: const Color(0xFF0D5F48),
-                                height: 50,
-                                onPressed: () => login(context),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: AppButton(
+                                  text: "Sign Up",
+                                  width: 59,
+                                  color: AppColors.button_secondary,
+                                  height: 50,
+                                  onPressed: () =>
+                                      context.push(RouteNames.Account),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: AppButton(
+                                  text: "Sign In",
+                                  width: 59,
+                                  color: const Color(0xFF0D5F48),
+                                  height: 50,
+                                  onPressed: () => login(context),
+                                ),
+                              ),
+                            ],
+                          ),
 
-                        const SizedBox(height: 30),
-                      ],
+                          const SizedBox(height: 30),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
-
+        ],
+      ),
+    );
+  }
 }

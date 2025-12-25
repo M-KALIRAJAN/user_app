@@ -91,14 +91,14 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
   @override
   Widget build(BuildContext context) {
     Future<void> _logout(BuildContext context) async {
-  // Clear all local storage
-  await AppPreferences.clearAll();
+      // Clear all local storage
+      await AppPreferences.clearAll();
+      await AppPreferences.setLoggedIn(false);
+      // Optional: reset theme to system
+      ref.read(themeProvider.notifier).changeTheme(ThemeMode.system);
 
-  // Optional: reset theme to system
-  ref.read(themeProvider.notifier).changeTheme(ThemeMode.system);
-
-    context.go(RouteNames.login);
-}
+      context.go(RouteNames.login);
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background_clr,
