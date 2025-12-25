@@ -21,24 +21,24 @@ class WelcomeView extends StatefulWidget {
 }
 
 class _WelcomeViewState extends State<WelcomeView> {
-  String? welcomeUrl;
+  // String? welcomeUrl;
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    welocomelogo();
-  }
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   
+  // }
 
-  void welocomelogo() async {
-    final welcomeLogo = await OnbordingService().loading();
-    AppLogger.warn(jsonEncode(welcomeLogo));
-    if (welcomeLogo != null && welcomeLogo["data"] != null) {
-      setState(() {
-        String fileName = welcomeLogo["data"]["image"];
-        welcomeUrl = "${ImageBaseUrl.baseUrl}$fileName";
-      });
-    }
-  }
+  // void welocomelogo() async {
+  //   final welcomeLogo = await OnbordingService().loading();
+  //   AppLogger.warn(jsonEncode(welcomeLogo));
+  //   if (welcomeLogo != null && welcomeLogo["data"] != null) {
+  //     setState(() {
+  //       String fileName = welcomeLogo["data"]["image"];
+  //       welcomeUrl = "${ImageBaseUrl.baseUrl}$fileName";
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -74,23 +74,21 @@ class _WelcomeViewState extends State<WelcomeView> {
                     ),
                   ),
                 ),
-
                 Positioned(top: 50, right: 20, child: LanguageView()),
                 Positioned(
                   bottom: -110,
                   child: SizedBox(
                     height: 270,
                     width: 480,
-                    child: welcomeUrl == null
-                        ? Image.asset(
+                    child: 
+                         Image.asset(
                             "assets/images/logo.png",
                             fit: BoxFit.contain,
+                            height: 150,
+                            width: 150,
+                            
                           )
-                        : CachedNetworkImage(
-                            imageUrl: welcomeUrl!,
-                            fit: BoxFit.contain,
-                            useOldImageOnUrlChange: true,
-                          ),
+                       
                   ),
                 ),
               ],
