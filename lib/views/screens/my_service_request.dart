@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
-
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/my_service.dart';
@@ -19,24 +17,16 @@ class MyServiceRequest extends StatefulWidget {
   State<MyServiceRequest> createState() => _MyServiceRequestState();
 }
 
-class _MyServiceRequestState extends State<MyServiceRequest> {
+class _MyServiceRequestState extends State<MyServiceRequest>  {
   MyService _myService = MyService();
   List<dynamic> MyServices = [];
   bool isLoading = true;
-  Timer? timer;
+
   @override
   void initState() {
     super.initState();
     myserviceslist();
-    timer = Timer.periodic(const Duration(seconds: 10), (_) {
-      myserviceslist();
-    });
-  }
 
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
   }
 
   Future<void> myserviceslist() async {
@@ -50,10 +40,10 @@ class _MyServiceRequestState extends State<MyServiceRequest> {
         isLoading = false;
       });
 
-      // ✅ optional optimization
+      
       if (response != null &&
           response.every((e) => e["serviceStatus"] == "completed")) {
-        timer?.cancel();
+      
       }
     } catch (e) {
       isLoading = false;

@@ -23,7 +23,7 @@ class _OtpState extends State<Otp> {
   final AuthService _authService = AuthService();
   bool isOtpError = false;
   bool isLoading = false;
-
+String? phoneNumber;
   int _secountleft = 60;
   Timer? _timer;
   bool _canResend = false;
@@ -31,6 +31,7 @@ class _OtpState extends State<Otp> {
   void initState() {
     super.initState();
     _startTimer();
+    _loadPhoneNumber();
   }
 
   @override
@@ -39,6 +40,12 @@ class _OtpState extends State<Otp> {
     // TODO: implement dispose
     super.dispose();
   }
+  Future<void> _loadPhoneNumber() async {
+  final phone = await AppPreferences.getphonenumber();
+  setState(() {
+    phoneNumber = phone;
+  });
+}
 
   void _showOtpError(String message) {
     setState(() => isOtpError = true);
@@ -191,7 +198,7 @@ Future<void> sendOtp(BuildContext context) async {
               ),
               SizedBox(height: 10),
               Text(
-                "+91 7502130089",
+                phoneNumber != null ? phoneNumber! : "",
                 style: TextStyle(
                   fontSize: AppFontSizes.medium,
                   color: AppColors.borderGrey,

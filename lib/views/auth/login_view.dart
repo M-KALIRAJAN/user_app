@@ -263,6 +263,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/controllers/login_controller.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
@@ -298,10 +299,12 @@ class _LoginViewState extends State<LoginView> {
         email: loginData.email,
         password: loginData.password,
       );
+        print(" loginData: $response");
 
       if (response != null && response['token'] != null) {
         await AppPreferences.saveToken(response['token']);
         await AppPreferences.setLoggedIn(true);
+       await AppPreferences.saveAccountType(response['accountType']);
         context.go(RouteNames.bottomnav);
       }
     } on DioException catch (e) {

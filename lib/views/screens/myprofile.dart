@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -22,6 +23,7 @@ class _MyprofileState extends State<Myprofile> {
   Map<String, dynamic>? basicData;
   List addresses = [];
   List familyMembers = [];
+  File? profileImage;
   @override
   void initState() {
     super.initState();
@@ -154,7 +156,7 @@ class _MyprofileState extends State<Myprofile> {
                       ),
 
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           if (basicData != null) {
                             final profileResponse = {
                               "data": basicData,
@@ -162,10 +164,15 @@ class _MyprofileState extends State<Myprofile> {
                               "familyMembers": familyMembers,
                             };
 
-                            context.push(
+                            // Await for result
+                            final result = await context.push<bool>(
                               RouteNames.editprfoile,
                               extra: profileResponse,
                             );
+                            // If result is true, refresh profile data
+                            if (result == true) {
+                              profiledata(); // call your API again to refresh
+                            }
                           } else {
                             AppLogger.error("Profile data is null");
                           }
@@ -194,7 +201,7 @@ class _MyprofileState extends State<Myprofile> {
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
-            
+
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -203,10 +210,12 @@ class _MyprofileState extends State<Myprofile> {
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 5),
-            
+
                   AppTextField(
                     controller: TextEditingController(
-                      text: basicData?['basicInfo']['fullName'] ?? "No Name",
+                      text:
+                          basicData?['basicInfo']['fullName']?.toString() ??
+                          "No Name",
                     ),
                     readonly: true,
                     enabled: false,
@@ -217,10 +226,10 @@ class _MyprofileState extends State<Myprofile> {
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 5),
-            
+
                   AppTextField(
                     controller: TextEditingController(
-                      text: basicData?['basicInfo']['email'],
+                      text: basicData?['basicInfo']['email']?.toString() ?? "",
                     ),
                     readonly: true,
                     enabled: false,
@@ -231,10 +240,12 @@ class _MyprofileState extends State<Myprofile> {
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 5),
-            
+
                   AppTextField(
                     controller: TextEditingController(
-                      text: basicData?['basicInfo']['mobileNumber'],
+                      text:
+                          basicData?['basicInfo']['mobileNumber']?.toString() ??
+                          "",
                     ),
                     readonly: true,
                     enabled: false,
@@ -245,13 +256,13 @@ class _MyprofileState extends State<Myprofile> {
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 5),
-            
+
                   AppTextField(
                     minLines: 3,
                     maxLines: 5,
                     controller: TextEditingController(
                       text: addresses.isNotEmpty
-                          ? addresses[0]['city'] ?? ""
+                          ? addresses[0]['city']?.toString() ?? ""
                           : "",
                     ),
                     readonly: true,

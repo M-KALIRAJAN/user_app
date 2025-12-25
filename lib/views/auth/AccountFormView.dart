@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/controllers/signup_controller.dart';
-
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/inputs/app_dropdown.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountFormView extends StatefulWidget {
   final String accountType;
@@ -30,7 +29,7 @@ class _AccountFormViewState extends State<AccountFormView> {
   final controller = SignupController();
   final AuthService _basicInfo = AuthService();
   bool _isLoading = false;
-
+  final String name ="";
   Future<void> submitBasicInfo(BuildContext context) async {
     if (!widget.formKey.currentState!.validate()) return;
 
@@ -40,7 +39,9 @@ class _AccountFormViewState extends State<AccountFormView> {
 
     controller.saveToModel();
     final data = controller.signupData!;
-
+   AppLogger.info(
+  "basic form data **************: ${data.toJson()}",
+);
     final userId = await AppPreferences.getUserId();
 
     try {
@@ -54,8 +55,9 @@ class _AccountFormViewState extends State<AccountFormView> {
       );
       if (mounted) setState(() => _isLoading = false);
       if (response["message"] == "Basic info saved") {
-        final prefs = await SharedPreferences.getInstance();
-        // await prefs.setString("user_name", data.name);
+         await AppPreferences.saveusername(response['name']);
+          final mobile = response['mobile'].toString();
+     await AppPreferences.savephonenumber("+973$mobile");
         widget.onNext();
       }
     } catch (e) {
@@ -94,6 +96,7 @@ class _AccountFormViewState extends State<AccountFormView> {
             keyboardType: TextInputType.phone,
             label: "Mobile Number*",
             validator: (value) => controller.validateMobile(value),
+            prefixText: "+973 ",
           ),
           const SizedBox(height: 17),
 

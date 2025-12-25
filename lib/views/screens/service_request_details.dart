@@ -244,6 +244,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
@@ -265,6 +266,13 @@ class ServiceRequestDetails extends StatelessWidget {
       if (completed) return "completed";
       if (current) return "current";
       return "pending";
+    }
+
+    String formatBackendDate(String dateStr){
+        final inputFormat = DateFormat('yyy-MM-dd, HH:mm');
+        final outputFormat = DateFormat('dd/MM/yy hh:mm a');
+        final dataTime = inputFormat.parse(dateStr);
+        return outputFormat.format(dataTime);
     }
 
     final List<Map<String, dynamic>> steps = [
@@ -452,7 +460,7 @@ class ServiceRequestDetails extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
-                                  serviceData["statusTimestamps"]["submitted"],
+                                formatBackendDate(serviceData["statusTimestamps"]["submitted"])  ,
                                   style: const TextStyle(
                                     fontSize: 10,
                                     color: Colors.grey,
@@ -594,6 +602,12 @@ class _TimelineTile extends StatelessWidget {
   final bool isLast;
 
   const _TimelineTile({required this.data, required this.isLast});
+      String formatBackendDate(String dateStr){
+        final inputFormat = DateFormat('yyy-MM-dd, HH:mm');
+        final outputFormat = DateFormat('dd/MM/yy hh:mm a');
+        final dataTime = inputFormat.parse(dateStr);
+        return outputFormat.format(dataTime);
+    }
 
   Color get dotColor {
     if (data["status"] == "completed") return Colors.green;
@@ -701,7 +715,7 @@ class _TimelineTile extends StatelessWidget {
               if (data["time"] != null) ...[
                 const SizedBox(height: 6),
                 Text(
-                  data["time"],
+                formatBackendDate(data["time"])  ,
                   style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
                 ),
               ],

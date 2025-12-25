@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/serviceProvider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
@@ -25,21 +27,24 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   bool isLoading = true;
   String userName = "";
+  String accountType = "";
+
   @override
   void initState() {
     super.initState();
-    _loadUserName();
+    get_preferencevalue();
   }
 
-  Future<void> _loadUserName() async {
-    final prefs = await SharedPreferences.getInstance();
-    final name = prefs.getString("user_name"); // same key you saved
+  Future<void> get_preferencevalue() async {
+    final type = await AppPreferences.getaccounttype();
+    final name = await AppPreferences.getusername();
 
-    if (mounted) {
-      setState(() {
-        userName = name ?? "User"; // fallback if null
-      });
-    }
+    if (!mounted) return;
+
+    setState(() {
+      accountType = type == "IA" ? "Individual" : "Family";
+      userName = name ?? "";
+    });
   }
 
   Widget serviceShimmerItem() {
@@ -160,8 +165,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
+                              children: [
+                                const Text(
                                   "Welcome",
                                   style: TextStyle(
                                     color: Colors.white,
@@ -169,8 +174,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                   ),
                                 ),
                                 Text(
-                                  "Muhamad Musin!",
-                                  style: TextStyle(
+                                  "$userName",
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -235,7 +240,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text(
-                            "Indiviual points",
+                            "$accountType points",
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 16,
@@ -532,12 +537,16 @@ class _DashboardState extends ConsumerState<Dashboard> {
                           Container(
                             child: Row(
                               children: [
-                                Text(
-                                  "View All",
-                                  style: TextStyle(
-                                    fontSize: AppFontSizes.small,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.borderGrey,
+                                InkWell(
+                                  onTap: () =>
+                                      context.push(RouteNames.viewalllogs),
+                                  child: Text(
+                                    "View All",
+                                    style: TextStyle(
+                                      fontSize: AppFontSizes.small,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.borderGrey,
+                                    ),
                                   ),
                                 ),
                                 Icon(
@@ -552,7 +561,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                       ),
                     ),
                   ),
-                  RecentActivity(),
+                  RecentActivity(limitLogs: true),
                 ],
               ),
             ],

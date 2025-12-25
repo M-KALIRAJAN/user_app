@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
+import 'package:nadi_user_app/preferences/preferences.dart';
+import 'package:nadi_user_app/services/profile_service.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
@@ -29,6 +31,7 @@ class _EditProfileState extends State<EditProfile> {
   late TextEditingController floorController;
   late TextEditingController apartmentController;
   late TextEditingController additionalInfoController;
+  ProfileService _profileService = ProfileService();
 
   @override
   void didChangeDependencies() {
@@ -38,7 +41,7 @@ class _EditProfileState extends State<EditProfile> {
     // Read the paased data from GoRouter
     final profileResponse =
         GoRouterState.of(context).extra as Map<String, dynamic>;
-    AppLogger.warn("@@@@@ $profileResponse");
+
     if (profileResponse != null) {
       setState(() {
         basicData = profileResponse['data'] as Map<String, dynamic>;
@@ -67,9 +70,7 @@ class _EditProfileState extends State<EditProfile> {
         apartmentController = TextEditingController(
           text: addresses.isNotEmpty ? addresses[0]['aptNo']?.toString() : '',
         );
-        additionalInfoController = TextEditingController(
-          text: "",
-        ); 
+        additionalInfoController = TextEditingController(text: "");
       });
     }
   }
@@ -91,16 +92,22 @@ class _EditProfileState extends State<EditProfile> {
   Future<void> pickImage(ImageSource source) async {
     final XFile? image = await _pcker.pickImage(source: source);
     if (image == null) return;
+    final file = File(image.path);
+
     setState(() {
-      profileImage = File(image.path);
+      profileImage = file;
     });
   }
 
   Future<void> saveProfile() async {
+    final userId = await AppPreferences.getUserId();
     final payload = {
-      "fulllName": fullNameController.text,
-      "email": emailController.text,
-      "mobileNumber": mobileController.text,
+      "userId": userId,
+      "basicInfo": {
+        "fullName": fullNameController.text,
+        "email": emailController.text,
+        "mobileNumber": mobileController.text,
+      },
       "address": {
         "building": buildingController.text,
         "blockId": blockController.text,
@@ -108,6 +115,17 @@ class _EditProfileState extends State<EditProfile> {
         "aptNo": apartmentController.text,
       },
     };
+    try {
+      final response = await _profileService.EditProfile(payload: payload);
+      
+      AppLogger.success(" Edit response :$response");
+          // Return true to indicate success
+    if (mounted) {
+      context.pop(true);  // <-- Pop with value
+    }
+    } catch (e) {
+      AppLogger.error("Edit Profile :$e");
+    }
     AppLogger.warn("payload $payload ");
   }
 

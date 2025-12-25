@@ -30,3 +30,7 @@ class DioClient {
 class ImageBaseUrl {
   static const baseUrl = "https://nadi-buhrain-render.onrender.com/uploads/";
 }
+
+class ImageAssetUrl{
+    static const baseUrl = "https://nadi-buhrain-render.onrender.com";
+}

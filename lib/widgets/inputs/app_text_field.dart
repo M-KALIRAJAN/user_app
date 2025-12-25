@@ -11,53 +11,48 @@ class AppTextField extends StatefulWidget {
   final bool enabled;
   final int? minLines;
   final int? maxLines;
+  final String? prefixText;
   const AppTextField({
     super.key,
-     this.controller,
-   this.label,
+    this.controller,
+    this.label,
     this.keyboardType = TextInputType.text,
     this.isPassword = false,
     this.prefixIcon,
+    this.prefixText,
     this.validator,
     this.readonly = false,
     this.enabled = true,
-        this.minLines,
+    this.minLines,
     this.maxLines,
   });
-
   @override
   State<AppTextField> createState() => _AppTextFieldState();
 }
-
 class _AppTextFieldState extends State<AppTextField> {
   bool _obscure = true;
-  
-
-
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-  readOnly: widget.readonly,
-enabled: widget.enabled,
-
+      readOnly: widget.readonly,
+      enabled: widget.enabled,
       controller: widget.controller,
       obscureText: widget.isPassword ? _obscure : false,
       keyboardType: widget.keyboardType,
       validator: widget.validator,
-          minLines: widget.minLines,
-    maxLines: widget.maxLines ?? (widget.isPassword ? 1 : 1),
+      minLines: widget.minLines,
+      maxLines: widget.maxLines ?? (widget.isPassword ? 1 : 1),
       decoration: InputDecoration(
         labelText: widget.label,
-        labelStyle: const TextStyle(
-          fontSize: 14,
-          color: Color(0xFF79747E),
-        ),
+        prefixText: widget.prefixText,
+        labelStyle: const TextStyle(fontSize: 14, color: Color(0xFF79747E)),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
         ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Colors.black26),
@@ -65,9 +60,8 @@ enabled: widget.enabled,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-    
-        ///       EYE ICON (Password)
-      
+
+        //   EYE ICON (Password)
         suffixIcon: widget.isPassword
             ? IconButton(
                 icon: Icon(
@@ -83,4 +77,3 @@ enabled: widget.enabled,
     );
   }
 }
-

@@ -28,4 +28,20 @@ class ProfileService {
       return null;
     }
   }
+
+  // Edit Profile 
+  Future<Map<String,dynamic>?> EditProfile({
+     required Map<String, dynamic> payload,
+  })async{
+      try{
+        final response =  await _dio.post(
+          "user-account/profile-update",
+          data: payload
+          );
+          return response.data;
+      } on DioException catch(e){
+              AppLogger.error("EditProfile DioError: ${e.response?.statusCode}");
+      AppLogger.error("EditProfile: ${e.response?.data}");
+      }
+  }
 }

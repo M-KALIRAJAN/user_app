@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
+import 'package:nadi_user_app/widgets/RecentActivity.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 
 class ViewAllLogs extends StatefulWidget {
@@ -27,9 +29,11 @@ class _ViewAllLogsState extends State<ViewAllLogs> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppCircleIconButton(icon: Icons.arrow_back, onPressed: () {}),
+                  AppCircleIconButton(icon: Icons.arrow_back, onPressed: () {
+                    context.pop();
+                  }),
                   Text(
-                    "MY Service Request",
+                    "MY Recent Activity",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: AppFontSizes.large,
@@ -39,6 +43,10 @@ class _ViewAllLogsState extends State<ViewAllLogs> {
                 ],
               ),
             ),
+
+            SizedBox(height: 10,),
+
+             Expanded(child: RecentActivity( limitLogs: false,))
           ],
         ),
       ),

@@ -97,8 +97,8 @@ class AuthService {
         "user-account/basic-info",
         data: {
           "userId": userId,
-          "full_name": fullName,
-          "mobile": mobileNumber,
+          "fullName": fullName,
+          "mobileNumber": mobileNumber,
           "email": email,
           "password": password,
           "gender": gender,

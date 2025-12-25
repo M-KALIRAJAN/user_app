@@ -13,22 +13,20 @@ class PointDetails extends StatefulWidget {
 }
 
 class _PointDetailsState extends State<PointDetails> {
-  String? accountType;
+  String accountType = "";
 
   @override
   void initState() {
     super.initState();
     _accountcheck();
   }
-
   Future<void> _accountcheck() async {
-    // final type = await AppPreferences.getaccountType();
-
-    // setState(() {
-    //   accountType = type;
-    // });
+     final type = await AppPreferences.getaccounttype();
+    if (!mounted) return;
+    setState(() {
+        accountType = type ?? "IA";
+    });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

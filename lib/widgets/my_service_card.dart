@@ -43,7 +43,10 @@ class ServiceRequestCard extends StatelessWidget {
                     width: 48,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: serviceStatus == "submitted" ? AppColors.btn_primery:  serviceStatus == "paymentInProgress" ? const Color.fromARGB(255, 192, 200, 184): null,
+                      color: serviceStatus == "submitted" ? AppColors.btn_primery: 
+                       serviceStatus == "paymentInProgress" ? const Color.fromARGB(255, 112, 214, 11):
+                       serviceStatus == "accepted" ? AppColors.btn_primery:
+                        serviceStatus == "technicianAssigned" ? AppColors.btn_primery: null,
                     ),
                     child: CachedNetworkImage(
                       imageUrl: serviceLogo != null
@@ -92,7 +95,10 @@ class ServiceRequestCard extends StatelessWidget {
                     width: 135,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: serviceStatus == "submitted" ? AppColors.btn_primery:  serviceStatus == "paymentInProgress" ? const Color.fromARGB(255, 192, 200, 184): null,
+                         color: serviceStatus == "submitted" ? AppColors.btn_primery: 
+                       serviceStatus == "paymentInProgress" ? const Color.fromARGB(255, 112, 214, 11):
+                       serviceStatus == "accepted" ? AppColors.btn_primery:
+                        serviceStatus == "technicianAssigned" ? AppColors.btn_primery: null,
                     ),
                     child: Center(
                       child: Text(
