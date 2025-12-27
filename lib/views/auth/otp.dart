@@ -117,6 +117,7 @@ Future<void> verifyOtp(BuildContext context) async {
 
 Future<void> sendOtp(BuildContext context) async {
   final userId = await AppPreferences.getUserId();
+  final fcmToken = await AppPreferences.getfcmToken();
 
   setState(() {
     isOtpError = false;

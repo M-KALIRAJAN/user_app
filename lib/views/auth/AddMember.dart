@@ -263,6 +263,7 @@
 
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/controllers/address_controller.dart';
@@ -273,7 +274,7 @@ import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
-import 'package:nadi_user_app/views/auth/individual/Address.dart';
+import 'package:nadi_user_app/views/auth/Address.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/inputs/app_dropdown.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
@@ -325,14 +326,14 @@ class _AddmemberState extends State<Addmember> {
           ? addressController.getOnlyAddressMap(addressType: "flat")
           : null,
     );
- AppLogger.success("body : $body");
+    AppLogger.success("body : $body");
     setState(() => _isLoading = true);
 
     try {
       final response = await _authService.memberdetails(body: body);
       setState(() => _isLoading = false);
 
-      AppLogger.debug("Member added 👉 ${jsonEncode(response)}");
+      AppLogger.debug("Member added  ${jsonEncode(response)}");
 
       // Clear form for next member
       controller.fullName.clear();
@@ -348,7 +349,7 @@ class _AddmemberState extends State<Addmember> {
         setState(() {
           _hideBottomButton = true;
         });
-        
+
         SnackbarHelper.ShowSuccess(context, "All members added successfully");
 
         // Delay slightly so user sees the snackbar
@@ -363,9 +364,20 @@ class _AddmemberState extends State<Addmember> {
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Submit failed: $e")));
+      if (e is DioException) {
+        final errorMessage =
+            e.response?.data['message'] ??
+            e.response?.data.toString() ??
+            "Something went wrong";
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Something went wrong")));
+      }
     }
   }
 

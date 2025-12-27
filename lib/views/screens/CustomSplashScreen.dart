@@ -47,8 +47,14 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     );
 
     // 🧪 Get FCM token (for testing)
-    final token = await FirebaseMessaging.instance.getToken();
-    debugPrint("FCM TOKEN: $token");
+   final String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+  if (fcmToken != null) {
+    await AppPreferences.savefcmToken(fcmToken);
+    debugPrint("FCM TOKEN: $fcmToken");
+  } else {
+    debugPrint("FCM TOKEN is null");
+  }
   }
 
   Future<void> decideNavigation(BuildContext context) async {
@@ -56,6 +62,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     final bool hasSeenAbout = await AppPreferences.hasSeenAbout();
 
     await Future.delayed(Duration(seconds: 5));
+
     context.go(RouteNames.language);
     if(!hasSeenAbout){
        // FIRST TIME USER

@@ -106,10 +106,11 @@ class AuthService {
       );
       AppLogger.success(response.data.toString());
       return response.data;
-    } catch (e) {
-      AppLogger.error("Basic Info ${e}");
-      throw Exception("Basic info failed");
-    }
+    } on DioException catch (e) {
+  AppLogger.error("Login ${e.response?.statusCode}");
+  AppLogger.error("Login ${e.response?.data}");
+  throw e; //  ADD THIS LINE ONLY
+}
   }
 
   //Selected Block
@@ -167,6 +168,7 @@ class AuthService {
     } on DioException catch(e){
       AppLogger.error("Login ${e.response?.statusCode}");
     AppLogger.error("Login ${e.response?.data}");
+    throw e;
   }
   }
   // Upload ID
@@ -233,13 +235,15 @@ Future<Map<String, dynamic>?> uploadIdProof({
   //Terms & Conditions 
 
   Future<Map<String,dynamic>?> TermsAndSonditions({
-    required String userId
+    required String userId,
+    required String fcmToken
   })async{
      try{
        final response = await _dio.post(
         "user-account/terms-verify",
         data: {
-          "userId":userId
+          "userId":userId,
+          "fcmToken":fcmToken
         }
         );
         return response.data;
@@ -274,13 +278,15 @@ Future<Map<String, dynamic>?> CompleteuserAccount({
 
 
   Future<Map<String,dynamic>?> SendOTP({
-     required String userId
+     required String userId,
+    
   })async{
       try{
        final response = await _dio.post(
         "user-account/send-otp",
         data: {
-          "userId":userId
+          "userId":userId,
+        
         }
         );
         return response.data;

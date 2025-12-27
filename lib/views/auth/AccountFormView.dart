@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/controllers/signup_controller.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
@@ -62,9 +63,20 @@ class _AccountFormViewState extends State<AccountFormView> {
       }
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Submit failed: $e")));
+    if (e is DioException) {
+  final errorMessage =
+      e.response?.data['message'] ??
+      e.response?.data.toString() ??
+      "Something went wrong";
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(errorMessage),),
+  );
+} else {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Something went wrong")),
+  );
+}
     }
   }
 

@@ -266,6 +266,7 @@ import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
+import 'package:nadi_user_app/services/notification_service.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class LoginView extends StatefulWidget {
@@ -278,6 +279,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final LoginController controller = LoginController();
   final AuthService _authService = AuthService();
+  // final NotificationService _notificationService = NotificationService();
 
   bool isChecked = false;
   bool _obscure = true;
@@ -287,6 +289,10 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
+       // START LISTENING FOR PUSH
+     WidgetsBinding.instance.addPostFrameCallback((_){
+      NotificationService.initialize(context);
+     }) ;
     _loadRememberMe();
   }
 
@@ -301,7 +307,7 @@ class _LoginViewState extends State<LoginView> {
         isChecked = true;
       });
     }
-  }
+  } 
 
   Future<void> login(BuildContext context) async {
     setState(() {
@@ -310,11 +316,12 @@ class _LoginViewState extends State<LoginView> {
     });
 
     final loginData = controller.getLoginData();
-
+     final fcmToken = await AppPreferences.getfcmToken();
     try {
       final response = await _authService.LoginApi(
         email: loginData.email,
         password: loginData.password,
+       
       );
       print(" loginData: $response");
 
@@ -333,6 +340,7 @@ class _LoginViewState extends State<LoginView> {
       }
     } on DioException catch (e) {
       final message = e.response?.data?['message'] ?? "Invalid credentials";
+      
       setState(() {
         if (message.toString().toLowerCase().contains('email')) {
           emailError = message;

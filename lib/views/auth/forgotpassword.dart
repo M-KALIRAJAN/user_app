@@ -40,12 +40,9 @@ class _ForgotpasswordState extends State<Forgotpassword> {
             child: Column(
               children: [
                 SizedBox(height: height * 0.07),
-
                 /// LOGO
                 Image.asset("assets/icons/logo.png", height: 140),
-
                 SizedBox(height: height * 0.10),
-
                 /// FORM
                 Expanded(
                   child: Container(
@@ -74,53 +71,28 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-
+                  
                           const SizedBox(height: 25),
-
+                  
                           TextFormField(
                             controller: controller.email,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
-                              labelText: "Email Address",
+                              labelText: "Enter Email Address",
                               errorText: emailError,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                           ),
-
-                          const SizedBox(height: 15),
-
-                          TextFormField(
-                            controller: controller.password,
-                            obscureText: _obscure,
-                            decoration: InputDecoration(
-                              labelText: "Password",
-                              errorText: passwordError,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscure
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                ),
-                                onPressed: () {
-                                  setState(() => _obscure = !_obscure);
-                                },
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 10),
-
-                          const SizedBox(height: 20),
+                  
+                          const SizedBox(height: 35),
+                  
                           Row(
                             children: [
                               Expanded(
                                 child: AppButton(
-                                  text: "Sign Up",
+                                  text: "Change Password",
                                   width: 59,
                                   color: AppColors.button_secondary,
                                   height: 50,
@@ -129,7 +101,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                               ),
                             ],
                           ),
-
+                  
                           const SizedBox(height: 30),
                         ],
                       ),

@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/serviceProvider.dart';
+import 'package:nadi_user_app/services/notification_service.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -32,6 +32,10 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   void initState() {
     super.initState();
+     // START LISTENING FOR PUSH
+     WidgetsBinding.instance.addPostFrameCallback((_){
+      NotificationService.initialize(context);
+     }) ;
     get_preferencevalue();
   }
 
@@ -131,7 +135,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-
                   children: [
                     SizedBox(height: 37),
                     Row(
@@ -193,36 +196,41 @@ class _DashboardState extends ConsumerState<Dashboard> {
                             shape: BoxShape.circle,
                             color: Colors.white.withOpacity(0.3),
                           ),
-                          child: Center(
-                            child: Stack(
-                              children: [
-                                const Icon(
-                                  Icons.notifications_outlined,
-                                  color: Colors.white,
-                                  size: 27,
-                                ),
-                                Positioned(
-                                  left: 11,
-                                  child: Container(
-                                    height: 14,
-                                    width: 14,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.white,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "25",
-                                        style: TextStyle(
-                                          color: AppColors.btn_primery,
-                                          fontSize: 8,
-                                          fontWeight: FontWeight.bold,
+                          child: InkWell(
+                            onTap: () {
+                              context.push(RouteNames.nodifications);
+                            },
+                            child: Center(
+                              child: Stack(
+                                children: [
+                                  const Icon(
+                                    Icons.notifications_outlined,
+                                    color: Colors.white,
+                                    size: 27,
+                                  ),
+                                  Positioned(
+                                    left: 11,
+                                    child: Container(
+                                      height: 14,
+                                      width: 14,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "25",
+                                          style: TextStyle(
+                                            color: AppColors.btn_primery,
+                                            fontSize: 8,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),

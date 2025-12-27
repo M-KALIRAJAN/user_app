@@ -10,9 +10,11 @@ class AppPreferences {
   static const String _accounttypekey = "account_type";
   static const String _namekey = "name";
   static const String _phonenumberkey = "phonenumber";
-
+  static const String _fcmtokenkey = "fcmtoken";
   static const String _rememberMeKey = "remember_me";
   static const String _rememberEmailkey = "remember_email";
+
+
   // --- Remember Flag --
   static Future<void> setRememberMe(bool value) async {
     final prefs = await SharedPreferences.getInstance();
@@ -46,7 +48,14 @@ class AppPreferences {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
   }
-
+static Future<void> savefcmToken(String fcmtoken)async{
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString(_fcmtokenkey, fcmtoken);
+}
+static Future<String> getfcmToken()async{
+ final prefs = await SharedPreferences.getInstance();
+ return await prefs.getString(_fcmtokenkey) ?? '';
+}
   static Future<String> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey) ?? '';
@@ -125,10 +134,23 @@ class AppPreferences {
     return prefs.getString(_namekey);
   }
 
-  static Future<void> clearAll() async {
-    final prefs = await SharedPreferences.getInstance();
-    // await prefs.clear();
-    await prefs.remove(_tokenKey);
-    await prefs.setBool(_loginKey, false);
+
+
+static Future<void> clearAll() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  // Save remember-me values temporarily
+  final bool rememberMe = prefs.getBool(_rememberMeKey) ?? false;
+  final String? rememberEmail = prefs.getString(_rememberEmailkey);
+
+  // Clear everything
+  await prefs.clear();
+
+  // Restore remember-me values
+  await prefs.setBool(_rememberMeKey, rememberMe);
+  if (rememberEmail != null) {
+    await prefs.setString(_rememberEmailkey, rememberEmail);
   }
+}
+
 }

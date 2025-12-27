@@ -1,12 +1,14 @@
   
 import 'package:dio/dio.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
+
+//https://nadi-buhrain-render.onrender.com/api/
 class DioClient {
   static final Dio dio = Dio(
     BaseOptions(
-      baseUrl: "https://nadi-buhrain-render.onrender.com/api/",
-      connectTimeout: const Duration(seconds: 35),
-      receiveTimeout: const Duration(seconds: 35),
+      baseUrl: "http://192.168.29.129:8080/api",
+      connectTimeout: const Duration(seconds: 85),
+      receiveTimeout: const Duration(seconds: 85),
     ),
   )..interceptors.add(
       InterceptorsWrapper(
@@ -27,10 +29,13 @@ class DioClient {
 
 // onRequest -Runs before every API
 // options.headers[...] -  Adds header automatically 
+//https://nadi-buhrain-render.onrender.com/uploads/
+
 class ImageBaseUrl {
-  static const baseUrl = "https://nadi-buhrain-render.onrender.com/uploads/";
+  static const baseUrl = "http://192.168.29.129:8080/uploads";
 }
 
+//https://nadi-buhrain-render.onrender.com
 class ImageAssetUrl{
-    static const baseUrl = "https://nadi-buhrain-render.onrender.com";
+    static const baseUrl = "http://192.168.29.129:8080";
 }

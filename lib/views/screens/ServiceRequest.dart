@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
-
 class Servicerequest extends StatelessWidget {
   const Servicerequest({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

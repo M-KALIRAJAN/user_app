@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/views/auth/forgotpassword.dart';
 import 'package:nadi_user_app/views/screens/edit_profile.dart';
+import 'package:nadi_user_app/views/screens/nodifications.dart';
 import 'package:nadi_user_app/views/screens/point_details.dart';
 import 'package:nadi_user_app/views/screens/send_service_request.dart';
 import 'package:nadi_user_app/views/screens/service_request_details.dart';
@@ -59,6 +60,10 @@ final appRouter = GoRouter(
       path: RouteNames.allservice,
       builder: (context, state) => const Allservice(),
     ),
+    GoRoute(
+      path: RouteNames.nodifications,
+      builder: (context, state) => const Nodifications(),
+      ),
     GoRoute(
       path: RouteNames.accountverfy,
       builder: (context, state) => const AccountVerification(),
