@@ -33,9 +33,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
   void initState() {
     super.initState();
      // START LISTENING FOR PUSH
-     WidgetsBinding.instance.addPostFrameCallback((_){
-      NotificationService.initialize(context);
-     }) ;
+    //  WidgetsBinding.instance.addPostFrameCallback((_){
+    //   NotificationService.initialize(context);
+    //  }) ;
     get_preferencevalue();
   }
 

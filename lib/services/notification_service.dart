@@ -33,52 +33,60 @@
 //    }
 // }
 
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:nadi_user_app/routing/app_router.dart';
 
+
+
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
+  static final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
 
-  static void initialize(BuildContext context) {
+  static Future<void> initialize() async {
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    /// FOREGROUND
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification == null) return;
+    const InitializationSettings settings =
+        InitializationSettings(android: androidSettings);
 
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text(message.notification!.title ?? "OTP"),
-          content: Text(message.notification!.body ?? ""),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("OK"),
-            ),
-          ],
-        ),
-      );
-    });
-
-    /// BACKGROUND TAP
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      final otp = message.data['otp'];
-      if (otp != null) {
-        context.go(RouteNames.opt, extra: otp);
-      }
-    });
+    await _plugin.initialize(settings);
   }
 
-  /// TERMINATED STATE
-  static Future<void> checkInitialMessage(BuildContext context) async {
-    final message = await FirebaseMessaging.instance.getInitialMessage();
-    if (message != null) {
-      final otp = message.data['otp'];
-      if (otp != null) {
-        context.go(RouteNames.opt, extra: otp);
-      }
-    }
+  static Future<void> createChannel() async {
+    const AndroidNotificationChannel channel =
+        AndroidNotificationChannel(
+      'high_importance_channel',
+      'High Importance Notifications',
+      description: 'Used for OTP notifications',
+      importance: Importance.high,
+    );
+
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+  }
+
+  static Future<void> show({
+    required String title,
+    required String body,
+  }) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'high_importance_channel',
+      'High Importance Notifications',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails details =
+        NotificationDetails(android: androidDetails);
+
+    await _plugin.show(
+      DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title,
+      body,
+      details,
+    );
   }
 }

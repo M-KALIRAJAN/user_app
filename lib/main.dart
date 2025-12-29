@@ -9,7 +9,7 @@ import 'package:nadi_user_app/providers/theme_provider.dart';
 
 import 'package:nadi_user_app/routing/route_names.dart';
 import 'package:nadi_user_app/services/firebase_background_handler.dart';
-
+import 'package:nadi_user_app/services/notification_service.dart';
 
 ///  STEP 1: ADD THIS HERE (TOP LEVEL, NOT INSIDE CLASS)
 Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
@@ -23,11 +23,15 @@ void main() async {
   ///  STEP 2: INITIALIZE FIREBASE
   await Firebase.initializeApp();
   
-// await setupNotificationChannel();
-  ///  STEP 3: REGISTER BACKGROUND HANDLER
-
+  await NotificationService.initialize();
+  await NotificationService.createChannel();
   FirebaseMessaging.onBackgroundMessage(
     firebaseMessagingBackgroundHandler,
+  );
+    await FirebaseMessaging.instance.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
   );
 
   /// Hive init
@@ -35,6 +39,14 @@ void main() async {
   await Hive.openBox("aboutBox");
   await Hive.openBox("blockbox");
   await Hive.openBox("servicesBox");
+    // ✅ Add this here: Foreground notifications
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    NotificationService.show(
+      title: message.notification?.title ?? 'OTP',
+      body: message.notification?.body ??
+          'Your OTP is ${message.data['otp']}',
+    );
+  });
 
   runApp(
     const ProviderScope(

@@ -33,10 +33,10 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     debugPrint("🚀 Splash initState()");
     _initNotifications();
     _loadSplashMedia();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-      /// TERMINATED CHECK
-      NotificationService.checkInitialMessage(context);
-    });
+    //     WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   /// TERMINATED CHECK
+    //   NotificationService.checkInitialMessage(context);
+    // });
   }
 
   // --------------------------------------------------

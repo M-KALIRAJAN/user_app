@@ -290,9 +290,9 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
     super.initState();
     // START LISTENING FOR PUSH
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      NotificationService.initialize(context);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   NotificationService.initialize(context);
+    // });
     _loadRememberMe();
   }
 
