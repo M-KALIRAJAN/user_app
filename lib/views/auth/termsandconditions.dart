@@ -26,19 +26,19 @@ class _TermsandconditionsState extends State<Termsandconditions> {
      final fcmToken = await AppPreferences.getfcmToken();
        final response = await _authService.TermsAndSonditions(userId: userId!,fcmToken:fcmToken);
        
-        // final responsesendotp = await _authService.SendOTP(userId: userId!,fcmToken:fcmToken);
-       AppLogger.success("CompleteRegistration : $response");
-        //  AppLogger.success("responsesendotp : $responsesendotp");
-       if(response != null  ){
+    //     final responsesendotp = await _authService.SendOTP(userId: userId!,);
+    //    AppLogger.success("CompleteRegistration : $response");
+    //     //  AppLogger.success("responsesendotp : $responsesendotp");
+    //    if(response != null  && responsesendotp != null  ){
     //       final otp = responsesendotp['otp'].toString();
-    //       ///  SHOW SNACKBAR
-    //     SnackbarHelper.ShowSuccess(context, otp);
+      
      
     // Future.delayed(const Duration(seconds: 1), () {
 
     //   });
-            context.push(RouteNames.opt);
-       }
+           
+    //    }
+        context.push(RouteNames.opt);
       }catch(e){
         AppLogger.error("CompleteRegistration error: $e");
       }finally {

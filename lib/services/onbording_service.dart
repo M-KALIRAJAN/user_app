@@ -28,13 +28,12 @@ Future<Map<String, dynamic>?> fetchAbout() async {
     // Welcome 
 
     Future<Map<String,dynamic>?> loading() async{
-   
       try{
          final response = await _dio.get("user/loading/loading-screen");
          if(response.statusCode == 200){
           return response.data ;
          } else{
-                    return null ;
+            return null ;
          } 
       }catch(e){
         AppLogger.error("loading Api $e");

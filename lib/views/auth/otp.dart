@@ -13,7 +13,11 @@ import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:pinput/pinput.dart';
 
 class Otp extends StatefulWidget {
-  const Otp({super.key});
+  final String? receivedOtp;
+    const Otp({
+    super.key,
+    this.receivedOtp,
+  });
 
   @override
   State<Otp> createState() => _OtpState();
@@ -32,14 +36,26 @@ class _OtpState extends State<Otp> {
   @override
   void initState() {
     super.initState();
+      
     // START LISTENING FOR PUSH
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      NotificationService.initialize(context);
-    });
+   
+    /// FOREGROUND LISTENER
+  /// REGISTER NOTIFICATION LISTENERS
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   NotificationService.initialize(context);
+    //   NotificationService.checkInitialMessage(context);
+    // });
+
+    /// AUTO FILL OTP
+    if (widget.receivedOtp != null) {
+      otpController.text = widget.receivedOtp!;
+    }
     _startTimer();
     _loadPhoneNumber();
+sendOtp(context);
   }
 
+ 
   @override
   void dispose() {
     _timer?.cancel();
@@ -56,10 +72,26 @@ class _OtpState extends State<Otp> {
 
   void _showOtpError(String message) {
     setState(() => isOtpError = true);
-
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ).showSnackBar(SnackBar(content: Text(message,style: TextStyle(color: Colors.red),)));
+  }
+   Future<void> sendOtp(BuildContext context) async {
+    final userId = await AppPreferences.getUserId();
+    // final fcmToken = await AppPreferences.getfcmToken();
+    setState(() {
+      isOtpError = false;
+      otpController.clear();
+    });
+
+    try {
+      final response = await _authService.SendOTP(userId: userId!);
+      AppLogger.success("Resend OTP response: $response");
+
+    } on DioException catch (e) {
+      final message = e.response?.data["message"] ?? "Failed to resend OTP";
+      _showOtpError(message);
+    }
   }
 
   Future<void> verifyOtp(BuildContext context) async {
@@ -70,20 +102,15 @@ class _OtpState extends State<Otp> {
 
     try {
       final response = await _authService.OTPverify(otp: otp, userId: userId!);
-
       if (response["message"] == "OTP verified successfully") {
-        // ✅ Call second API only after OTP success
-        final Map<String, dynamic>? completeuseraccount =
-            await _authService.CompleteuserAccount(userId: userId);
-
+        final  completeuseraccount =
+        await _authService.CompleteuserAccount(userId: userId);
         AppLogger.success("completeuseraccount: $completeuseraccount");
-
-        // ✅ Null & key safety check
+    
         if (completeuseraccount != null &&
             completeuseraccount.containsKey('token')) {
           await AppPreferences.saveToken(completeuseraccount['token']);
         }
-
         context.push(RouteNames.accountcreated);
       } else {
         _showOtpError(response["message"] ?? "Invalid OTP");
@@ -115,37 +142,7 @@ class _OtpState extends State<Otp> {
     ),
   );
 
-  Future<void> sendOtp(BuildContext context) async {
-    final userId = await AppPreferences.getUserId();
-    final fcmToken = await AppPreferences.getfcmToken();
-
-    setState(() {
-      isOtpError = false;
-      otpController.clear();
-    });
-
-    try {
-      final response = await _authService.SendOTP(userId: userId!);
-      AppLogger.success("Resend OTP response: $response");
-
-      if (response != null && response['otp'] != null) {
-        final otp = response['otp'].toString();
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Your OTP is: $otp"),
-            backgroundColor: AppColors.button_secondary,
-            duration: const Duration(seconds: 5),
-          ),
-        );
-      } else {
-        _showOtpError("OTP not received");
-      }
-    } on DioException catch (e) {
-      final message = e.response?.data["message"] ?? "Failed to resend OTP";
-      _showOtpError(message);
-    }
-  }
+ 
 
   void _startTimer() {
     _secountleft = 60;

@@ -2,6 +2,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/views/auth/forgotpassword.dart';
+import 'package:nadi_user_app/views/auth/sign_in_otp.dart';
 import 'package:nadi_user_app/views/screens/edit_profile.dart';
 import 'package:nadi_user_app/views/screens/nodifications.dart';
 import 'package:nadi_user_app/views/screens/point_details.dart';
@@ -27,12 +28,16 @@ import 'package:nadi_user_app/views/screens/create_service_request.dart';
 import 'package:nadi_user_app/widgets/dialogs/RequestCreateSucess.dart';
 final appRouter = GoRouter(
   initialLocation: RouteNames.splash,
- 
+
   routes: [
     GoRoute(
       path: RouteNames.splash,
       builder: (context, state) => const CustomSplashScreen(),
     ),
+    GoRoute(
+      path: RouteNames.phonewithotp,
+      builder: (context, state) => const SignInOtp(),
+      ),
     GoRoute(
       path: RouteNames.language,
       builder: (context, state) => const LanguangeView(),
@@ -114,7 +119,14 @@ final appRouter = GoRouter(
       path: RouteNames.accountcreated,
       builder: (context, state) => Accountcreated(),
     ),
-    GoRoute(builder: (context, state) => Otp(), path: RouteNames.opt),
+   GoRoute(
+  path: RouteNames.opt,
+  builder: (context, state) {
+    final otp = state.extra as String?;
+    return Otp(receivedOtp: otp);
+  },
+),
+
     GoRoute(
       builder: (context, state) => EditProfile(),
       path: RouteNames.editprfoile,

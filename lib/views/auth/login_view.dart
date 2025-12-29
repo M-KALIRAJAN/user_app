@@ -289,10 +289,10 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
-       // START LISTENING FOR PUSH
-     WidgetsBinding.instance.addPostFrameCallback((_){
+    // START LISTENING FOR PUSH
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationService.initialize(context);
-     }) ;
+    });
     _loadRememberMe();
   }
 
@@ -307,7 +307,7 @@ class _LoginViewState extends State<LoginView> {
         isChecked = true;
       });
     }
-  } 
+  }
 
   Future<void> login(BuildContext context) async {
     setState(() {
@@ -316,18 +316,17 @@ class _LoginViewState extends State<LoginView> {
     });
 
     final loginData = controller.getLoginData();
-     final fcmToken = await AppPreferences.getfcmToken();
+    final fcmToken = await AppPreferences.getfcmToken();
     try {
       final response = await _authService.LoginApi(
         email: loginData.email,
         password: loginData.password,
-       
       );
       print(" loginData: $response");
-
       if (response != null && response['token'] != null) {
         await AppPreferences.saveToken(response['token']);
         await AppPreferences.setLoggedIn(true);
+        await AppPreferences.saveUserId(response['userId']);
         await AppPreferences.saveAccountType(response['accountType']);
         //  REMEMBER ME LOGIC
         if (isChecked) {
@@ -340,7 +339,7 @@ class _LoginViewState extends State<LoginView> {
       }
     } on DioException catch (e) {
       final message = e.response?.data?['message'] ?? "Invalid credentials";
-      
+
       setState(() {
         if (message.toString().toLowerCase().contains('email')) {
           emailError = message;
@@ -377,12 +376,9 @@ class _LoginViewState extends State<LoginView> {
             child: Column(
               children: [
                 SizedBox(height: height * 0.07),
-
                 /// LOGO
                 Image.asset("assets/icons/logo.png", height: 140),
-
                 SizedBox(height: height * 0.10),
-
                 /// FORM
                 Expanded(
                   child: Container(
@@ -411,9 +407,7 @@ class _LoginViewState extends State<LoginView> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-
                           const SizedBox(height: 25),
-
                           TextFormField(
                             controller: controller.email,
                             keyboardType: TextInputType.emailAddress,
@@ -425,9 +419,7 @@ class _LoginViewState extends State<LoginView> {
                               ),
                             ),
                           ),
-
                           const SizedBox(height: 15),
-
                           TextFormField(
                             controller: controller.password,
                             obscureText: _obscure,
@@ -507,7 +499,19 @@ class _LoginViewState extends State<LoginView> {
                             ],
                           ),
 
-                          const SizedBox(height: 30),
+                          const SizedBox(height: 10),
+
+                          const Center(child: Text("OR")),
+                          const SizedBox(height: 10),
+                          InkWell(
+                            onTap: () {
+                               context.push(RouteNames.phonewithotp);
+                            },
+                            child: Center(child: Text("Sign In with OTP" ,style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.btn_primery,
+                                    ),),),
+                          ),
                         ],
                       ),
                     ),

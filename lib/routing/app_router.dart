@@ -24,5 +24,6 @@ class RouteNames {
  static const String forgotpassword = '/forgotpassword';
  static const String viewalllogs = '/viewalllogs';
  static const String nodifications ='/nodifications';
+ static const String phonewithotp ='/phonewithotp';
 
 }

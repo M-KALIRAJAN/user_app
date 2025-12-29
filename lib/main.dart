@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import 'package:nadi_user_app/providers/theme_provider.dart';
+import 'package:nadi_user_app/services/notification_channel.dart';
 
 import 'package:nadi_user_app/routing/route_names.dart';
+import 'package:nadi_user_app/services/firebase_background_handler.dart';
 
 
 ///  STEP 1: ADD THIS HERE (TOP LEVEL, NOT INSIDE CLASS)
@@ -20,9 +22,13 @@ void main() async {
 
   ///  STEP 2: INITIALIZE FIREBASE
   await Firebase.initializeApp();
-
+  
+await setupNotificationChannel();
   ///  STEP 3: REGISTER BACKGROUND HANDLER
-  FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
+
+  FirebaseMessaging.onBackgroundMessage(
+    firebaseMessagingBackgroundHandler,
+  );
 
   /// Hive init
   await Hive.initFlutter();
@@ -44,7 +50,6 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
-
     return MaterialApp.router(
       routerConfig: appRouter,
       debugShowCheckedModeBanner: false,

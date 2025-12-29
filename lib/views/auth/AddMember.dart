@@ -473,6 +473,7 @@ class _AddmemberState extends State<Addmember> {
                   controller: controller.mobile,
                   keyboardType: TextInputType.phone,
                   label: "Mobile Number*",
+                   prefixText: "+973 ",
                   validator: (value) => controller.validatemobilenumber(value),
                 ),
 
