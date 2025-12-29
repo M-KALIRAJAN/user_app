@@ -8,6 +8,7 @@ import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
+import 'package:nadi_user_app/services/notification_service.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:pinput/pinput.dart';
 
@@ -21,15 +22,20 @@ class Otp extends StatefulWidget {
 class _OtpState extends State<Otp> {
   final otpController = TextEditingController();
   final AuthService _authService = AuthService();
+
   bool isOtpError = false;
   bool isLoading = false;
-String? phoneNumber;
+  String? phoneNumber;
   int _secountleft = 60;
   Timer? _timer;
   bool _canResend = false;
   @override
   void initState() {
     super.initState();
+    // START LISTENING FOR PUSH
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService.initialize(context);
+    });
     _startTimer();
     _loadPhoneNumber();
   }
@@ -40,12 +46,13 @@ String? phoneNumber;
     // TODO: implement dispose
     super.dispose();
   }
+
   Future<void> _loadPhoneNumber() async {
-  final phone = await AppPreferences.getphonenumber();
-  setState(() {
-    phoneNumber = phone;
-  });
-}
+    final phone = await AppPreferences.getphonenumber();
+    setState(() {
+      phoneNumber = phone;
+    });
+  }
 
   void _showOtpError(String message) {
     setState(() => isOtpError = true);
@@ -55,50 +62,43 @@ String? phoneNumber;
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-Future<void> verifyOtp(BuildContext context) async {
-  final userId = await AppPreferences.getUserId();
-  final otp = otpController.text.trim();
+  Future<void> verifyOtp(BuildContext context) async {
+    final userId = await AppPreferences.getUserId();
+    final otp = otpController.text.trim();
 
-  setState(() => isLoading = true);
+    setState(() => isLoading = true);
 
-  try {
-    final response =
-        await _authService.OTPverify(otp: otp, userId: userId!);
+    try {
+      final response = await _authService.OTPverify(otp: otp, userId: userId!);
 
-    if (response["message"] == "OTP verified successfully") {
+      if (response["message"] == "OTP verified successfully") {
+        // ✅ Call second API only after OTP success
+        final Map<String, dynamic>? completeuseraccount =
+            await _authService.CompleteuserAccount(userId: userId);
 
-      // ✅ Call second API only after OTP success
-      final Map<String, dynamic>? completeuseraccount =
-          await _authService.CompleteuserAccount(userId: userId);
+        AppLogger.success("completeuseraccount: $completeuseraccount");
 
-      AppLogger.success(
-        "completeuseraccount: $completeuseraccount",
-      );
+        // ✅ Null & key safety check
+        if (completeuseraccount != null &&
+            completeuseraccount.containsKey('token')) {
+          await AppPreferences.saveToken(completeuseraccount['token']);
+        }
 
-      // ✅ Null & key safety check
-      if (completeuseraccount != null &&
-          completeuseraccount.containsKey('token')) {
-        await AppPreferences.saveToken(
-          completeuseraccount['token'],
-        );
+        context.push(RouteNames.accountcreated);
+      } else {
+        _showOtpError(response["message"] ?? "Invalid OTP");
       }
+    } on DioException catch (e) {
+      final errorResponse = e.response?.data;
+      final message = (errorResponse is Map && errorResponse["message"] != null)
+          ? errorResponse["message"]
+          : "Something went wrong";
 
-      context.push(RouteNames.accountcreated);
-    } else {
-      _showOtpError(response["message"] ?? "Invalid OTP");
+      _showOtpError(message);
+    } finally {
+      setState(() => isLoading = false);
     }
-  } on DioException catch (e) {
-    final errorResponse = e.response?.data;
-    final message =
-        (errorResponse is Map && errorResponse["message"] != null)
-            ? errorResponse["message"]
-            : "Something went wrong";
-
-    _showOtpError(message);
-  } finally {
-    setState(() => isLoading = false);
   }
-}
 
   final errorPinTheme = PinTheme(
     width: 50,
@@ -115,38 +115,37 @@ Future<void> verifyOtp(BuildContext context) async {
     ),
   );
 
-Future<void> sendOtp(BuildContext context) async {
-  final userId = await AppPreferences.getUserId();
-  final fcmToken = await AppPreferences.getfcmToken();
+  Future<void> sendOtp(BuildContext context) async {
+    final userId = await AppPreferences.getUserId();
+    final fcmToken = await AppPreferences.getfcmToken();
 
-  setState(() {
-    isOtpError = false;
-    otpController.clear();
-  });
+    setState(() {
+      isOtpError = false;
+      otpController.clear();
+    });
 
-  try {
-    final response = await _authService.SendOTP(userId: userId!);
-    AppLogger.success("Resend OTP response: $response");
+    try {
+      final response = await _authService.SendOTP(userId: userId!);
+      AppLogger.success("Resend OTP response: $response");
 
-    if (response != null && response['otp'] != null) {
-      final otp = response['otp'].toString();
+      if (response != null && response['otp'] != null) {
+        final otp = response['otp'].toString();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Your OTP is: $otp"),
-          backgroundColor: AppColors.button_secondary,
-          duration: const Duration(seconds: 5),
-        ),
-      );
-    } else {
-      _showOtpError("OTP not received");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Your OTP is: $otp"),
+            backgroundColor: AppColors.button_secondary,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      } else {
+        _showOtpError("OTP not received");
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data["message"] ?? "Failed to resend OTP";
+      _showOtpError(message);
     }
-  } on DioException catch (e) {
-    final message = e.response?.data["message"] ?? "Failed to resend OTP";
-    _showOtpError(message);
   }
-}
-
 
   void _startTimer() {
     _secountleft = 60;

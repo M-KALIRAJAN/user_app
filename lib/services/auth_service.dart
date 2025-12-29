@@ -61,7 +61,7 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     AppLogger.warn("accountTypeId: $accountTypeId");
     final response = await _dio.post(
-      "user-account/",
+      "user-account",
       data: {
         "accountTypeId": accountTypeId,
       },

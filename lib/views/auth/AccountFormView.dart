@@ -58,7 +58,7 @@ class _AccountFormViewState extends State<AccountFormView> {
       if (response["message"] == "Basic info saved") {
          await AppPreferences.saveusername(response['name']);
           final mobile = response['mobile'].toString();
-     await AppPreferences.savephonenumber("+973$mobile");
+     await AppPreferences.savephonenumber("+973 $mobile");
         widget.onNext();
       }
     } catch (e) {
