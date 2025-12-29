@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import 'package:nadi_user_app/providers/theme_provider.dart';
-import 'package:nadi_user_app/services/notification_channel.dart';
+
 
 import 'package:nadi_user_app/routing/route_names.dart';
 import 'package:nadi_user_app/services/firebase_background_handler.dart';
@@ -23,7 +23,7 @@ void main() async {
   ///  STEP 2: INITIALIZE FIREBASE
   await Firebase.initializeApp();
   
-await setupNotificationChannel();
+// await setupNotificationChannel();
   ///  STEP 3: REGISTER BACKGROUND HANDLER
 
   FirebaseMessaging.onBackgroundMessage(

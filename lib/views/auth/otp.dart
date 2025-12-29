@@ -8,7 +8,7 @@ import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
-import 'package:nadi_user_app/services/notification_service.dart';
+
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:pinput/pinput.dart';
 
