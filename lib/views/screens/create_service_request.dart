@@ -255,11 +255,11 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                       context.pop();
                     },
                   ),
-                  Text(
+                 const Text(
                     "Create Servie Request",
                     style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
                   ),
-                  Text(""),
+                 const Text(""),
                 ],
               ),
             ),
@@ -274,7 +274,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                     crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
-                      Text(
+                     const Text(
                         "Servie category",
                         style: TextStyle(
                           fontSize: 18,
@@ -305,7 +305,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                         },
                       ),
                       SizedBox(height: 18),
-                      Text(
+                     const Text(
                         "Issuse Details",
                         style: TextStyle(
                           fontSize: 18,
@@ -335,7 +335,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                           });
                         },
                       ),
-                      SizedBox(height: 20),
+                     const SizedBox(height: 20),
                       TextField(
                         controller: descriptionController,
                         minLines: 5,
@@ -353,15 +353,15 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                         ),
                       ),
 
-                      SizedBox(height: 18),
-                      Text(
+                    const  SizedBox(height: 18),
+                    const  Text(
                         "Perfered Date",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      SizedBox(height: 10),
+                     const SizedBox(height: 10),
 
                       AppDatePicker(
                         controller: _dateController,
@@ -370,15 +370,15 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                           print("Selected Date: $date");
                         },
                       ),
-                      SizedBox(height: 18),
-                      Text(
+                    const  SizedBox(height: 18),
+                    const  Text(
                         "Media Upload (optional)",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      SizedBox(height: 15),
+                     const SizedBox(height: 15),
 
                       MediaUploadWidget(
                         images: selectedImages,
@@ -392,7 +392,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                         },
                       ),
 
-                      SizedBox(height: 15),
+                    const  SizedBox(height: 15),
                       // Container(
                       //   height: 49,
                       //   width: double.infinity,
@@ -445,7 +445,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                       //     ),
                       //   ),
                       // ),
-                      SizedBox(height: 15),
+                    const  SizedBox(height: 15),
                       RecordWidget(
                         onRecordComplete: (file) {
                           setState(() {
@@ -466,7 +466,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                               });
                             },
                           ),
-                          Text("Need immitated Asstience"),
+                         const Text("Need immitated Asstience"),
                         ],
                       ),
 

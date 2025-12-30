@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,8 +15,6 @@ import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/media_upload_widget.dart';
 import 'package:nadi_user_app/widgets/record_widget.dart';
 import 'package:shimmer/shimmer.dart';
-
-
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
@@ -187,7 +184,7 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                     AppCircleIconButton(
                       icon: Icons.arrow_back,
                       onPressed: () {
-                        //  Navigator.push(context, MaterialPageRoute(builder: (context)=>))
+                       
                         Navigator.pop(context);
                       },
                     ),
@@ -287,7 +284,7 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                           ),
                         ),
 
-                        SizedBox(height: 10),
+                      const  SizedBox(height: 10),
 
                         AppDatePicker(
                           controller: _dateController,
@@ -334,7 +331,7 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                                 });
                               },
                             ),
-                            Text("Need immitated Asstience"),
+                          const  Text("Need immitated Asstience"),
                           ],
                         ),
                         RecordWidget(
@@ -342,7 +339,7 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                             recordedFilePath = file?.path;
                           },
                         ),
-                        SizedBox(height: 15),
+                       const SizedBox(height: 15),
                         if (recordedFilePath != null && !isRecording) ...[
                            Container(
                             padding: const EdgeInsets.all(10),
@@ -376,9 +373,9 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                             ),
                           ),
 
-                          SizedBox(height: 15),
+                        const  SizedBox(height: 15),
                         ],
-                        SizedBox(height: 15),
+                      const  SizedBox(height: 15),
                         // ACTION BUTTONS
                         AppButton(
                           text: "Send Request",

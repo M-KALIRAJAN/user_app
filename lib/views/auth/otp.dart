@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -27,6 +26,7 @@ class _OtpState extends State<Otp> {
   final otpController = TextEditingController();
   final AuthService _authService = AuthService();
 
+
   bool isOtpError = false;
   bool isLoading = false;
   String? phoneNumber;
@@ -37,14 +37,6 @@ class _OtpState extends State<Otp> {
   void initState() {
     super.initState();
       
-    // START LISTENING FOR PUSH
-   
-    /// FOREGROUND LISTENER
-  /// REGISTER NOTIFICATION LISTENERS
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   NotificationService.initialize(context);
-    //   NotificationService.checkInitialMessage(context);
-    // });
 
     /// AUTO FILL OTP
     if (widget.receivedOtp != null) {
@@ -105,11 +97,12 @@ sendOtp(context);
       if (response["message"] == "OTP verified successfully") {
         final  completeuseraccount =
         await _authService.CompleteuserAccount(userId: userId);
-        AppLogger.success("completeuseraccount: $completeuseraccount");
-    
+        
+        AppLogger.warn("prettyString $completeuseraccount");
         if (completeuseraccount != null &&
             completeuseraccount.containsKey('token')) {
           await AppPreferences.saveToken(completeuseraccount['token']);
+           await AppPreferences.saveAccountType(completeuseraccount['accountType']);
         }
         context.push(RouteNames.accountcreated);
       } else {
@@ -178,7 +171,7 @@ sendOtp(context);
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+             const Text(
                 "Enter Verification code",
                 style: TextStyle(
                   fontSize: AppFontSizes.large,
@@ -186,7 +179,7 @@ sendOtp(context);
                 ),
               ),
               SizedBox(height: 20),
-              Text(
+             const Text(
                 "We have sent you a 4 digit verification code on",
                 style: TextStyle(
                   fontSize: AppFontSizes.small,
@@ -235,7 +228,7 @@ sendOtp(context);
                             _startTimer();
                             sendOtp(context);
                           },
-                          child: Text(
+                          child: const Text(
                             "Resend OTP",
                             style: TextStyle(
                               color: AppColors.btn_primery,

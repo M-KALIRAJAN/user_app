@@ -141,8 +141,8 @@ class _RecordWidgetState extends State<RecordWidget> {
                 icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
                 onPressed: playPauseVoice,
               ),
-              Text("Recorded Voice"),
-              Spacer(),
+             const Text("Recorded Voice"),
+             const  Spacer(),
               IconButton(
                 icon: Icon(Icons.delete, color: Colors.red),
                 onPressed: () {

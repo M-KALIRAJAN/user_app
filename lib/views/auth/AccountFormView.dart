@@ -9,7 +9,6 @@ import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/inputs/app_dropdown.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
 
-
 class AccountFormView extends StatefulWidget {
   final String accountType;
   final VoidCallback onNext;
@@ -30,19 +29,17 @@ class _AccountFormViewState extends State<AccountFormView> {
   final controller = SignupController();
   final AuthService _basicInfo = AuthService();
   bool _isLoading = false;
-  final String name ="";
+  final String name = "";
   Future<void> submitBasicInfo(BuildContext context) async {
     if (!widget.formKey.currentState!.validate()) return;
 
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (mounted) setState(() => _isLoading = true);
-    });
+    // Future.delayed(const Duration(milliseconds: 300), () {
 
+    // });
+    if (mounted) setState(() => _isLoading = true);
     controller.saveToModel();
     final data = controller.signupData!;
-   AppLogger.info(
-  "basic form data **************: ${data.toJson()}",
-);
+    AppLogger.info("basic form data **************: ${data.toJson()}");
     final userId = await AppPreferences.getUserId();
 
     try {
@@ -56,27 +53,28 @@ class _AccountFormViewState extends State<AccountFormView> {
       );
       if (mounted) setState(() => _isLoading = false);
       if (response["message"] == "Basic info saved") {
-         await AppPreferences.saveusername(response['name']);
-          final mobile = response['mobile'].toString();
-     await AppPreferences.savephonenumber("+973 $mobile");
+        await AppPreferences.saveusername(response['name']);
+        final mobile = response['mobile'].toString();
+        await AppPreferences.savephonenumber("+973 $mobile");
         widget.onNext();
       }
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
-    if (e is DioException) {
-  final errorMessage =
-      e.response?.data['message'] ??
-      e.response?.data.toString() ??
-      "Something went wrong";
+      if (e is DioException) {
+        final errorMessage =
+            e.response?.data['message'] ??
+            e.response?.data.toString() ??
+            "Something went wrong";
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(errorMessage),),
-  );
-} else {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("Something went wrong")),
-  );
-}
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+      } else {
+        if (mounted) setState(() => _isLoading = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Something went wrong")));
+      }
     }
   }
 
@@ -84,7 +82,6 @@ class _AccountFormViewState extends State<AccountFormView> {
   Widget build(BuildContext context) {
     return Form(
       key: widget.formKey,
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

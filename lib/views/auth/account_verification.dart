@@ -28,7 +28,7 @@ class _AccountVerificationState extends State<AccountVerification> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AppCircleIconButton(icon: Icons.arrow_back, onPressed: () {}),
-        Text(
+       const Text(
           "Sign up",
           style: TextStyle(
             fontSize: AppFontSizes.medium,
@@ -60,7 +60,7 @@ class _AccountVerificationState extends State<AccountVerification> {
     SizedBox(height: 15),
 
 
-    Text(
+  const  Text(
       "Secure Your Account With ID Verification",
       textAlign: TextAlign.center,
       style: TextStyle(
@@ -75,7 +75,7 @@ class _AccountVerificationState extends State<AccountVerification> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Text(
+          const  Text(
               """
 To ensure the highest level of security and trust within the Service Connect community, we require all users to complete a simple identity verification process. This helps protect against fraud and maintain a safe environment for everyone.
               """,

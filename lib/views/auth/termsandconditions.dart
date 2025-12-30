@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
-import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
@@ -58,7 +57,7 @@ class _TermsandconditionsState extends State<Termsandconditions> {
               const SizedBox(height: 16),
 
               /// Title
-              Text(
+             const Text(
                 "Terms & Conditions",
                 style: TextStyle(
                   fontSize: AppFontSizes.xLarge,
@@ -85,7 +84,7 @@ class _TermsandconditionsState extends State<Termsandconditions> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       /// Header
-                      Text(
+                     const Text(
                         "Our Commitments To You",
                         style: TextStyle(
                           color: AppColors.btn_primery,
@@ -110,7 +109,7 @@ There are many variations of passages of Lorem Ipsum available, but the majority
 
                       const Spacer(),
 
-                      Text(
+                     const Text(
                         "Read the full Terms & Conditions",
                         style: TextStyle(
                           color: AppColors.btn_primery,
@@ -142,7 +141,7 @@ There are many variations of passages of Lorem Ipsum available, but the majority
                     ),
 
                     Expanded(
-                      child: Text(
+                      child: const Text(
                         "I have read and agree to the Service Connect Terms & Conditions and Privacy Policy",
                         style: TextStyle(fontSize: AppFontSizes.small),
                       ),

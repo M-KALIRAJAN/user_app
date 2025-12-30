@@ -377,7 +377,7 @@ class _LoginViewState extends State<LoginView> {
               children: [
                 SizedBox(height: height * 0.07),
                 /// LOGO
-                Image.asset("assets/icons/logo.png", height: 140),
+                Image.asset("assets/icons/logo.png", height: 170),
                 SizedBox(height: height * 0.10),
                 /// FORM
                 Expanded(
@@ -413,10 +413,19 @@ class _LoginViewState extends State<LoginView> {
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               labelText: "Email Address",
+                              floatingLabelStyle: TextStyle(color: AppColors.btn_primery),
                               errorText: emailError,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
+
                               ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: AppColors.btn_primery,
+                                  width: 1.5
+                                )
+                              )
                             ),
                           ),
                           const SizedBox(height: 15),
@@ -425,10 +434,17 @@ class _LoginViewState extends State<LoginView> {
                             obscureText: _obscure,
                             decoration: InputDecoration(
                               labelText: "Password",
+                              floatingLabelStyle: const TextStyle(color: AppColors.btn_primery),
                               errorText: passwordError,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
+                                 focusedBorder: OutlineInputBorder(
+                                borderRadius:  BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: AppColors.btn_primery,
+                                  width: 1.5
+                                )),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscure
@@ -505,12 +521,17 @@ class _LoginViewState extends State<LoginView> {
                           const SizedBox(height: 10),
                           InkWell(
                             onTap: () {
-                               context.push(RouteNames.phonewithotp);
+                              context.push(RouteNames.phonewithotp);
                             },
-                            child: Center(child: Text("Sign In with OTP" ,style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.btn_primery,
-                                    ),),),
+                            child: Center(
+                              child: Text(
+                                "Sign In with OTP",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.btn_primery,
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),

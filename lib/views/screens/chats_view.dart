@@ -40,12 +40,12 @@ class _ChatsViewState extends State<ChatsView> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     AppCircleIconButton(icon: Icons.arrow_back, onPressed: () {context.pop(context);}),
-                    Text(
+                   const Text(
                       "Chats",
                       style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
                     ),
-                    Text(""),
-                    Text("")
+                   const Text(""),
+                   const Text("")
                   ],
                 ),
               ),
@@ -157,7 +157,7 @@ Padding(
   ),
 ),
 
- Spacer(),
+const Spacer(),
 
           ],
          ),

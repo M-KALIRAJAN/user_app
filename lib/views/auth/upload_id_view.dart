@@ -67,7 +67,7 @@ Future<void> UploadIDproof(BuildContext context) async {
   if (frontImage == null || backImage == null) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text("Please upload both front and back images"),
+        content: const Text("Please upload both front and back images"),
         backgroundColor: Colors.red,
       ),
     );
@@ -125,7 +125,7 @@ Future<void> UploadIDproof(BuildContext context) async {
                 children: [
                   AppCircleIconButton(icon: Icons.arrow_back, onPressed: () {}),
 
-                  Text(
+                 const  Text(
                     "Sign up",
                     style: TextStyle(
                       fontSize: AppFontSizes.medium,
@@ -148,7 +148,7 @@ Future<void> UploadIDproof(BuildContext context) async {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                    const  Text(
                         "Upload ID Card",
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,

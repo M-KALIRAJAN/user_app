@@ -47,7 +47,7 @@ class _RecentActivityState extends State<RecentActivity> {
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(width: 12),
+               const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     children: [
@@ -61,7 +61,7 @@ class _RecentActivityState extends State<RecentActivity> {
                     ],
                   ),
                 ),
-                SizedBox(width: 8),
+               const SizedBox(width: 8),
                 Container(
                   height: 22,
                   width: 60,
@@ -204,7 +204,7 @@ class _RecentActivityState extends State<RecentActivity> {
 
               const SizedBox(height: 12),
 
-              Divider(color: AppColors.borderGrey, height: 1),
+             const Divider(color: AppColors.borderGrey, height: 1),
               const SizedBox(height: 12),
             ],
           ),

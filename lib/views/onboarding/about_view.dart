@@ -4,17 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
-
 import 'package:nadi_user_app/widgets/app_back.dart';
-import 'package:nadi_user_app/providers/onbording_provider.dart'; // <-- provider file
-
+import 'package:nadi_user_app/providers/onbording_provider.dart'; 
 class AboutView extends ConsumerStatefulWidget {
   const AboutView({super.key});
-
   @override
   ConsumerState<AboutView> createState() => _AboutViewState();
 }
-
 class _AboutViewState extends ConsumerState<AboutView> {
   final PageController _controller = PageController();
   int currentIndex = 0;
@@ -50,7 +46,7 @@ class _AboutViewState extends ConsumerState<AboutView> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: Image.asset(
+                  child:  Image.asset(
                     "assets/images/about.png",
                     fit: BoxFit.cover,
                   ),
@@ -81,7 +77,7 @@ class _AboutViewState extends ConsumerState<AboutView> {
                         icon: Icons.arrow_back,
                         onPressed: () => Navigator.pop(context),
                       ),
-                      Text(
+                     const Text(
                         "About",
                         style: TextStyle(
                           fontSize: AppFontSizes.medium,
@@ -130,9 +126,7 @@ class _AboutViewState extends ConsumerState<AboutView> {
           ),
 
           const SizedBox(height: 10),
-
-          /// ---------------- TITLE ----------------
-          Text(
+        const  Text(
             "Nadi Bahrain Services",
             style: TextStyle(
               fontSize: AppFontSizes.xLarge,
@@ -142,8 +136,7 @@ class _AboutViewState extends ConsumerState<AboutView> {
           ),
 
           const SizedBox(height: 10),
-
-          /// ---------------- CONTENT ----------------
+   
           SizedBox(
             height: 250,
             child: aboutAsync.when(
@@ -190,7 +183,7 @@ class _AboutViewState extends ConsumerState<AboutView> {
 
           const SizedBox(height: 20),
 
-          /// ---------------- BOTTOM CONTROLS ----------------
+     
           Padding(
             padding: const EdgeInsets.all(10),
             child: Row(
@@ -198,7 +191,7 @@ class _AboutViewState extends ConsumerState<AboutView> {
               children: [
                 const SizedBox(width: 40),
 
-                /// Indicators
+       
                 aboutAsync.maybeWhen(
                   data: (textPages) => Row(
                     children: List.generate(

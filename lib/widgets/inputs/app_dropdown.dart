@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
 
 class AppDropdown extends StatelessWidget {
   final String label;
@@ -27,6 +28,10 @@ class AppDropdown extends StatelessWidget {
           fontSize: 14,
           color: Color(0xFF79747E),
         ),
+        floatingLabelStyle: const TextStyle(
+          
+          color: AppColors.btn_primery,
+        ) ,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -38,6 +43,10 @@ class AppDropdown extends StatelessWidget {
         ),
           focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: AppColors.btn_primery,
+            width: 1.5
+          )
         ),
         filled: true,
         fillColor: Colors.white,

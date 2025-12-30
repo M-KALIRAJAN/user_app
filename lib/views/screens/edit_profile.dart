@@ -153,11 +153,11 @@ class _EditProfileState extends State<EditProfile> {
                       context.pop(context);
                     },
                   ),
-                  Text(
+                 const Text(
                     "Edit Profile",
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
                   ),
-                  Text(""),
+                 const Text(""),
                 ],
               ),
             ),

@@ -69,18 +69,18 @@ class _MyServiceRequestState extends State<MyServiceRequest>  {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AppCircleIconButton(icon: Icons.arrow_back, onPressed: () {}),
-                  Text(
+                const  Text(
                     "MY Service Request",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: AppFontSizes.large,
                     ),
                   ),
-                  Text(""),
+                const  Text(""),
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Divider(),
 
             Expanded(

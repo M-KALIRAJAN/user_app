@@ -51,7 +51,7 @@ class _LanguangeViewState extends State<LanguangeView> {
                     child: Column(
                       children: [
                         const SizedBox(height: 20),
-                        Text(
+                      const  Text(
                           "Choose The Language",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -88,7 +88,7 @@ class _LanguangeViewState extends State<LanguangeView> {
 
                         const SizedBox(height: 10),
 
-                        Text(
+                       const Text(
                           "Your language preference can be changed any time in Settings",
 
                           style: TextStyle(

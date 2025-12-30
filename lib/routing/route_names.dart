@@ -75,20 +75,20 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouteNames.creterequest,
-      builder: (context, state) => CreateServiceRequest(),
+      builder: (context, state) =>const  CreateServiceRequest(),
     ),
     
     GoRoute(
       path: RouteNames.uploadcard,
-      builder: (context, state) => UploadIdView(),
+      builder: (context, state) => const UploadIdView(),
     ),
       GoRoute(
       path: RouteNames.viewalllogs,
-      builder: (context, state) => ViewAllLogs(),
+      builder: (context, state) => const ViewAllLogs(),
     ),
     GoRoute(
       path: RouteNames.welcome,
-      builder: (context, state) => WelcomeView(),
+      builder: (context, state) =>const  WelcomeView(),
     ),
     GoRoute(
       path: RouteNames.serviceRequestDetails,
@@ -109,15 +109,15 @@ final appRouter = GoRouter(
 
     GoRoute(
       path: RouteNames.servicerequestsubmitted,
-      builder: (context, state) => Servicerequest(),
+      builder: (context, state) => const Servicerequest(),
     ),
     GoRoute(
       path: RouteNames.Terms,
-      builder: (context, state) => Termsandconditions(),
+      builder: (context, state) => const Termsandconditions(),
     ),
     GoRoute(
       path: RouteNames.accountcreated,
-      builder: (context, state) => Accountcreated(),
+      builder: (context, state) =>const Accountcreated(),
     ),
    GoRoute(
   path: RouteNames.opt,
@@ -128,16 +128,16 @@ final appRouter = GoRouter(
 ),
 
     GoRoute(
-      builder: (context, state) => EditProfile(),
+      builder: (context, state) =>const EditProfile(),
       path: RouteNames.editprfoile,
     ),
     GoRoute(
       path: RouteNames.pointdetails,
-      builder: (context, state) => PointDetails(),
+      builder: (context, state) => const PointDetails(),
     ),
     GoRoute(
       path: RouteNames.pointdetails,
-      builder: (context, state) => PointDetails(),
+      builder: (context, state) => const PointDetails(),
     ),
 GoRoute(
   path: RouteNames.sendservicerequest,

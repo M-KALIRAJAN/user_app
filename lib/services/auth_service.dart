@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
@@ -20,39 +19,6 @@ class AuthService {
     }
   }
 
-  //selectIndividualAccount
-  // Future<bool> selectIndividualAccount() async {
-  //   try {
-  //     final prefs = await SharedPreferences.getInstance();
-  //     final accountTypeId = prefs.getString("individual_id");
-  //     AppLogger.warn("individualId $accountTypeId");
-
-  //     if (accountTypeId == null) return false;
-
-  //     final response = await _dio.post(
-  //       "user-account/",
-  //       data: {"accountTypeId": accountTypeId},
-  //     );
-
-  //     AppLogger.debug("selectIndividualAccount response: ${response.data}");
-
-  //     // Extract userId from response and store in SharedPreferences
-  //     final userId = response.data["userId"].toString();
-  //     if (userId != null) {
-  //       // await prefs.setString("userId", userId);
-
-  //       //  Store via AppPreferences
-  //       await AppPreferences.saveUserId(userId);
-
-  //       AppLogger.warn("userId saved in SharedPreferences: $userId");
-  //     }
-
-  //     return true;
-  //   } catch (e, st) {
-  //     AppLogger.error("Account type API error: $e\n$st");
-  //     return false;
-  //   }
-  // }
   Future<bool> selectAccount({required String accountTypeId}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -202,7 +168,7 @@ class AuthService {
 
       return response.data;
     } on DioException catch (e) {
-      /// 🔥 BACKEND ERROR MESSAGE
+      ///  BACKEND ERROR MESSAGE
       final message =
           e.response?.data?["message"] ??
           e.response?.data?["error"] ??
@@ -266,29 +232,24 @@ class AuthService {
       AppLogger.error("SendOTP******** : $e");
     }
   }
-Future<dynamic> Forgetpassword({
-  required String email,
-}) async {
-  try {
-    final response = await _dio.post(
-      "user-account/forgot-password",
-      data: {"email": email},
-    );
 
-    return response.data;
-  } catch (e) {
-    if (e is DioException) {
-      final msg = e.response?.data?['message'] ??
-          "Something went wrong";
-      throw msg; 
+  Future<dynamic> Forgetpassword({required String email}) async {
+    try {
+      final response = await _dio.post(
+        "user-account/forgot-password",
+        data: {"email": email},
+      );
+
+      return response.data;
+    } catch (e) {
+      if (e is DioException) {
+        final msg = e.response?.data?['message'] ?? "Something went wrong";
+        throw msg;
+      }
+      throw "Network error";
     }
-    throw "Network error";
   }
 
-
-
-  
-  }   
   Future<Map<String, dynamic>?> OTPwithphone({
     required String mobileNumber,
   }) async {

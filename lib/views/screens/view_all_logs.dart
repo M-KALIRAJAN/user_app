@@ -32,19 +32,19 @@ class _ViewAllLogsState extends State<ViewAllLogs> {
                   AppCircleIconButton(icon: Icons.arrow_back, onPressed: () {
                     context.pop();
                   }),
-                  Text(
+                 const Text(
                     "MY Recent Activity",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: AppFontSizes.large,
                     ),
                   ),
-                  Text(""),
+                const  Text(""),
                 ],
               ),
             ),
 
-            SizedBox(height: 10,),
+           const SizedBox(height: 10,),
 
              Expanded(child: RecentActivity( limitLogs: false,))
           ],

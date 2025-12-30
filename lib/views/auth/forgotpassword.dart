@@ -28,7 +28,7 @@ Future<void> Emailverify() async {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(response['message'] ?? "Email sent"),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.btn_primery,
       ),
     );
   } catch (e) {

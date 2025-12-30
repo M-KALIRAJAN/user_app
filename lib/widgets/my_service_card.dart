@@ -128,7 +128,7 @@ class ServiceRequestCard extends StatelessWidget {
                         ),
                       ),
                       onPressed: onViewDetails,
-                      child: Text(
+                      child:const  Text(
                         "View Details",
                         style: TextStyle(color: AppColors.btn_primery),
                       ),

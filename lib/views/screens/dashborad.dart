@@ -2,7 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/serviceProvider.dart';
-import 'package:nadi_user_app/services/notification_service.dart';
+
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -32,10 +32,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   void initState() {
     super.initState();
-     // START LISTENING FOR PUSH
-    //  WidgetsBinding.instance.addPostFrameCallback((_){
-    //   NotificationService.initialize(context);
-    //  }) ;
+   
     get_preferencevalue();
   }
 
@@ -303,7 +300,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 22),
-                        child: Text(
+                        child:const Text(
                           "Quick Action",
                           style: TextStyle(
                             color: Colors.black,
@@ -327,7 +324,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                             context.push(RouteNames.allservice);
                           },
                           style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                          child: Text(
+                          child: const Text(
                             "More..",
                             style: TextStyle(
                               color: Colors.white,
@@ -460,7 +457,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                               const Text(
                                   "Servie Overview",
                                   style: TextStyle(
                                     fontSize: 15,
@@ -485,7 +482,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                       padding: EdgeInsets.zero,
                                     ),
                                     child: Center(
-                                      child: Text(
+                                      child:const Text(
                                         "Details",
                                         style: TextStyle(color: Colors.white),
                                       ),
@@ -535,7 +532,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                         const Text(
                             "Recent Activity",
                             style: TextStyle(
                               fontSize: AppFontSizes.medium,

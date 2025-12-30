@@ -29,7 +29,7 @@ class HomeTabNavigator extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+            const  Text(
                 "Do you want to exit the app?",
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -38,7 +38,7 @@ class HomeTabNavigator extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 25),
+            const  SizedBox(height: 25),
 
               Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -49,7 +49,7 @@ class HomeTabNavigator extends StatelessWidget {
                       Navigator.pop(context);
                       exitApp = false;
                     },
-                    child: Text(
+                    child: const Text(
                       "Cancel",
                       style: TextStyle(
                         fontSize: 12,
@@ -58,14 +58,14 @@ class HomeTabNavigator extends StatelessWidget {
                       ),
                     ),
                   ),
- SizedBox(width: 20,),
+    const SizedBox(width: 20,),
                   // Exit button
                   GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
                       exitApp = true;
                     },
-                    child: Text(
+                    child: const Text(
                       "Exit",
                       style: TextStyle(
                         fontSize: 12,

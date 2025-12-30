@@ -117,7 +117,7 @@ class _MyprofileState extends State<Myprofile> {
                       },
                       color: Color.fromRGBO(183, 213, 205, 1),
                     ),
-                    Text(
+                   const Text(
                       "Profile Details",
                       style: TextStyle(
                         fontSize: 20,
@@ -125,10 +125,10 @@ class _MyprofileState extends State<Myprofile> {
                         color: Colors.white,
                       ),
                     ),
-                    Text(""),
+                    const Text(""),
                   ],
                 ),
-                SizedBox(height: 40),
+              const  SizedBox(height: 40),
                 Container(
                   height: 62,
                   padding: EdgeInsets.all(10),
@@ -143,7 +143,6 @@ class _MyprofileState extends State<Myprofile> {
                         children: [
                           const CircleAvatar(
                             radius: 22,
-
                             backgroundColor: Colors.blue,
                             child: Icon(
                               Icons.person,
