@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nadi_user_app/core/constants/app_consts.dart';
 
 class AppDatePicker extends StatelessWidget {
   final TextEditingController controller;
@@ -42,9 +43,14 @@ class AppDatePicker extends StatelessWidget {
       onTap: () => _pickDate(context),
       decoration: InputDecoration(
         labelText: label,
+          floatingLabelStyle: const TextStyle(color: AppColors.btn_primery),
         suffixIcon: const Icon(Icons.calendar_today),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
+        ),
+                                 focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide:  BorderSide(color:AppColors.btn_primery ,width: 1.5)
         ),
       ),
     );

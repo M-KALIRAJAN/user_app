@@ -290,8 +290,10 @@ class ServiceRequestDetails extends StatelessWidget {
         "description": "Our team is reviewing the details of your request.",
         "time": timestamps["accepted"],
         "status": _getStatus(
-          completed: technicianAccepted,
-          current: !technicianAccepted,
+          // completed: technicianAccepted,
+          // current: !technicianAccepted,
+          completed:timestamps["accepted"] != null,
+          current: false
         ),
       },
       {

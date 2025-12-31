@@ -238,9 +238,14 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                           value: selectedIssueId,
                           decoration: InputDecoration(
                             labelText: "Select Issuse*",
+                            floatingLabelStyle: const TextStyle(color: AppColors.btn_primery),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
+                               focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide:  BorderSide(color:AppColors.btn_primery ,width: 1.5)
+        ),
                             filled: true,
                             fillColor: Colors.white,
                           ),
@@ -265,11 +270,16 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                           keyboardType: TextInputType.multiline,
                           decoration: InputDecoration(
                             labelText: "Describe your issue…",
+                             floatingLabelStyle: const TextStyle(color: AppColors.btn_primery),
                             alignLabelWithHint: true,
                             contentPadding: EdgeInsets.all(14),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
+                              focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide:  BorderSide(color:AppColors.btn_primery ,width: 1.5)
+        ),
                             filled: true,
                             fillColor: Colors.white,
                           ),

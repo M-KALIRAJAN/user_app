@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
+import 'package:nadi_user_app/core/utils/app_image.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/models/UserLogModel%20.dart';
 import 'package:nadi_user_app/services/logs_service.dart';
@@ -140,16 +141,17 @@ class _RecentActivityState extends State<RecentActivity> {
                       child: SizedBox(
                         height: 30,
                         width: 30,
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl: "${ImageAssetUrl.baseUrl}${log.logo}",
-                            fit: BoxFit.contain,
-                            placeholder: (context, url) =>
-                                const CircularProgressIndicator(),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.person),
-                          ),
-                        ),
+                        child:  buildServiceIcon(serviceLogo: log.logo, size: 39, isAsset: true)
+                        // ClipOval(
+                        //   child: CachedNetworkImage(
+                        //     imageUrl: "${ImageAssetUrl.baseUrl}${log.logo}",
+                        //     fit: BoxFit.contain,
+                        //     placeholder: (context, url) =>
+                        //         const CircularProgressIndicator(),
+                        //     errorWidget: (context, url, error) =>
+                        //         const Icon(Icons.person),
+                        //   ),
+                        // ),
                       ),
                     ),
                   ),

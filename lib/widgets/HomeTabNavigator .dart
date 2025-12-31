@@ -89,30 +89,27 @@ class HomeTabNavigator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => showCustomExitDialog(context),
-      child: Navigator(
-        key: navigatorKey,
-        initialRoute: "/home",
-        onGenerateRoute: (settings) {
-          switch (settings.name) {
-            case "/home":
-              return MaterialPageRoute(
-                builder: (_) => Dashboard(onTabChange: onTabChange),
-              );
-
-            case "/pointdetails":
-              return MaterialPageRoute(
-                builder: (_) => PointDetails(),
-              );
-
-            default:
-              return MaterialPageRoute(
-                builder: (_) => Dashboard(onTabChange: onTabChange),
-              );
-          }
-        },
-      ),
+    return Navigator(
+      key: navigatorKey,
+      initialRoute: "/home",
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case "/home":
+            return MaterialPageRoute(
+              builder: (_) => Dashboard(onTabChange: onTabChange),
+            );
+    
+          case "/pointdetails":
+            return MaterialPageRoute(
+              builder: (_) => PointDetails(),
+            );
+    
+          default:
+            return MaterialPageRoute(
+              builder: (_) => Dashboard(onTabChange: onTabChange),
+            );
+        }
+      },
     );
   }
 }

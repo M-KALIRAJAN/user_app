@@ -1,8 +1,9 @@
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; 
+import 'package:nadi_user_app/models/Userdashboard_model.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/serviceProvider.dart';
-
+import 'package:nadi_user_app/services/home_view_service.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -14,11 +15,9 @@ import 'package:nadi_user_app/widgets/RecentActivity.dart';
 import 'package:nadi_user_app/widgets/app_card.dart';
 import 'package:nadi_user_app/widgets/pie_chart.dart';
 import 'package:nadi_user_app/widgets/request_cart.dart';
-
 class Dashboard extends ConsumerStatefulWidget {
   final Function(int) onTabChange;
   const Dashboard({super.key, required this.onTabChange});
-
   @override
   ConsumerState<Dashboard> createState() => _DashboardState();
 }
@@ -28,13 +27,23 @@ class _DashboardState extends ConsumerState<Dashboard> {
   bool isLoading = true;
   String userName = "";
   String accountType = "";
-
+  final HomeViewService _homeViewService = HomeViewService();
+  DateTime? lastBackPressed;
+  UserdashboardModel? dashboard;
   @override
   void initState() {
     super.initState();
-   
     get_preferencevalue();
+    getUserData();
   }
+
+  Future<void> getUserData() async {
+    final response = await _homeViewService.userDashboard();
+    setState(() {
+      dashboard = response;
+    });
+  }
+
 
   Future<void> get_preferencevalue() async {
     final type = await AppPreferences.getaccounttype();
@@ -88,7 +97,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                 ? AppColors.btn_primery
                 : text == "Pending"
                 ? Colors.grey
-                : Colors.red,
+                : AppColors.gold_coin,
           ),
         ),
       ],
@@ -174,7 +183,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                   ),
                                 ),
                                 Text(
-                                  "$userName",
+                                  dashboard?.name ?? "Loading...",
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -245,7 +254,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text(
-                            "$accountType points",
+                            dashboard?.account ?? "",
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 16,
@@ -274,7 +283,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                       width: 28,
                                     ),
                                     Text(
-                                      "5000",
+                                      "${dashboard?.points ?? 0}",
                                       style: TextStyle(
                                         fontSize: AppFontSizes.medium,
                                         fontWeight: FontWeight.bold,
@@ -300,7 +309,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 22),
-                        child:const Text(
+                        child: const Text(
                           "Quick Action",
                           style: TextStyle(
                             color: Colors.black,
@@ -376,9 +385,14 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                         width: 70,
                                         height: 70,
                                         child: logo != null
-                                            ? Image.network(
+                                            ? SvgPicture.network(
                                                 "${ImageBaseUrl.baseUrl}/$logo",
-                                                fit: BoxFit.cover,
+                                                fit: BoxFit.contain,
+                                                placeholderBuilder: (context) =>
+                                                    const Icon(
+                                                      Icons.image,
+                                                      size: 30,
+                                                    ),
                                               )
                                             : const Icon(
                                                 Icons.miscellaneous_services,
@@ -457,7 +471,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                               const Text(
+                                const Text(
                                   "Servie Overview",
                                   style: TextStyle(
                                     fontSize: 15,
@@ -482,7 +496,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                       padding: EdgeInsets.zero,
                                     ),
                                     child: Center(
-                                      child:const Text(
+                                      child: const Text(
                                         "Details",
                                         style: TextStyle(color: Colors.white),
                                       ),
@@ -506,7 +520,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                   children: [
                                     statusItem(Color(0xFF0A615A), "Completed"),
                                     statusItem(Colors.grey, "Pending"),
-                                    statusItem(Colors.red, "Cancel"),
+                                    statusItem(AppColors.gold_coin, "Inprogress"),
                                   ],
                                 ),
                               ],
@@ -532,7 +546,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                         const Text(
+                          const Text(
                             "Recent Activity",
                             style: TextStyle(
                               fontSize: AppFontSizes.medium,

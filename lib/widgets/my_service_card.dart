@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:nadi_user_app/core/utils/app_image.dart';
 
 class ServiceRequestCard extends StatelessWidget {
   final String title;
@@ -39,23 +41,23 @@ class ServiceRequestCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    height: 48,
-                    width: 48,
+                    height: 55,
+                    width: 55,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: serviceStatus == "submitted" ? AppColors.btn_primery: 
-                       serviceStatus == "paymentInProgress" ? const Color.fromARGB(255, 112, 214, 11):
-                       serviceStatus == "accepted" ? AppColors.btn_primery:
-                        serviceStatus == "technicianAssigned" ? AppColors.btn_primery: null,
+                      color: serviceStatus == "submitted"
+                          ? AppColors.button_secondary
+                          : serviceStatus == "paymentInProgress"
+                          ? const Color.fromARGB(255, 112, 214, 11)
+                          : serviceStatus == "accepted"
+                          ? AppColors.button_secondary
+                          : serviceStatus == "inProgress"
+                          ? Colors.grey
+                          : serviceStatus == "technicianAssigned"
+                          ? AppColors.btn_primery
+                          : null,
                     ),
-                    child: CachedNetworkImage(
-                      imageUrl: serviceLogo != null
-                          ? "${ImageBaseUrl.baseUrl}/${serviceLogo}"
-                          : "",
-                      height: 25,
-                      width: 25,
-                      fit: BoxFit.cover,
-                    ),
+                    child: buildServiceIcon(serviceLogo: serviceLogo, size: 39, isAsset: false),
                   ),
                   const SizedBox(width: 20),
                   Column(
@@ -95,10 +97,17 @@ class ServiceRequestCard extends StatelessWidget {
                     width: 135,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                         color: serviceStatus == "submitted" ? AppColors.btn_primery: 
-                       serviceStatus == "paymentInProgress" ? const Color.fromARGB(255, 112, 214, 11):
-                       serviceStatus == "accepted" ? AppColors.btn_primery:
-                        serviceStatus == "technicianAssigned" ? AppColors.btn_primery: null,
+                      color: serviceStatus == "submitted"
+                          ? AppColors.btn_primery
+                          : serviceStatus == "paymentInProgress"
+                          ? const Color.fromARGB(255, 112, 214, 11)
+                          : serviceStatus == "accepted"
+                          ? AppColors.btn_primery
+                          : serviceStatus == "inProgress"
+                          ? Colors.grey
+                          : serviceStatus == "technicianAssigned"
+                          ? AppColors.btn_primery
+                          : null,
                     ),
                     child: Center(
                       child: Text(
@@ -128,7 +137,7 @@ class ServiceRequestCard extends StatelessWidget {
                         ),
                       ),
                       onPressed: onViewDetails,
-                      child:const  Text(
+                      child: const Text(
                         "View Details",
                         style: TextStyle(color: AppColors.btn_primery),
                       ),

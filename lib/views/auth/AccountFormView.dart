@@ -33,9 +33,6 @@ class _AccountFormViewState extends State<AccountFormView> {
   Future<void> submitBasicInfo(BuildContext context) async {
     if (!widget.formKey.currentState!.validate()) return;
 
-    // Future.delayed(const Duration(milliseconds: 300), () {
-
-    // });
     if (mounted) setState(() => _isLoading = true);
     controller.saveToModel();
     final data = controller.signupData!;

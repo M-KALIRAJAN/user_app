@@ -32,7 +32,7 @@ class DioClient {
 //https://nadi-buhrain-render.onrender.com/uploads/
 
 class ImageBaseUrl {
-  static const baseUrl = "http://192.168.29.129:8080/uploads/";
+  static const baseUrl = "http://192.168.29.129:8080/uploads";
 }
 
 //https://nadi-buhrain-render.onrender.com
