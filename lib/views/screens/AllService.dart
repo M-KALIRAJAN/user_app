@@ -20,12 +20,13 @@ class _AllserviceState extends ConsumerState<Allservice> {
   @override
   Widget build(BuildContext context) {
     final services = ref.watch(serviceListProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background_clr,
       body: SafeArea(
         child: Column(
           children: [
-            // HEADER SECTION
+           
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
@@ -39,13 +40,13 @@ class _AllserviceState extends ConsumerState<Allservice> {
                     "Service",
                     style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
                   ),
-                  Text(""),
+                  const SizedBox(width: 24),
                 ],
               ),
             ),
-            Divider(),
-            SizedBox(height: 15),
-            // GRID SECTION
+            const Divider(),
+            const SizedBox(height: 15),
+        
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
@@ -61,56 +62,79 @@ class _AllserviceState extends ConsumerState<Allservice> {
                     final service = services[index];
                     final String name = service['name'] ?? '';
                     final String serviceId = service['_id'] ?? "";
-                    final String? Image = service['serviceImage'];
+                    final String? image = service['serviceImage'];
 
-                    return InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () {
-                        context.push(
-                          RouteNames.sendservicerequest,
-                          extra: {
-                            'title': name,
-                            "imagePath":
-                                "${ImageBaseUrl.baseUrl}/${service['serviceImage']}",
-                                'serviceId': serviceId,
-                          },
+                    return TweenAnimationBuilder(
+                      tween: Tween<double>(begin: 0.8, end: 1),
+                      duration: Duration(milliseconds: 300 + index * 100),
+                      curve: Curves.easeOut,
+                      builder: (context, double scale, child) {
+                        return Transform.scale(
+                          scale: scale,
+                          child: Opacity(
+                            opacity: scale,
+                            child: child,
+                          ),
                         );
                       },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.25),
-                              blurRadius: 5,
-                              spreadRadius: 1,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: CachedNetworkImage(
-                                imageUrl: "${ImageBaseUrl.baseUrl}/$Image",
-                                height: 80,
-                                width: 140,
-                                fit: BoxFit.cover,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          context.push(
+                            RouteNames.sendservicerequest,
+                            extra: {
+                              'title': name,
+                              'imagePath': "${ImageBaseUrl.baseUrl}/$image",
+                              'serviceId': serviceId,
+                              'heroTag': "serviceHero$index",
+                            },
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.25),
+                                blurRadius: 5,
+                                spreadRadius: 1,
                               ),
-                            ),
-
-                            const SizedBox(height: 10),
-                            Text(
-                              name,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Hero(
+                                  tag: "serviceHero$index",
+                                  child: CachedNetworkImage(
+                                    imageUrl: "${ImageBaseUrl.baseUrl}/$image",
+                                    height: 80,
+                                    width: 140,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => Container(
+                                      color: Colors.grey.shade200,
+                                      height: 80,
+                                      width: 140,
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  ),
+                                ),
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                              const SizedBox(height: 10),
+                              Text(
+                                name,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

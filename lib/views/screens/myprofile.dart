@@ -42,6 +42,20 @@ class _MyprofileState extends State<Myprofile> {
       AppLogger.error("UserId is null or empty");
       return;
     }
+     // Check if we already stored profile data
+  final cachedProfile = await AppPreferences.getProfileData();
+  if (cachedProfile != null) {
+    setState(() {
+      basicData = cachedProfile['data'];
+      addresses = cachedProfile['addresses'];
+      familyMembers = cachedProfile['familyMembers'];
+      nameCtrl.text = basicData?['basicInfo']['fullName'] ?? "";
+      emailCtrl.text = basicData?['basicInfo']['email'] ?? "";
+      phoneCtrl.text = basicData?['basicInfo']['mobileNumber'] ?? "";
+      addressCtrl.text = addresses.isNotEmpty ? addresses[0]['city'] ?? "" : "";
+    });
+    return; // use cached data, no API call
+  }
 
     final Map<String, dynamic>? profileResponse = await _profileService
         .profileData(userId: userId);
@@ -52,6 +66,8 @@ class _MyprofileState extends State<Myprofile> {
     }
 
     AppLogger.info("profiledata ${jsonEncode(profileResponse)}");
+      // Save to cache
+  await AppPreferences.saveProfileData(profileResponse);
 
     setState(() {
       basicData = profileResponse['data'] as Map<String, dynamic>;
@@ -78,6 +94,12 @@ class _MyprofileState extends State<Myprofile> {
     addressCtrl.dispose();
     super.dispose();
   }
+  @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  profiledata(); // reload each time widget appears
+}
+
 
   @override
   Widget build(BuildContext context) {

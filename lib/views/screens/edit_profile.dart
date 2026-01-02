@@ -119,6 +119,27 @@ class _EditProfileState extends State<EditProfile> {
       final response = await _profileService.EditProfile(payload: payload);
       
       AppLogger.success(" Edit response :$response");
+        // ✅ Update cache immediately
+    final updatedProfile = {
+      "data": {
+        "basicInfo": {
+          "fullName": fullNameController.text,
+          "email": emailController.text,
+          "mobileNumber": mobileController.text,
+        },
+     
+      },
+      "addresses": [
+        {
+          "building": buildingController.text,
+          "blockId": blockController.text,
+          "floor": floorController.text,
+          "aptNo": apartmentController.text,
+        }
+      ],
+      "familyMembers": familyMembers,
+    };
+     await AppPreferences.saveProfileData(updatedProfile);
           // Return true to indicate success
     if (mounted) {
       context.pop(true);  // <-- Pop with value

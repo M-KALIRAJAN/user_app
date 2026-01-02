@@ -7,7 +7,7 @@ import 'package:nadi_user_app/core/network/dio_client.dart';
 Widget buildServiceIcon({
   required String? serviceLogo,
   double size = 25,
-  bool isAsset = false, // 👈 determines which URL to use
+  bool isAsset = false, //  determines which URL to use
 }) {
   if (serviceLogo == null || serviceLogo.isEmpty) {
     return Icon(Icons.image, size: size);

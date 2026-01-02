@@ -2,11 +2,10 @@
 import 'package:dio/dio.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 
-
 class DioClient {
   static final Dio dio = Dio(
     BaseOptions(
-      baseUrl: "http://192.168.29.129:8080/api/",
+      baseUrl: "https://nadi-buhrain-render-site.onrender.com/api/",
       connectTimeout: const Duration(seconds: 9000),
       receiveTimeout: const Duration(seconds: 9000),
     ),
@@ -32,10 +31,9 @@ class DioClient {
 //https://nadi-buhrain-render.onrender.com/uploads/
 
 class ImageBaseUrl {
-  static const baseUrl = "http://192.168.29.129:8080/uploads";
+  static const baseUrl = "https://nadi-buhrain-render-site.onrender.com/uploads";
 }
-
 //https://nadi-buhrain-render.onrender.com
 class ImageAssetUrl{
-    static const baseUrl = "http://192.168.29.129:8080";
+    static const baseUrl = "https://nadi-buhrain-render-site.onrender.com";
 }

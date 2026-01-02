@@ -5,20 +5,23 @@ import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
-import 'package:nadi_user_app/providers/onbording_provider.dart'; 
+import 'package:nadi_user_app/providers/onbording_provider.dart';
+
 class AboutView extends ConsumerStatefulWidget {
   const AboutView({super.key});
   @override
   ConsumerState<AboutView> createState() => _AboutViewState();
 }
+
 class _AboutViewState extends ConsumerState<AboutView> {
   final PageController _controller = PageController();
   int currentIndex = 0;
-  
-   Future<void> goToLogin() async{
-   await AppPreferences.setAboutSeen(true);
-   context.go(RouteNames.login);
-   }
+
+  Future<void> goToLogin() async {
+    await AppPreferences.setAboutSeen(true);
+    context.go(RouteNames.login);
+  }
+
   void nextPage(int total) {
     if (currentIndex < total - 1) {
       _controller.nextPage(
@@ -26,7 +29,6 @@ class _AboutViewState extends ConsumerState<AboutView> {
         curve: Curves.easeInOut,
       );
     } else {
-     
       goToLogin();
     }
   }
@@ -46,7 +48,7 @@ class _AboutViewState extends ConsumerState<AboutView> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child:  Image.asset(
+                  child: Image.asset(
                     "assets/images/about.png",
                     fit: BoxFit.cover,
                   ),
@@ -77,7 +79,7 @@ class _AboutViewState extends ConsumerState<AboutView> {
                         icon: Icons.arrow_back,
                         onPressed: () => Navigator.pop(context),
                       ),
-                     const Text(
+                      const Text(
                         "About",
                         style: TextStyle(
                           fontSize: AppFontSizes.medium,
@@ -126,7 +128,7 @@ class _AboutViewState extends ConsumerState<AboutView> {
           ),
 
           const SizedBox(height: 10),
-        const  Text(
+          const Text(
             "Nadi Bahrain Services",
             style: TextStyle(
               fontSize: AppFontSizes.xLarge,
@@ -136,21 +138,16 @@ class _AboutViewState extends ConsumerState<AboutView> {
           ),
 
           const SizedBox(height: 10),
-   
+
           SizedBox(
             height: 250,
             child: aboutAsync.when(
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
-              error: (err, _) => const Center(
-                child: Text("Failed to load content"),
-              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, _) =>
+                  const Center(child: Text("Failed to load content")),
               data: (textPages) {
                 if (textPages.isEmpty) {
-                  return const Center(
-                    child: Text("No content available"),
-                  );
+                  return const Center(child: Text("No content available"));
                 }
 
                 return PageView.builder(
@@ -161,17 +158,36 @@ class _AboutViewState extends ConsumerState<AboutView> {
                       currentIndex = index;
                     });
                   },
+                  // Inside your PageView.builder itemBuilder:
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.all(15),
-                      child: Text(
-                        textPages[index],
-                        textAlign: TextAlign.justify,
-                        style: TextStyle(
-                          fontSize: AppFontSizes.small,
-                          height: 1.5,
-                          fontFamily: "Poppins",
-                          color: Colors.black87,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 400),
+                        transitionBuilder: (child, animation) {
+                          final offsetAnimation = Tween<Offset>(
+                            begin: const Offset(0.0, 0.3),
+                            end: Offset.zero,
+                          ).animate(animation);
+
+                          return FadeTransition(
+                            opacity: animation,
+                            child: SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: Text(
+                          textPages[index],
+                          key: ValueKey(textPages[index]),
+                          textAlign: TextAlign.justify,
+                          style: TextStyle(
+                            fontSize: AppFontSizes.small,
+                            height: 1.5,
+                            fontFamily: "Poppins",
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
                     );
@@ -183,7 +199,6 @@ class _AboutViewState extends ConsumerState<AboutView> {
 
           const SizedBox(height: 20),
 
-     
           Padding(
             padding: const EdgeInsets.all(10),
             child: Row(
@@ -191,7 +206,6 @@ class _AboutViewState extends ConsumerState<AboutView> {
               children: [
                 const SizedBox(width: 40),
 
-       
                 aboutAsync.maybeWhen(
                   data: (textPages) => Row(
                     children: List.generate(

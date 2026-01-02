@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppPreferences {
@@ -41,6 +43,23 @@ class AppPreferences {
     await prefs.remove(_rememberEmailkey);
     await prefs.setBool(_rememberMeKey, false);
   }
+
+  // -- save profile data ---
+
+  // Save
+static Future<void> saveProfileData(Map<String, dynamic> data) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString('profileData', jsonEncode(data));
+}
+
+// Get
+static Future<Map<String, dynamic>?> getProfileData() async {
+  final prefs = await SharedPreferences.getInstance();
+  final data = prefs.getString('profileData');
+  if (data == null) return null;
+  return jsonDecode(data);
+}
+
 
   // ================== TOKEN ==================
   static Future<void> saveToken(String token) async {
