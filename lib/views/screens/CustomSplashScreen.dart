@@ -83,7 +83,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
 
       // IMAGE
       else if (image != null && image.toString().isNotEmpty) {
-        imageUrl = "${ImageBaseUrl.baseUrl}$image";
+        imageUrl = "${ImageBaseUrl.baseUrl}/$image";
         debugPrint("🖼 Image URL => $imageUrl");
       }
 

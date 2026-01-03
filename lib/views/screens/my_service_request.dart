@@ -35,6 +35,7 @@ class _MyServiceRequestState extends State<MyServiceRequest>  {
       final response = await _myService.myallservices();
       if (!mounted) return;
       AppLogger.warn("myserviceslist ${jsonEncode(response)}");
+      debugPrint("myserviceslist ${jsonEncode(response)}");
       setState(() {
         MyServices = response ?? [];
         isLoading = false;

@@ -6,7 +6,6 @@ import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/providers/onbording_provider.dart';
-
 class AboutView extends ConsumerStatefulWidget {
   const AboutView({super.key});
   @override

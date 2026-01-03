@@ -1,4 +1,5 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart'; 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nadi_user_app/core/utils/CommonNetworkImage.dart';
 import 'package:nadi_user_app/models/Userdashboard_model.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/serviceProvider.dart';
@@ -15,6 +16,7 @@ import 'package:nadi_user_app/widgets/RecentActivity.dart';
 import 'package:nadi_user_app/widgets/app_card.dart';
 import 'package:nadi_user_app/widgets/pie_chart.dart';
 import 'package:nadi_user_app/widgets/request_cart.dart';
+
 class Dashboard extends ConsumerStatefulWidget {
   final Function(int) onTabChange;
   const Dashboard({super.key, required this.onTabChange});
@@ -43,7 +45,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
       dashboard = response;
     });
   }
-
 
   Future<void> get_preferencevalue() async {
     final type = await AppPreferences.getaccounttype();
@@ -168,9 +169,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                 ),
                               ),
                             ),
-
                             const SizedBox(width: 12),
-
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -384,19 +383,24 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                       child: AppCard(
                                         width: 70,
                                         height: 70,
-                                        child: logo != null
-                                            ? SvgPicture.network(
-                                                "${ImageBaseUrl.baseUrl}/$logo",
-                                                fit: BoxFit.contain,
-                                                placeholderBuilder: (context) =>
-                                                    const Icon(
-                                                      Icons.image,
-                                                      size: 30,
-                                                    ),
-                                              )
-                                            : const Icon(
-                                                Icons.miscellaneous_services,
-                                              ),
+                                        child: CommonNetworkImage(
+                                          imageUrl:
+                                              "${ImageBaseUrl.baseUrl}/$logo",
+                                         size: 30,
+                                        ),
+                                        // logo != null
+                                        //     ? SvgPicture.network(
+                                        //         "${ImageBaseUrl.baseUrl}/$logo",
+                                        //         fit: BoxFit.contain,
+                                        //         placeholderBuilder: (context) =>
+                                        //             const Icon(
+                                        //               Icons.image,
+                                        //               size: 30,
+                                        //             ),
+                                        //       )
+                                        //     : const Icon(
+                                        //         Icons.miscellaneous_services,
+                                        //       ),
                                       ),
                                     ),
                                     SizedBox(
@@ -416,7 +420,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
                             },
                           ),
                   ),
-
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     child: Row(
@@ -520,7 +523,10 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                   children: [
                                     statusItem(Color(0xFF0A615A), "Completed"),
                                     statusItem(Colors.grey, "Pending"),
-                                    statusItem(AppColors.gold_coin, "Inprogress"),
+                                    statusItem(
+                                      AppColors.gold_coin,
+                                      "Inprogress",
+                                    ),
                                   ],
                                 ),
                               ],

@@ -24,7 +24,6 @@ final aboutContentProvider = FutureProvider<List<String>>((ref) async {
     
     final apiContent = List<String>.from(data["data"]["content"]);
     final apiUpdatedAt = data["data"]["updatedAt"];
-
     //  Update Hive only if content is new
     if (hiveData == null ||
         hiveData.isEmpty ||

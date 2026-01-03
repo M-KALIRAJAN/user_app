@@ -1,9 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:nadi_user_app/core/utils/app_image.dart';
+import 'package:nadi_user_app/core/utils/CommonNetworkImage.dart';
 
 class ServiceRequestCard extends StatelessWidget {
   final String title;
@@ -41,8 +39,8 @@ class ServiceRequestCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    height: 55,
-                    width: 55,
+                    height: 58,
+                    width: 58,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: serviceStatus == "submitted"
@@ -54,10 +52,15 @@ class ServiceRequestCard extends StatelessWidget {
                           : serviceStatus == "inProgress"
                           ? Colors.grey
                           : serviceStatus == "technicianAssigned"
-                          ? AppColors.btn_primery
+                          ? const Color.fromARGB(255, 160, 227, 208)
                           : null,
                     ),
-                    child: buildServiceIcon(serviceLogo: serviceLogo, size: 39, isAsset: false),
+                    child:
+                  
+                        CommonNetworkImage(
+                          imageUrl: "${ImageBaseUrl.baseUrl}/$serviceLogo",
+                          size: 10,
+                        ),
                   ),
                   const SizedBox(width: 20),
                   Column(
