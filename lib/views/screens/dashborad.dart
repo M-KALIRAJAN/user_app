@@ -38,6 +38,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
     super.initState();
     get_preferencevalue();
     getUserData();
+     Future.microtask(() {
+    ref.read(serviceListProvider.notifier).refresh();
+  });
   }
 
   Future<void> getUserData() async {
