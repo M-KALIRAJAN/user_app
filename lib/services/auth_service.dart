@@ -129,7 +129,6 @@ class AuthService {
     }
   }
   // Upload ID
-
   Future<Map<String, dynamic>?> uploadIdProof({
     required File frontImage,
     required File backImage,
@@ -252,11 +251,12 @@ class AuthService {
 
   Future<Map<String, dynamic>?> OTPwithphone({
     required String mobileNumber,
+    required String fcmToken
   }) async {
     try {
       final response = await _dio.post(
         "user-account/send-signin-otp",
-        data: {"mobileNumber": mobileNumber},
+        data: {"mobileNumber": mobileNumber ,"fcmToken":fcmToken},
       );
       return response.data;
     } catch (e) {

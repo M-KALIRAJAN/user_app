@@ -14,6 +14,7 @@ class AppPreferences {
   static const String _fcmtokenkey = "fcmtoken";
   static const String _rememberMeKey = "remember_me";
   static const String _rememberEmailkey = "remember_email";
+static const String _pointsKey = "points";
 
 
   // --- Remember Flag --
@@ -105,6 +106,16 @@ static Future<String> getfcmToken()async{
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_aboutSeenKey) ?? false;
   }
+static Future<void> savePoints(int value) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setInt(_pointsKey, value);
+}
+
+static Future<int> getPoints() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getInt(_pointsKey) ?? 0;
+}
+
 
   // ================== USER ID ==================
   static Future<void> saveUserId(String userId) async {

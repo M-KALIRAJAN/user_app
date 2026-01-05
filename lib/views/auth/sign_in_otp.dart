@@ -299,8 +299,9 @@ class _SignInOtpState extends State<SignInOtp> {
   Future<void> sendOtp() async {
     try {
       final mobileNumber = _phoneController.text;
+      final fcmToken = await AppPreferences.getfcmToken();
       final response =
-          await _authService.OTPwithphone(mobileNumber: mobileNumber);
+          await _authService.OTPwithphone(mobileNumber: mobileNumber,fcmToken:fcmToken);
       AppLogger.warn("phone with otp $response");
 
       if (response != null) {

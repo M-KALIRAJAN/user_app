@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nadi_user_app/core/utils/CommonNetworkImage.dart';
+import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/models/Userdashboard_model.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/serviceProvider.dart';
@@ -41,9 +42,13 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
   Future<void> getUserData() async {
     final response = await _homeViewService.userDashboard();
+    await AppPreferences.saveusername(response.name ?? "");
+  await AppPreferences.savePoints(response.points ?? 0);
+  AppLogger.warn("getUserData********* ${response.name}");
     setState(() {
       dashboard = response;
     });
+   
   }
 
   Future<void> get_preferencevalue() async {

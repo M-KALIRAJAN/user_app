@@ -65,7 +65,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
 
       // VIDEO
       if (video != null && video.toString().isNotEmpty) {
-        videoUrl = "${ImageBaseUrl.baseUrl}$video";
+        videoUrl = "${ImageBaseUrl.baseUrl}/$video";
         debugPrint("🎥 VIDEO URL => $videoUrl");
 
         _videoController = VideoPlayerController.networkUrl(
@@ -79,7 +79,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
 
         debugPrint("▶️ Video initialized & playing");
       }
-
       // IMAGE
       else if (image != null && image.toString().isNotEmpty) {
         imageUrl = "${ImageBaseUrl.baseUrl}/$image";

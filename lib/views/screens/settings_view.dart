@@ -97,7 +97,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
       // Optional: reset theme to system
       ref.read(themeProvider.notifier).changeTheme(ThemeMode.system);
 
-      context.go(RouteNames.login);
+      context.go(RouteNames.splash);
     }
 
     return Scaffold(
@@ -218,7 +218,9 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                     settingItem(
                       text: "History",
                       icon: Image.asset("assets/icons/menu.png"),
-                      onTap: () {},
+                      onTap: () {
+                        context.push(RouteNames.viewalllogs);
+                      },
                     ),
                     const SizedBox(height: 15),
                     settingItem(
@@ -264,7 +266,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                   ref
                                       .read(themeProvider.notifier)
                                       .changeTheme(ThemeMode.light);
-                                  ;
+                                  
                                 },
                                 child: themeOption("Light"),
                               ),

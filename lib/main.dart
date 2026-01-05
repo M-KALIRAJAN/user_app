@@ -6,7 +6,7 @@ import 'package:hive_flutter/adapters.dart';
 
 import 'package:nadi_user_app/providers/theme_provider.dart';
 
-
+import 'package:flutter/services.dart';
 import 'package:nadi_user_app/routing/route_names.dart';
 import 'package:nadi_user_app/services/firebase_background_handler.dart';
 import 'package:nadi_user_app/services/notification_service.dart';
@@ -19,6 +19,10 @@ Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+    SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   ///  STEP 2: INITIALIZE FIREBASE
   await Firebase.initializeApp();

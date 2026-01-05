@@ -14,19 +14,29 @@ class PointDetails extends StatefulWidget {
 
 class _PointDetailsState extends State<PointDetails> {
   String accountType = "";
+  String userName = "";
+  int points = 0;
 
   @override
   void initState() {
     super.initState();
-    _accountcheck();
+    _loadUserData();
   }
-  Future<void> _accountcheck() async {
-     final type = await AppPreferences.getaccounttype();
+
+  Future<void> _loadUserData() async {
+    final type = await AppPreferences.getaccounttype();
+    final name = await AppPreferences.getusername();
+    final savedPoints = await AppPreferences.getPoints();
+
     if (!mounted) return;
+
     setState(() {
-        accountType = type ?? "IA";
+      accountType = type ?? "IA";
+      userName = name ?? "";
+      points = savedPoints;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,7 +152,7 @@ class _PointDetailsState extends State<PointDetails> {
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
+                                  children: [
                                     Text(
                                       "Welcome",
                                       style: TextStyle(
@@ -151,8 +161,10 @@ class _PointDetailsState extends State<PointDetails> {
                                       ),
                                     ),
                                     Text(
-                                      "Muhamad Musin!",
-                                      style: TextStyle(
+                                      userName.isEmpty
+                                          ? "Loading..."
+                                          : userName,
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -190,7 +202,7 @@ class _PointDetailsState extends State<PointDetails> {
                       SizedBox(height: 10),
                       Center(
                         child: Text(
-                          "5000",
+                           points.toString(),
                           style: TextStyle(
                             fontSize: 26,
                             color: Colors.white,
