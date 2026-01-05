@@ -262,11 +262,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/controllers/login_controller.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
-import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
-import 'package:nadi_user_app/services/notification_service.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class LoginView extends StatefulWidget {

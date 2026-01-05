@@ -7,7 +7,6 @@ class AppColors {
   static const gold_coin = const Color(0xFFD59B08);
   static const background_clr = Color.fromRGBO(243, 243, 243, 1);
 
-
 }
 
 class AppFontSizes {
@@ -16,3 +15,4 @@ class AppFontSizes {
   static const double large = 20.0;
   static const double xLarge = 24.0;
 }
+

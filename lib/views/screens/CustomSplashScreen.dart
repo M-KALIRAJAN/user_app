@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nadi_user_app/services/notification_service.dart';
 import 'package:video_player/video_player.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 

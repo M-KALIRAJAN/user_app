@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
-
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/services/auth_service.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
-
 class Forgotpassword extends StatefulWidget {
   const Forgotpassword({super.key});
-
   @override
   State<Forgotpassword> createState() => _ForgotpasswordState();
 }
-
 class _ForgotpasswordState extends State<Forgotpassword> {
-
   final _formKey = GlobalKey<FormState>();
  final _emailCtrl = TextEditingController();
  AuthService _authService = AuthService();
@@ -43,11 +38,9 @@ Future<void> Emailverify() async {
   }
 }
 
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
@@ -71,15 +64,11 @@ Future<void> Emailverify() async {
                     child: Column(
                       children: [
                         SizedBox(height: size.height * 0.03),
-
                         /// LOGO (Responsive)
                         Image.asset(
                           "assets/images/logo.png",
                           height: size.height * 0.45,
                         ),
-
-                        
-
                         /// WHITE CONTAINER
                         Expanded(
                           child: Container(
@@ -105,18 +94,14 @@ Future<void> Emailverify() async {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-
                                   const SizedBox(height: 15),
-
                                   AppTextField(
                                     label: "Enter Email",
                                     keyboardType:
                                         TextInputType.emailAddress,
                                         controller: _emailCtrl,
                                   ),
-
                                   const SizedBox(height: 30),
-
                                   AppButton(
                                     height: 48,
                                     width: double.infinity,
@@ -128,7 +113,6 @@ Future<void> Emailverify() async {
                                     },
                                     text: "Login",
                                   ),
-
                                   const Spacer(),
                                 ],
                               ),
