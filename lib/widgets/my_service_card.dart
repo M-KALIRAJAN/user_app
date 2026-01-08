@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/core/utils/CommonNetworkImage.dart';
-
+import 'package:intl/intl.dart';
 class ServiceRequestCard extends StatelessWidget {
   final String title;
   final String date;
@@ -23,134 +23,164 @@ class ServiceRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+      String formatDate(String isoDate) {
+    final dateTime = DateTime.parse(isoDate);
+    return DateFormat('MMMM d, yyyy').format(dateTime);
+  }
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 10),
-      child: Container(
-        height: 177,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 58,
-                    width: 58,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: serviceStatus == "submitted"
-                          ? AppColors.button_secondary
-                          : serviceStatus == "paymentInProgress"
-                          ? const Color.fromARGB(255, 112, 214, 11)
-                          : serviceStatus == "accepted"
-                          ? AppColors.button_secondary
-                          : serviceStatus == "inProgress"
-                          ? Colors.grey
-                          : serviceStatus == "technicianAssigned"
-                          ? const Color.fromARGB(255, 160, 227, 208)
-                          : null,
-                    ),
-                    child:
-                  
-                        CommonNetworkImage(
-                          imageUrl: "${ImageBaseUrl.baseUrl}/$serviceLogo",
-                          size: 10,
-                        ),
-                  ),
-                  const SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title),
-                      const SizedBox(height: 5),
-                      Text(
-                        date,
-                        style: TextStyle(
-                          fontSize: AppFontSizes.small,
-                          color: AppColors.borderGrey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10 ),
+            child: Container(
+              decoration: BoxDecoration(
+               borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15)
+               ),
+                color: Colors.white,
               ),
-              const SizedBox(height: 10),
-              Text(
-                description,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: AppFontSizes.small,
-                  color: AppColors.borderGrey,
+              child: Padding(
+                padding: const EdgeInsets.all(12), 
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: 58,
+                          width: 58,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: serviceStatus == "submitted"
+                                ? AppColors.button_secondary
+                                : serviceStatus == "paymentInProgress"
+                                ? const Color.fromARGB(255, 112, 214, 11)
+                                : serviceStatus == "accepted"
+                                ? AppColors.button_secondary
+                                : serviceStatus == "inProgress"
+                                ? Colors.grey
+                                : serviceStatus == "technicianAssigned"
+                                ? const Color.fromARGB(255, 160, 227, 208)
+                                : null,
+                          ),
+                          child: CommonNetworkImage(
+                            imageUrl: "${ImageBaseUrl.baseUrl}/$serviceLogo",
+                            size: 10,
+                          ),
+                        ),
+      
+                        const SizedBox(width: 14),
+      
+                        /// Title & Date
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                date,
+                                style: TextStyle(
+                                  fontSize: AppFontSizes.small,
+                                  color: AppColors.borderGrey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+      
+                        /// Status Chip
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(35),
+                            color: serviceStatus == "submitted"
+                                ? AppColors.btn_primery
+                                : serviceStatus == "paymentInProgress"
+                                ? const Color.fromARGB(255, 112, 214, 11)
+                                : serviceStatus == "accepted"
+                                ? AppColors.btn_primery
+                                : serviceStatus == "inProgress"
+                                ? Colors.grey
+                                : serviceStatus == "technicianAssigned"
+                                ? AppColors.button_secondary
+                                : null,
+                          ),
+                          child: Text(
+                            serviceStatus == "technicianAssigned"
+                                ? "Assigned" 
+                                :serviceStatus == "inProgress" ? "InProgress"
+                                 :serviceStatus == "accepted" ? "Accepted"
+                                  :serviceStatus == "submitted" ? "Submitted"
+                                : serviceStatus,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+      
+                    const SizedBox(height: 8),
+      
+                    Text(
+                      description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: AppFontSizes.small,
+                        color: AppColors.borderGrey,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 10),
-              Container(height: 1, color: AppColors.borderGrey),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    height: 32,
-                    width: 135,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: serviceStatus == "submitted"
-                          ? AppColors.btn_primery
-                          : serviceStatus == "paymentInProgress"
-                          ? const Color.fromARGB(255, 112, 214, 11)
-                          : serviceStatus == "accepted"
-                          ? AppColors.btn_primery
-                          : serviceStatus == "inProgress"
-                          ? Colors.grey
-                          : serviceStatus == "technicianAssigned"
-                          ? AppColors.btn_primery
-                          : null,
-                    ),
-                    child: Center(
-                      child: Text(
-                        serviceStatus,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(
-                    height: 31,
-                    width: 135,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: AppColors.btn_primery,
-                          width: 1,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: onViewDetails,
-                      child: const Text(
-                        "View Details",
-                        style: TextStyle(color: AppColors.btn_primery),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
+      
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: InkWell(
+              onTap: onViewDetails,
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              ),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.btn_primery,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(12),
+                    bottomRight: Radius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  "View Details",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

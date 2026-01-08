@@ -46,14 +46,12 @@ class _BottomNavState extends State<BottomNav> {
       setState(() => _selectedIndex = 0);
       return false;
     }
-
     //  If Home has inner pages → pop them
     if (homeNavigatorKey.currentState != null &&
         homeNavigatorKey.currentState!.canPop()) {
       homeNavigatorKey.currentState!.pop();
       return false;
     }
-
     //  Dashboard root → double tap to exit
     DateTime now = DateTime.now();
     if (lastBackPressed == null ||

@@ -5,7 +5,7 @@ import 'package:nadi_user_app/preferences/preferences.dart';
 class DioClient {
   static final Dio dio = Dio(
     BaseOptions(
-      baseUrl: "https://nadi-buhrain-render-site.onrender.com/api/",
+      baseUrl: "https://srv1252888.hstgr.cloud/api/",
       connectTimeout: const Duration(seconds: 100),
       receiveTimeout: const Duration(seconds: 100),
     ),
@@ -31,10 +31,10 @@ class DioClient {
 //http://192.168.29.129:8080/uploads/
 
 class ImageBaseUrl {
-  static const baseUrl = "https://nadi-buhrain-render-site.onrender.com/uploads";
+  static const baseUrl = "https://srv1252888.hstgr.cloud/uploads";
 }
 //https://nadi-buhrain-render.onrender.com
 class ImageAssetUrl{
-    static const baseUrl = "https://nadi-buhrain-render-site.onrender.com";
+    static const baseUrl = "https://srv1252888.hstgr.cloud";
 }
  

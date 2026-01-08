@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
@@ -28,6 +29,29 @@ class _MyServiceRequestState extends State<MyServiceRequest>  {
     myserviceslist();
 
   }
+  
+
+String formatDate(String date) {
+  if (date.isEmpty) return "";
+
+  try {
+    // Backend format
+    final inputFormat = DateFormat('yyyy-MM-dd, HH:mm');
+
+    // UI format (SHORT MONTH)
+    final outputFormat = DateFormat('d MMM yyyy hh:mm a');
+
+    final DateTime parsedDate = inputFormat.parse(date);
+
+    return outputFormat.format(parsedDate);
+  } catch (e) {
+    return date;
+  }
+}
+
+
+
+
 
   Future<void> myserviceslist() async {
     AppLogger.warn("************************************");
@@ -99,7 +123,7 @@ class _MyServiceRequestState extends State<MyServiceRequest>  {
                         final service = MyServices[index];
                         return ServiceRequestCard(
                           title: service["serviceRequestID"] ?? "",
-                          date: service["createdAt"] ?? "",
+                         date: formatDate(service["createdAt"] ?? ""),
                           description: service["feedback"] ?? "",
                           serviceStatus: service['serviceStatus'] ?? "",
                           serviceLogo:
