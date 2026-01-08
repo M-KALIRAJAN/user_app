@@ -11,6 +11,7 @@ import 'package:nadi_user_app/services/home_view_service.dart';
 import 'package:nadi_user_app/services/request_service.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/app_date_picker.dart';
+import 'package:nadi_user_app/widgets/app_time_picker.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/media_upload_widget.dart';
 import 'package:nadi_user_app/widgets/record_widget.dart';
@@ -23,6 +24,7 @@ class CreateServiceRequest extends StatefulWidget {
   @override
   State<CreateServiceRequest> createState() => _CreateServiceRequestState();
 }
+
 class _CreateServiceRequestState extends State<CreateServiceRequest> {
   final ImagePicker _picker = ImagePicker();
   List<XFile> selectedImages = [];
@@ -36,6 +38,8 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
   final TextEditingController _dateController = TextEditingController();
   RequestSerivices _requestSerivices = RequestSerivices();
   HomeViewService _homeViewService = HomeViewService();
+  final TextEditingController _timeController =
+      TextEditingController(); // <-- Add this
 
   List<Map<String, dynamic>> issueList = [];
   List<Map<String, dynamic>> serviceLst = [];
@@ -166,7 +170,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
   void dispose() {
     descriptionController.dispose();
     _dateController.dispose();
-
+    _timeController.dispose();
     _playerCompleteSub?.cancel();
     _playerStateSub?.cancel();
 
@@ -255,11 +259,11 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                       context.pop();
                     },
                   ),
-                 const Text(
+                  const Text(
                     "Create Servie Request",
                     style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
                   ),
-                 const Text(""),
+                  const Text(""),
                 ],
               ),
             ),
@@ -274,7 +278,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                     crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
-                     const Text(
+                      const Text(
                         "Servie category",
                         style: TextStyle(
                           fontSize: 18,
@@ -286,14 +290,19 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
                           labelText: "Select Services*",
-                          floatingLabelStyle: const TextStyle(color: AppColors.btn_primery),
+                          floatingLabelStyle: const TextStyle(
+                            color: AppColors.btn_primery,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide:  BorderSide(color:AppColors.btn_primery ,width: 1.5)
-        ),
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: AppColors.btn_primery,
+                              width: 1.5,
+                            ),
+                          ),
                           filled: true,
                           fillColor: Colors.white,
                         ),
@@ -310,7 +319,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                         },
                       ),
                       SizedBox(height: 18),
-                     const Text(
+                      const Text(
                         "Issuse Details",
                         style: TextStyle(
                           fontSize: 18,
@@ -322,14 +331,19 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                         value: selectedIssueId,
                         decoration: InputDecoration(
                           labelText: "Select Issuse*",
-                          floatingLabelStyle: const TextStyle(color: AppColors.btn_primery),
+                          floatingLabelStyle: const TextStyle(
+                            color: AppColors.btn_primery,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide:  BorderSide(color:AppColors.btn_primery ,width: 1.5)
-        ),
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: AppColors.btn_primery,
+                              width: 1.5,
+                            ),
+                          ),
                           filled: true,
                           fillColor: Colors.white,
                         ),
@@ -345,7 +359,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                           });
                         },
                       ),
-                     const SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       TextField(
                         controller: descriptionController,
                         minLines: 5,
@@ -353,30 +367,35 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                         keyboardType: TextInputType.multiline,
                         decoration: InputDecoration(
                           labelText: "Describe your issue…",
-                          floatingLabelStyle: const TextStyle(color: AppColors.btn_primery),
+                          floatingLabelStyle: const TextStyle(
+                            color: AppColors.btn_primery,
+                          ),
                           alignLabelWithHint: true,
                           contentPadding: EdgeInsets.all(14),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide:  BorderSide(color:AppColors.btn_primery ,width: 1.5)
-        ),
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: AppColors.btn_primery,
+                              width: 1.5,
+                            ),
+                          ),
                           filled: true,
                           fillColor: Colors.white,
                         ),
                       ),
 
-                    const  SizedBox(height: 18),
-                    const  Text(
+                      const SizedBox(height: 18),
+                      const Text(
                         "Perfered Date",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                     const SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
                       AppDatePicker(
                         controller: _dateController,
@@ -385,15 +404,33 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                           print("Selected Date: $date");
                         },
                       ),
-                    const  SizedBox(height: 18),
-                    const  Text(
+                      const SizedBox(height: 18),
+                      const Text(
+                        "Preferred Time",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      AppTimePicker(
+                        controller: _timeController,
+                        label: "Preferred Time",
+                        onTimeSelected: (time) {
+                          // Do something with the selected time
+                          print("User selected: $time");
+                        },
+                      ),
+
+                      const SizedBox(height: 18),
+                      const Text(
                         "Media Upload (optional)",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                     const SizedBox(height: 15),
+                      const SizedBox(height: 15),
 
                       MediaUploadWidget(
                         images: selectedImages,
@@ -407,7 +444,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                         },
                       ),
 
-                    const  SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       // Container(
                       //   height: 49,
                       //   width: double.infinity,
@@ -460,7 +497,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                       //     ),
                       //   ),
                       // ),
-                    const  SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       RecordWidget(
                         onRecordComplete: (file) {
                           setState(() {
@@ -481,7 +518,7 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
                               });
                             },
                           ),
-                         const Text("Need immitated Asstience"),
+                          const Text("Need immitated Asstience"),
                         ],
                       ),
 

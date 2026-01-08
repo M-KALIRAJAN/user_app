@@ -42,21 +42,34 @@ class _MyprofileState extends State<Myprofile> {
       AppLogger.error("UserId is null or empty");
       return;
     }
-     // Check if we already stored profile data
-  final cachedProfile = await AppPreferences.getProfileData();
-  if (cachedProfile != null) {
-    setState(() {
-      basicData = cachedProfile['data'];
-      addresses = cachedProfile['addresses'];
-      familyMembers = cachedProfile['familyMembers'];
-      nameCtrl.text = basicData?['basicInfo']['fullName'] ?? "";
-      emailCtrl.text = basicData?['basicInfo']['email'] ?? "";
-      phoneCtrl.text = basicData?['basicInfo']['mobileNumber'] ?? "";
-      addressCtrl.text = addresses.isNotEmpty ? addresses[0]['city'] ?? "" : "";
-    });
-    return; // use cached data, no API call
-  }
 
+    // Helper function to safely convert to string
+    String safeString(dynamic value) {
+      return value?.toString() ?? "";
+    }
+
+    // Check if we already stored profile data
+    final cachedProfile = await AppPreferences.getProfileData();
+    if (cachedProfile != null) {
+      setState(() {
+        basicData = cachedProfile['data'] as Map<String, dynamic>?;
+        addresses = cachedProfile['addresses'] as List? ?? [];
+        familyMembers = cachedProfile['familyMembers'] as List? ?? [];
+
+        final basicInfo = basicData?['basicInfo'] ?? {};
+
+        nameCtrl.text = safeString(basicInfo['fullName']);
+        emailCtrl.text = safeString(basicInfo['email']);
+        phoneCtrl.text = safeString(basicInfo['mobileNumber']);
+
+        addressCtrl.text = addresses.isNotEmpty
+            ? safeString(addresses[0]['city'])
+            : "";
+      });
+      return; // Use cached data, no API call
+    }
+
+    // Fetch profile from API
     final Map<String, dynamic>? profileResponse = await _profileService
         .profileData(userId: userId);
 
@@ -66,22 +79,23 @@ class _MyprofileState extends State<Myprofile> {
     }
 
     AppLogger.info("profiledata ${jsonEncode(profileResponse)}");
-      // Save to cache
-  await AppPreferences.saveProfileData(profileResponse);
+
+    // Save to cache
+    await AppPreferences.saveProfileData(profileResponse);
 
     setState(() {
-      basicData = profileResponse['data'] as Map<String, dynamic>;
-      addresses = profileResponse["addresses"] as List;
-      familyMembers = profileResponse["familyMembers"] as List;
-      nameCtrl.text = basicData?['basicInfo']['fullName']?.toString() ?? "";
+      basicData = profileResponse['data'] as Map<String, dynamic>?;
+      addresses = profileResponse['addresses'] as List? ?? [];
+      familyMembers = profileResponse['familyMembers'] as List? ?? [];
 
-      emailCtrl.text = basicData?['basicInfo']['email']?.toString() ?? "";
+      final basicInfo = basicData?['basicInfo'] ?? {};
 
-      phoneCtrl.text =
-          basicData?['basicInfo']['mobileNumber']?.toString() ?? "";
+      nameCtrl.text = safeString(basicInfo['fullName']);
+      emailCtrl.text = safeString(basicInfo['email']);
+      phoneCtrl.text = safeString(basicInfo['mobileNumber']);
 
       addressCtrl.text = addresses.isNotEmpty
-          ? addresses[0]['city']?.toString() ?? ""
+          ? safeString(addresses[0]['city'])
           : "";
     });
   }
@@ -94,12 +108,12 @@ class _MyprofileState extends State<Myprofile> {
     addressCtrl.dispose();
     super.dispose();
   }
-  @override
-void didChangeDependencies() {
-  super.didChangeDependencies();
-  profiledata(); // reload each time widget appears
-}
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    profiledata(); // reload each time widget appears
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +153,7 @@ void didChangeDependencies() {
                       },
                       color: Color.fromRGBO(183, 213, 205, 1),
                     ),
-                   const Text(
+                    const Text(
                       "Profile Details",
                       style: TextStyle(
                         fontSize: 20,
@@ -150,7 +164,7 @@ void didChangeDependencies() {
                     const Text(""),
                   ],
                 ),
-              const  SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Container(
                   height: 62,
                   padding: EdgeInsets.all(10),
@@ -186,8 +200,9 @@ void didChangeDependencies() {
                                 ),
                               ),
                               Text(
-                                basicData?['basicInfo']['fullName'] ??
-                                    "No Name",
+                                nameCtrl.text.isNotEmpty
+                                    ? nameCtrl.text
+                                    : "Loading...",
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,

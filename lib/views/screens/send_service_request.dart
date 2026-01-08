@@ -11,6 +11,7 @@ import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/services/request_service.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/app_date_picker.dart';
+import 'package:nadi_user_app/widgets/app_time_picker.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 import 'package:nadi_user_app/widgets/media_upload_widget.dart';
 import 'package:nadi_user_app/widgets/record_widget.dart';
@@ -49,7 +50,7 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
   bool isRecording = false;
   String? recordedFilePath;
   bool isPlaying = false;
-
+  final TextEditingController _timeController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -127,8 +128,8 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
       AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
       if (mounted) setState(() => _isLoading = false);
       if (response != null) {
-         final message = response['message'] ;
-            if (message == "Service created successfully") {
+        final message = response['message'];
+        if (message == "Service created successfully") {
           context.push(RouteNames.requestcreatesucess);
         }
         //  ERROR FROM API (ACCOUNT NOT VERIFIED etc.)
@@ -184,7 +185,6 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                     AppCircleIconButton(
                       icon: Icons.arrow_back,
                       onPressed: () {
-                       
                         Navigator.pop(context);
                       },
                     ),
@@ -238,14 +238,19 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                           value: selectedIssueId,
                           decoration: InputDecoration(
                             labelText: "Select Issuse*",
-                            floatingLabelStyle: const TextStyle(color: AppColors.btn_primery),
+                            floatingLabelStyle: const TextStyle(
+                              color: AppColors.btn_primery,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                               focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide:  BorderSide(color:AppColors.btn_primery ,width: 1.5)
-        ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: AppColors.btn_primery,
+                                width: 1.5,
+                              ),
+                            ),
                             filled: true,
                             fillColor: Colors.white,
                           ),
@@ -270,23 +275,28 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                           keyboardType: TextInputType.multiline,
                           decoration: InputDecoration(
                             labelText: "Describe your issue…",
-                             floatingLabelStyle: const TextStyle(color: AppColors.btn_primery),
+                            floatingLabelStyle: const TextStyle(
+                              color: AppColors.btn_primery,
+                            ),
                             alignLabelWithHint: true,
                             contentPadding: EdgeInsets.all(14),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                              focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide:  BorderSide(color:AppColors.btn_primery ,width: 1.5)
-        ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: AppColors.btn_primery,
+                                width: 1.5,
+                              ),
+                            ),
                             filled: true,
                             fillColor: Colors.white,
                           ),
                         ),
 
                         const SizedBox(height: 22),
-                        Text(
+                        const Text(
                           "Perfered Date",
                           style: TextStyle(
                             fontSize: 18,
@@ -294,13 +304,30 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                           ),
                         ),
 
-                      const  SizedBox(height: 10),
+                        const SizedBox(height: 10),
 
                         AppDatePicker(
                           controller: _dateController,
                           label: "Select Date",
                           onDateSelected: (date) {
                             print("Selected Date: $date");
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Perfered Time",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        AppTimePicker(
+                          controller: _timeController,
+                          label: "selected Time",
+                          onTimeSelected: (time) {
+                            // Do something with the selected time
+                            print("User selected: $time");
                           },
                         ),
                         const SizedBox(height: 22),
@@ -341,7 +368,7 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                                 });
                               },
                             ),
-                          const  Text("Need immitated Asstience"),
+                            const Text("Need immitated Asstience"),
                           ],
                         ),
                         RecordWidget(
@@ -349,9 +376,9 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                             recordedFilePath = file?.path;
                           },
                         ),
-                       const SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         if (recordedFilePath != null && !isRecording) ...[
-                           Container(
+                          Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: Colors.white,
@@ -383,9 +410,9 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
                             ),
                           ),
 
-                        const  SizedBox(height: 15),
+                          const SizedBox(height: 15),
                         ],
-                      const  SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         // ACTION BUTTONS
                         AppButton(
                           text: "Send Request",

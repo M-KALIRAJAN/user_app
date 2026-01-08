@@ -38,20 +38,19 @@ class _DashboardState extends ConsumerState<Dashboard> {
     super.initState();
     get_preferencevalue();
     getUserData();
-     Future.microtask(() {
-    ref.read(serviceListProvider.notifier).refresh();
-  });
+    Future.microtask(() {
+      ref.read(serviceListProvider.notifier).refresh();
+    });
   }
 
   Future<void> getUserData() async {
     final response = await _homeViewService.userDashboard();
     await AppPreferences.saveusername(response.name ?? "");
-  await AppPreferences.savePoints(response.points ?? 0);
-  AppLogger.warn("getUserData********* ${response.name}");
+    await AppPreferences.savePoints(response.points ?? 0);
+    AppLogger.warn("getUserData********* ${response.name}");
     setState(() {
       dashboard = response;
     });
-   
   }
 
   Future<void> get_preferencevalue() async {
@@ -129,7 +128,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
           child: Column(
             children: [
               Container(
-                height: 230,
+                height: 220,
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
@@ -394,7 +393,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                         child: CommonNetworkImage(
                                           imageUrl:
                                               "${ImageBaseUrl.baseUrl}/$logo",
-                                         size: 30,
+                                          size: 30,
                                         ),
                                         // logo != null
                                         //     ? SvgPicture.network(
