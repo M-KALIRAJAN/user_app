@@ -7,11 +7,12 @@ class PointsRequest {
   Future<Map<String, dynamic>> sendtofriend({
     required String mobileNumber,
     required String points,
+    required String reason
   }) async {
     try {
       final response = await _dio.post(
         "points/requestToFamily",
-        data: {"mobileNumber": mobileNumber, "points": points},
+        data: {"mobileNumber": mobileNumber, "points": points ,"reason":reason},
       );
       AppLogger.warn("PointsRequest ${response.data}");
       return response.data;

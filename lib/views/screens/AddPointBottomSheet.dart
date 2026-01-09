@@ -36,7 +36,7 @@ class _AddPointBottomSheetContentState
 
     final points = _pointsController.text.trim();
     final mobile = _mobileController.text.trim();
-
+    final reason = _notesController.text.trim();
     AppLogger.warn("Submitting points=$points, mobile=$mobile");
 
     if (_selectedType == RecipientType.admin) {
@@ -47,6 +47,7 @@ class _AddPointBottomSheetContentState
         final result = await _pointsRequest.sendtofriend(
           mobileNumber: mobile,
           points: points,
+          reason:reason,
         );
         setState(() => isLoading = false);
         AppLogger.warn("API SUCCESS: $result");
@@ -60,13 +61,14 @@ class _AddPointBottomSheetContentState
       }
     }
   }
+
   @override
-void dispose() {
-  _pointsController.dispose();
-  _notesController.dispose();
-  _mobileController.dispose();
-  super.dispose();
-}
+  void dispose() {
+    _pointsController.dispose();
+    _notesController.dispose();
+    _mobileController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +102,7 @@ void dispose() {
                 ),
               ),
               const SizedBox(height: 20),
+
               /// Title
               const Text(
                 "Recipient",
@@ -157,6 +160,7 @@ void dispose() {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 10),
+
                     /// Mobile Number (Disabled for Admin)
                     reuseTextField(
                       controller: _mobileController,
@@ -177,6 +181,7 @@ void dispose() {
                       },
                     ),
                     const SizedBox(height: 15),
+
                     /// Points
                     reuseTextField(
                       controller: _pointsController,
@@ -271,7 +276,6 @@ void dispose() {
       maxLines: maxLines,
       keyboardType: keyboardType,
       validator: validator,
-
       decoration: InputDecoration(
         labelText: hintText,
         prefixText: prefix,

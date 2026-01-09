@@ -51,7 +51,7 @@ class _PointDetailsState extends State<PointDetails> {
               Container(
                 height: 200,
                 width: double.infinity,
-                padding: EdgeInsets.only(top: 40,left: 20,right: 20),
+                padding: EdgeInsets.only(top: 48,left: 20,right: 20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,

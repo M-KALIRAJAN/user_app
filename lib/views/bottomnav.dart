@@ -81,9 +81,9 @@ class _BottomNavState extends State<BottomNav> {
 
   Widget _buildBottomNav() {
     return Container(
-      height: 85,
+      height: 80,
       decoration: BoxDecoration(
-        color: Colors.white,
+      
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
