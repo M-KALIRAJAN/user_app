@@ -128,9 +128,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
           child: Column(
             children: [
               Container(
-                height: 220,
+                height: 170,
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.only(left: 20,right: 20),
                 decoration: BoxDecoration(
                   // color: AppColors.btn_primery,
                   gradient: LinearGradient(
@@ -150,105 +150,107 @@ class _DashboardState extends ConsumerState<Dashboard> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 37),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppColors.btn_primery,
-                                  width: 2,
-                                ),
-                              ),
-                              child: const CircleAvatar(
-                                radius: 22,
-                                backgroundColor: Colors.blue,
-                                child: Icon(
-                                  Icons.person,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Welcome",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 35),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.btn_primery,
+                                    width: 2,
                                   ),
                                 ),
-                                Text(
-                                  dashboard?.name ?? "Loading...",
-                                  style: const TextStyle(
+                                child: const CircleAvatar(
+                                  radius: 22,
+                                  backgroundColor: Colors.blue,
+                                  child: Icon(
+                                    Icons.person,
                                     color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                    size: 20,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.3),
-                          ),
-                          child: InkWell(
-                            onTap: () {
-                              context.push(RouteNames.nodifications);
-                            },
-                            child: Center(
-                              child: Stack(
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(
-                                    Icons.notifications_outlined,
-                                    color: Colors.white,
-                                    size: 27,
+                                  const Text(
+                                    "Welcome",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                    ),
                                   ),
-                                  Positioned(
-                                    left: 11,
-                                    child: Container(
-                                      height: 14,
-                                      width: 14,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white,
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          "25",
-                                          style: TextStyle(
-                                            color: AppColors.btn_primery,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
+                                  Text(
+                                    dashboard?.name ?? "Loading...",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
                               ),
+                            ],
+                          ),
+                      
+                          Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.3),
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                context.push(RouteNames.nodifications);
+                              },
+                              child: Center(
+                                child: Stack(
+                                  children: [
+                                    const Icon(
+                                      Icons.notifications_outlined,
+                                      color: Colors.white,
+                                      size: 27,
+                                    ),
+                                    Positioned(
+                                      left: 11,
+                                      child: Container(
+                                        height: 14,
+                                        width: 14,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "25",
+                                            style: TextStyle(
+                                              color: AppColors.btn_primery,
+                                              fontSize: 8,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    SizedBox(height: 50),
+                    SizedBox(height: 20),
                     Container(
                       height: 50,
                       width: 315,

@@ -104,6 +104,7 @@ sendOtp(context);
           await AppPreferences.saveToken(completeuseraccount['token']);
            await AppPreferences.saveAccountType(completeuseraccount['accountType']);
         }
+          await AppPreferences.setLoggedIn(true);
         context.push(RouteNames.accountcreated);
       } else {
         _showOtpError(response["message"] ?? "Invalid OTP");

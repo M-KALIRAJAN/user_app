@@ -122,9 +122,9 @@ class _MyprofileState extends State<Myprofile> {
       body: Column(
         children: [
           Container(
-            height: 230,
+            height: 200,
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 45),
+            padding: const EdgeInsets.only(top: 40,left: 15,right: 15),
 
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -164,7 +164,7 @@ class _MyprofileState extends State<Myprofile> {
                     const Text(""),
                   ],
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
                 Container(
                   height: 62,
                   padding: EdgeInsets.all(10),

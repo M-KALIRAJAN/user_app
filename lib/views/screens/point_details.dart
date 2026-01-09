@@ -49,12 +49,9 @@ class _PointDetailsState extends State<PointDetails> {
             children: [
               // Background Header
               Container(
-                height: 230,
+                height: 200,
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 45,
-                ),
+                padding: EdgeInsets.only(top: 40,left: 20,right: 20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,
