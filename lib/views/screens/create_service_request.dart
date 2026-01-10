@@ -198,7 +198,8 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
       );
 
       AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
-
+final serviceRequestId = response?['data']?['serviceRequestID']?.toString();
+  AppLogger.warn("serviceRequestID $serviceRequestId");
       if (!mounted) return;
 
       setState(() => _isLoading = false);
@@ -207,8 +208,8 @@ class _CreateServiceRequestState extends State<CreateServiceRequest> {
         final message = response['message'];
 
         //  SUCCESS
-        if (message == "Service created successfully") {
-          context.push(RouteNames.requestcreatesucess);
+        if (message == "Service created successfully" && serviceRequestId != null) {
+          context.push(RouteNames.requestcreatesucess ,extra: serviceRequestId);
         }
         //  ERROR FROM API (ACCOUNT NOT VERIFIED etc.)
         else {

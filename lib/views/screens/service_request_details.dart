@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
+import 'package:nadi_user_app/core/utils/Time_Date.dart';
 import 'package:nadi_user_app/models/technician_model.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/inputs/app_text_field.dart';
@@ -18,94 +18,74 @@ class ServiceRequestDetails extends StatelessWidget {
     final timestamps = serviceData["statusTimestamps"];
     final bool technicianAccepted = serviceData["technicianAccepted"] == true;
     final String serviceStatus = serviceData["serviceStatus"];
-    // final technician = serviceData["technicianId"];
+
     final List acceptedTechnicians = serviceData["acceptedTechnicians"] ?? [];
-    String _getStatus({required bool completed, required bool current}) {
-      if (completed) return "completed";
-      if (current) return "current";
+
+    const List<String> statusOrder = [
+      "submitted",
+      "accepted",
+      "technicianAssigned",
+      "inProgress",
+      "paymentInProgress",
+      "completed",
+    ];
+    String getStepState(String stepKey, String currentStatus, Map timestamps) {
+      final stepIndex = statusOrder.indexOf(stepKey);
+      final currentIndex = statusOrder.indexOf(currentStatus);
+
+      if (timestamps[stepKey] != null) return "completed";
+      if (stepIndex == currentIndex) return "current";
       return "pending";
     }
 
-    String formatBackendDate(String dateStr) {
-      final inputFormat = DateFormat('yyy-MM-dd, HH:mm');
-      final outputFormat = DateFormat('dd/MM/yy hh:mm a');
-      final dataTime = inputFormat.parse(dateStr);
-      return outputFormat.format(dataTime);
-    }
-
-    final List<Map<String, dynamic>> steps = [
-      {
-        "title": "Request Submitted",
-        "description": "Your service request has been successfully submitted.",
-        "time": timestamps["submitted"],
-        "status": _getStatus(
-          completed: timestamps["submitted"] != null,
-          current: false,
-        ),
-      },
-      {
-        "title": "Processing Request",
-        "description": "Our team is reviewing the details of your request.",
-        "time": timestamps["accepted"],
-        "status": _getStatus(
-          // completed: technicianAccepted,
-          // current: !technicianAccepted,
-          completed: timestamps["accepted"] != null,
-          current: false,
-        ),
-      },
-      // {
-      //   "title": "Technician Assigned",
-      //   "description": "A technician has been assigned to your request.",
-      //   "time": timestamps["technicianAssigned"],
-      //   "status": _getStatus(
-      //     completed: timestamps["technicianAssigned"] != null,
-      //     current:
-      //         technicianAccepted && timestamps["technicianAssigned"] == null,
-      //   ),
-      //   "technician": technicianAccepted ? technician : null,
-      // },
-      {
-        "title": "Technician Assigned",
-        "description": "A technician has been assigned to your request.",
-        "time": timestamps["technicianAssigned"],
-        "status": _getStatus(
-          completed: timestamps["technicianAssigned"] != null,
-          current: timestamps["technicianAssigned"] == null,
-        ),
-        "acceptedTechnicians": acceptedTechnicians,
-      },
-      {
-        "title": "Service In Progress",
-        "description": "Technician is on the way to your location.",
-        "time": timestamps["inProgress"],
-        "status": _getStatus(
-          completed: serviceStatus == "inProgress",
-          current: serviceStatus != "completed",
-        ),
-         
-      },
-      {
-        "title": "payment In Progress",
-        "description": "Waiting for payment confirmation.",
-        "time": timestamps["paymentInProgress"],
-        "status": _getStatus(
-          completed: serviceStatus == "paymentInProgress",
-          current: serviceStatus != "completed",
-        ),
-         "payment": serviceData["payment"]
-      },
-      {
-        "title": "Service Completed",
-        "description": "Service has been successfully completed.",
-        "time": timestamps["completed"],
-        "status": _getStatus(
-          completed: timestamps["completed"] != null,
-          current: false,
-        ),
-        
-      },
-    ];
+    final steps =
+        [
+          {
+            "key": "submitted",
+            "title": "Request Submitted",
+            "description":
+                "Your service request has been successfully submitted.",
+            "time": timestamps["submitted"],
+          },
+          {
+            "key": "accepted",
+            "title": "Admin Processing Request",
+            "description":
+                "Nadi team is reviewing the details of your request.",
+            "time": timestamps["accepted"],
+          },
+          {
+            "key": "technicianAssigned",
+            "title": "Technician Assigned",
+            "description": "A technician has been assigned to your request.",
+            "time": timestamps["technicianAssigned"],
+            "acceptedTechnicians": acceptedTechnicians,
+          },
+          {
+            "key": "inProgress",
+            "title": "Service In Progress",
+            "description": "Technician is working on your service",
+            "time": timestamps["inProgress"],
+          },
+          {
+            "key": "paymentInProgress",
+            "title": "Payment In Progress",
+            "description": "Waiting for payment confirmation.",
+            "time": timestamps["paymentInProgress"],
+            "payment": serviceData["payment"],
+          },
+          {
+            "key": "completed",
+            "title": "Service Completed",
+            "description": "Service has been successfully completed.",
+            "time": timestamps["completed"],
+          },
+        ].map((step) {
+          return {
+            ...step,
+            "currentStatus": serviceStatus, 
+          };
+        }).toList();
 
     Widget ImageShimmer() {
       return Padding(
@@ -126,6 +106,25 @@ class ServiceRequestDetails extends StatelessWidget {
       );
     }
 
+    String getServiceImage(Map<String, dynamic> serviceData) {
+      final List media = serviceData["media"] ?? [];
+
+      //  Pick ONLY the first image
+      for (final file in media) {
+        final String name = file.toString().toLowerCase();
+
+        if (name.endsWith(".png") ||
+            name.endsWith(".jpg") ||
+            name.endsWith(".jpeg") ||
+            name.endsWith(".webp") ||
+            name.endsWith(".svg")) {
+          return "${ImageBaseUrl.baseUrl}/$file";
+        }
+      }
+
+      return "${ImageBaseUrl.baseUrl}/${serviceData["serviceId"]["serviceImage"]}";
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background_clr,
       body: SingleChildScrollView(
@@ -135,9 +134,7 @@ class ServiceRequestDetails extends StatelessWidget {
             Stack(
               children: [
                 CachedNetworkImage(
-                  imageUrl: serviceData["serviceId"]["serviceImage"] != null
-                      ? "${ImageBaseUrl.baseUrl}/${serviceData["serviceId"]["serviceImage"]}"
-                      : "",
+                  imageUrl: getServiceImage(serviceData),
                   fit: BoxFit.cover,
                   width: double.infinity,
                   placeholder: (context, url) => ImageShimmer(),
@@ -242,9 +239,10 @@ class ServiceRequestDetails extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
-                                  formatBackendDate(
+                                  formatIsoDateForUI(
                                     serviceData["statusTimestamps"]["submitted"],
                                   ),
+
                                   style: const TextStyle(
                                     fontSize: 10,
                                     color: Colors.grey,
@@ -276,14 +274,10 @@ class ServiceRequestDetails extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
                   // PROGRESS TRACKER (IMAGE LIKE)
                   ServiceProgressTimeline(steps: steps),
-
                   const SizedBox(height: 20),
-
                   // COMPLAINT DETAILS
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -302,24 +296,22 @@ class ServiceRequestDetails extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        const Text(
-                          "Issue description provided by the user goes here.",
+                        Text(
+                          serviceData['feedback'],
                           style: TextStyle(fontSize: 13),
                         ),
                         const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            "assets/images/service.png",
-                            height: 150,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                        CachedNetworkImage(
+                  imageUrl: getServiceImage(serviceData),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  placeholder: (context, url) => ImageShimmer(),
+                  height: 150,
+                  
+                )
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 20),
 
                   /// FEEDBACK
@@ -344,7 +336,6 @@ class ServiceRequestDetails extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 30),
                 ],
               ),
@@ -386,40 +377,92 @@ class _TimelineTile extends StatelessWidget {
   final bool isLast;
 
   const _TimelineTile({required this.data, required this.isLast});
-  String formatBackendDate(String dateStr) {
-    final inputFormat = DateFormat('yyy-MM-dd, HH:mm');
-    final outputFormat = DateFormat('dd/MM/yy hh:mm a');
-    final dataTime = inputFormat.parse(dateStr);
-    return outputFormat.format(dataTime);
+
+  static const List<String> statusOrder = [
+    "submitted",
+    "accepted",
+    "technicianAssigned",
+    "inProgress",
+    "paymentInProgress",
+    "completed",
+  ];
+
+  bool get isCurrent => data["key"] == data["currentStatus"];
+
+  bool get isCompleted {
+    final int stepIndex = statusOrder.indexOf(data["key"]);
+    final int currentIndex = statusOrder.indexOf(data["currentStatus"]);
+    return stepIndex < currentIndex;
   }
 
   Color get dotColor {
-    if (data["status"] == "completed") return Colors.green;
-    if (data["status"] == "current") return Colors.orange;
+    if (isCompleted) return Colors.green;
+
+    if (isCurrent) {
+      switch (data["key"]) {
+        case "technicianAssigned":
+          return Colors.blue;
+        case "inProgress":
+          return Colors.orange;
+        case "paymentInProgress":
+          return AppColors.gold_coin;
+        default:
+          return Colors.orange;
+      }
+    }
+
     return Colors.grey.shade400;
   }
 
   Color get chipBg {
-    if (data["status"] == "completed") return Colors.green.shade100;
-    if (data["status"] == "current") return Colors.orange.shade100;
+    if (isCompleted) return Colors.green.shade100;
+
+    if (isCurrent) {
+      switch (data["key"]) {
+        case "technicianAssigned":
+          return Colors.blue.shade100;
+        case "inProgress":
+          return Colors.orange.shade100;
+        case "paymentInProgress":
+          return Colors.yellow.shade100;
+        default:
+          return Colors.orange.shade100;
+      }
+    }
+
     return Colors.grey.shade300;
   }
 
   String get label {
-    if (data["status"] == "completed") return "Completed";
-    if (data["status"] == "current") return "Current";
+    if (isCompleted) return "Completed";
+    if (isCurrent) {
+      switch (data["key"]) {
+        case "submitted":
+          return "Submitted";
+        case "accepted":
+          return "Accepted";
+        case "technicianAssigned":
+          return "Technician Assigned";
+        case "inProgress":
+          return "In Progress";
+        case "paymentInProgress":
+          return "Payment Pending";
+        case "completed":
+          return "Completed";
+      }
+    }
     return "Pending";
   }
 
   @override
   Widget build(BuildContext context) {
     final bool showTechnicians =
-    data["title"] == "Technician Assigned" &&
-    data["acceptedTechnicians"] != null &&
-    (data["acceptedTechnicians"] as List).isNotEmpty;
-final bool showPayment =
-    data["title"] == "payment In Progress" &&
-    data["payment"] != null;
+        data["key"] == "technicianAssigned" &&
+        data["acceptedTechnicians"] != null &&
+        (data["acceptedTechnicians"] as List).isNotEmpty;
+
+    final bool showPayment = data["payment"] != null;
+    final double lineHeight = showTechnicians ? 120.0 : showPayment ? 80:70.0;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -433,20 +476,19 @@ final bool showPayment =
                 color: dotColor,
                 shape: BoxShape.circle,
               ),
-              child: data["status"] == "completed"
+              child: isCompleted
                   ? const Icon(Icons.check, size: 14, color: Colors.white)
                   : null,
             ),
-           if (!isLast)
-  Container(
-    width: 2,
-    height: showTechnicians ? 145.0 : 70.0,
-    color: Colors.grey.shade300,
-  ),
-
+            if (!isLast)
+              Container(
+                width: 2,
+                height: lineHeight,
+                color: Colors.grey.shade300,
+              ),
           ],
         ),
-        const SizedBox(width: 14),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -457,7 +499,7 @@ final bool showPayment =
                     child: Text(
                       data["title"],
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -487,59 +529,10 @@ final bool showPayment =
                 data["description"],
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
-              if (showPayment) ...[
-  const SizedBox(height: 10),
 
-  Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
-    decoration: BoxDecoration(
-      color: Colors.green.shade50,
-      borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: Colors.green.shade200),
-    ),
-    child: Row(
-      children: [
-        const Icon(Icons.currency_rupee, size: 18, color: Colors.green),
-        const SizedBox(width: 7),
-        Text(
-          "Amount to Pay:   ₹ ${data["payment"]}",
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.green,
-          ),
-        ),
-      ],
-    ),
-  ),
-],
-  const SizedBox(height: 10),
-
-
-              // if (data["acceptedTechnicians"] != null) ...[
-              //   const SizedBox(height: 10),
-              //   Row(
-              //     children: [
-              //       CircleAvatar(
-              //         radius: 16,
-              //         backgroundImage: CachedNetworkImageProvider(
-              //           "${ImageBaseUrl.baseUrl}/${data["acceptedTechnicians"]["technicianId"]['image']}",
-              //         ),
-              //       ),
-              //       const SizedBox(width: 10),
-              //       Text(
-              //         "${data["acceptedTechnicians"]["technicianId"]['firstName']} ${data["acceptedTechnicians"]["technicianId"]['lastName']}",
-              //         style: const TextStyle(
-              //           fontSize: 13,
-              //           fontWeight: FontWeight.w500,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ],
-             if (showTechnicians) ...[ ...[
-                const SizedBox(height: 10),
-
+              ///  TECHNICIAN IMAGE + NAME + TAP
+              if (showTechnicians) ...[
+                const SizedBox(height: 8),
                 SizedBox(
                   height: 36,
                   child: Stack(
@@ -548,9 +541,7 @@ final bool showPayment =
                     ) {
                       final techJson =
                           data["acceptedTechnicians"][index]["technicianId"];
-
                       final techModel = TechnicianModel.fromJson(techJson);
-
                       return Positioned(
                         left: index * 22.0,
                         child: InkWell(
@@ -574,113 +565,117 @@ final bool showPayment =
                     }),
                   ),
                 ),
-
-                const SizedBox(height: 8),
-
-                Text(
-                  "${data["acceptedTechnicians"].length} Technicians Assigned",
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
               ],
 
               if (data["time"] != null) ...[
                 const SizedBox(height: 6),
                 Text(
-                  formatBackendDate(data["time"]),
-                  style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                  formatIsoDateForUI(data["time"]),
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                 ),
               ],
-              const SizedBox(height: 16),
+              if (showPayment) ...[
+                const SizedBox(height: 5),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                   
+                  ),
+                  // decoration: BoxDecoration(
+                  //   color: Colors.green.shade50,
+                  //   borderRadius: BorderRadius.circular(10),
+                  //   border: Border.all(color: Colors.green.shade200),
+                  // ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.currency_rupee,
+                        size: 18,
+                        color: Colors.green,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        "BH to Pay: BD ${data["payment"]}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              const SizedBox(height: 10),
             ],
-            ],
-            
-          )
-        
+          ),
         ),
       ],
     );
   }
+}
 
-  void _showTechnicianDetails(BuildContext context, TechnicianModel tech) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) {
-        return Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircleAvatar(
-                radius: 40,
-                backgroundImage: tech.image.isNotEmpty
-                    ? CachedNetworkImageProvider(
-                        "${ImageBaseUrl.baseUrl}/${tech.image}",
-                      )
-                    : null,
-                child: tech.image.isEmpty
-                    ? const Icon(Icons.person, size: 40)
-                    : null,
-              ),
-              const SizedBox(height: 12),
-
-              Text(
-                "${tech.firstName} ${tech.lastName}",
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+void _showTechnicianDetails(BuildContext context, TechnicianModel tech) {
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) {
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: tech.image.isNotEmpty
+                  ? CachedNetworkImageProvider(
+                      "${ImageBaseUrl.baseUrl}/${tech.image}",
+                    )
+                  : null,
+              child: tech.image.isEmpty
+                  ? const Icon(Icons.person, size: 40)
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "${tech.firstName} ${tech.lastName}",
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.phone, size: 16, color: Colors.grey),
+                const SizedBox(width: 6),
+                Text(tech.mobile, style: const TextStyle(fontSize: 14)),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.email, size: 16, color: Colors.grey),
+                const SizedBox(width: 6),
+                Text(tech.email, style: const TextStyle(fontSize: 14)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.btn_primery,
+                minimumSize: const Size(double.infinity, 44),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
-
-              const SizedBox(height: 8),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.phone, size: 16, color: Colors.grey),
-                  const SizedBox(width: 6),
-                  Text(tech.mobile, style: const TextStyle(fontSize: 14)),
-                ],
-              ),
-
-              const SizedBox(height: 6),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.email, size: 16, color: Colors.grey),
-                  const SizedBox(width: 6),
-                  Text(tech.email, style: const TextStyle(fontSize: 14)),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.btn_primery,
-                  minimumSize: const Size(double.infinity, 44),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  "Close",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Close", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }

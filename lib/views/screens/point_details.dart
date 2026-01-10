@@ -259,7 +259,6 @@ class _PointDetailsState extends State<PointDetails> {
                 ],
               ),
             ),
-
           Spacer(),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),

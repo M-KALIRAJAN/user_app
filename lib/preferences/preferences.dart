@@ -15,6 +15,7 @@ class AppPreferences {
   static const String _rememberMeKey = "remember_me";
   static const String _rememberEmailkey = "remember_email";
 static const String _pointsKey = "points";
+ static const String _serviceRequestIdKey = "service_request_id";
 
 
   // --- Remember Flag --
@@ -44,6 +45,8 @@ static const String _pointsKey = "points";
     await prefs.remove(_rememberEmailkey);
     await prefs.setBool(_rememberMeKey, false);
   }
+
+//--- Service Request ---
 
   // -- save profile data ---
 

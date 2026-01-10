@@ -9,28 +9,28 @@ class CommonNetworkImage extends StatelessWidget {
   const CommonNetworkImage({
     super.key,
     required this.imageUrl,
-    this.size = 25,
+    this.size = 20, // default image size
   });
 
   bool get _isSvg => imageUrl.toLowerCase().endsWith('.svg');
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: _isSvg
-            ? SvgPicture.network(
-                imageUrl,
-                width: size,
-                height: size,
-              )
-            : Image.network(
-                imageUrl,
-              ),
-      ),
+    return Center(
+      child: _isSvg
+          ? SvgPicture.network(
+              imageUrl,
+              width: size,
+              height: size,
+              fit: BoxFit.contain,
+            )
+          : Image.network(
+              imageUrl,
+              width: size,
+              height: size,
+              fit: BoxFit.contain,
+            ),
     );
   }
 }
+

@@ -3,6 +3,7 @@ import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/core/utils/CommonNetworkImage.dart';
 import 'package:intl/intl.dart';
+import 'package:nadi_user_app/core/utils/Time_Date.dart';
 class ServiceRequestCard extends StatelessWidget {
   final String title;
   final String date;
@@ -20,13 +21,8 @@ class ServiceRequestCard extends StatelessWidget {
     required this.serviceLogo,
     required this.onViewDetails,
   });
-
   @override
   Widget build(BuildContext context) {
-      String formatDate(String isoDate) {
-    final dateTime = DateTime.parse(isoDate);
-    return DateFormat('MMMM d, yyyy').format(dateTime);
-  }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -50,14 +46,14 @@ class ServiceRequestCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          height: 58,
-                          width: 58,
+                          height: 60,
+                          width: 60,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: serviceStatus == "submitted"
                                 ? AppColors.button_secondary
                                 : serviceStatus == "paymentInProgress"
-                                ? const Color.fromARGB(255, 112, 214, 11)
+                                ? AppColors.gold_coin
                                 : serviceStatus == "accepted"
                                 ? AppColors.button_secondary
                                 : serviceStatus == "inProgress"
@@ -68,7 +64,7 @@ class ServiceRequestCard extends StatelessWidget {
                           ),
                           child: CommonNetworkImage(
                             imageUrl: "${ImageBaseUrl.baseUrl}/$serviceLogo",
-                            size: 10,
+                            size: 40,
                           ),
                         ),
       
@@ -86,7 +82,7 @@ class ServiceRequestCard extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                date,
+                               formatIsoDateForUI(date),
                                 style: TextStyle(
                                   fontSize: AppFontSizes.small,
                                   color: AppColors.borderGrey,
@@ -107,7 +103,7 @@ class ServiceRequestCard extends StatelessWidget {
                             color: serviceStatus == "submitted"
                                 ? AppColors.btn_primery
                                 : serviceStatus == "paymentInProgress"
-                                ? const Color.fromARGB(255, 112, 214, 11)
+                                ?AppColors.gold_coin
                                 : serviceStatus == "accepted"
                                 ? AppColors.btn_primery
                                 : serviceStatus == "inProgress"

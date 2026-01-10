@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/network/dio_client.dart';
 import 'package:nadi_user_app/core/utils/CommonNetworkImage.dart';
+import 'package:nadi_user_app/core/utils/Time_Date.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/models/UserLogModel%20.dart';
 import 'package:nadi_user_app/services/logs_service.dart';
@@ -47,7 +48,7 @@ class _RecentActivityState extends State<RecentActivity> {
                     color: Colors.white,
                   ),
                 ),
-               const SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     children: [
@@ -61,7 +62,7 @@ class _RecentActivityState extends State<RecentActivity> {
                     ],
                   ),
                 ),
-               const SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Container(
                   height: 22,
                   width: 60,
@@ -134,28 +135,16 @@ class _RecentActivityState extends State<RecentActivity> {
                     width: 48,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.btn_primery,
+                      color: AppColors.button_secondary,
                     ),
                     child: Center(
                       child: SizedBox(
                         height: 30,
                         width: 30,
-                        child:  
-                                          CommonNetworkImage(
-  imageUrl: "${ImageAssetUrl.baseUrl}${log.logo}",
-size: 40,
-)
-                        // buildServiceIcon(serviceLogo: log.logo, size: 39,  )
-                        // ClipOval(
-                        //   child: CachedNetworkImage(
-                        //     imageUrl: "${ImageAssetUrl.baseUrl}${log.logo}",
-                        //     fit: BoxFit.contain,
-                        //     placeholder: (context, url) =>
-                        //         const CircularProgressIndicator(),
-                        //     errorWidget: (context, url, error) =>
-                        //         const Icon(Icons.person),
-                        //   ),
-                        // ),
+                        child: CommonNetworkImage(
+                          imageUrl: "${ImageAssetUrl.baseUrl}${log.logo}",
+                          size: 40,
+                        ),
                       ),
                     ),
                   ),
@@ -175,7 +164,7 @@ size: 40,
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          log.time.toString(),
+                          formatIsoDateForUI(log.time.toString() ?? ""),
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 12,
@@ -210,7 +199,7 @@ size: 40,
 
               const SizedBox(height: 12),
 
-             const Divider(color: AppColors.borderGrey, height: 1),
+              const Divider(color: AppColors.borderGrey, height: 1),
               const SizedBox(height: 12),
             ],
           ),

@@ -126,11 +126,13 @@ class _SendServiceRequestState extends State<SendServiceRequest> {
         voiceFile: recordedFilePath != null ? File(recordedFilePath!) : null,
       );
       AppLogger.warn("createServiceRequestes ${jsonEncode(response)}");
+      final serviceRequestId = response?['data']?['serviceRequestID']?.toString();
+      AppLogger.info("serviceRequestId $serviceRequestId");
       if (mounted) setState(() => _isLoading = false);
       if (response != null) {
         final message = response['message'];
-        if (message == "Service created successfully") {
-          context.push(RouteNames.requestcreatesucess);
+        if (message == "Service created successfully" &&  serviceRequestId != null) {
+          context.push(RouteNames.requestcreatesucess ,extra: serviceRequestId);
         }
         //  ERROR FROM API (ACCOUNT NOT VERIFIED etc.)
         else {

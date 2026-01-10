@@ -5,7 +5,8 @@ import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class Requestcreatesucess extends StatefulWidget {
-  const Requestcreatesucess({super.key});
+  final String serviceRequestId;
+  const Requestcreatesucess({super.key, required this.serviceRequestId});
 
   @override
   State<Requestcreatesucess> createState() => _RequestcreatesucessState();
@@ -15,10 +16,12 @@ class _RequestcreatesucessState extends State<Requestcreatesucess>
     with TickerProviderStateMixin {
   late final AnimationController _mainController;
   late final AnimationController _starController;
+  late final AnimationController _checkController;
 
   late final Animation<double> _scaleAnimation;
   late final Animation<double> _fadeAnimation;
   late final Animation<double> _starOpacity;
+  late final Animation<double> _checkScale;
 
   @override
   void initState() {
@@ -49,14 +52,27 @@ class _RequestcreatesucessState extends State<Requestcreatesucess>
       CurvedAnimation(parent: _starController, curve: Curves.easeInOut),
     );
 
+    // check icon pulse animation
+    _checkController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
+    _checkScale = Tween<double>(begin: 0.9, end: 1.1).animate(
+      CurvedAnimation(parent: _checkController, curve: Curves.easeInOut),
+    );
+
+    // Start animations
     _mainController.forward();
     _starController.repeat(reverse: true);
+    _checkController.repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _mainController.dispose();
     _starController.dispose();
+    _checkController.dispose();
     super.dispose();
   }
 
@@ -103,47 +119,37 @@ class _RequestcreatesucessState extends State<Requestcreatesucess>
                         alignment: Alignment.center,
                         clipBehavior: Clip.none,
                         children: [
-                          //  TOP
+                          // Stars
                           animatedStar(
                             opacity: _starOpacity,
                             size: 17,
                             top: -20,
                             left: 40,
                           ),
-
-                          // LEFT
                           animatedStar(
                             opacity: _starOpacity,
                             size: 15,
                             top: 10,
                             left: -30,
                           ),
-
-                          //  RIGHT
                           animatedStar(
                             opacity: _starOpacity,
                             size: 12,
                             top: 10,
                             left: 110,
                           ),
-
-                          // ⭐ BOTTOM RIGHT
                           animatedStar(
                             opacity: _starOpacity,
                             size: 17,
                             top: 85,
                             left: 90,
                           ),
-
-                          //  NEW: BOTTOM LEFT
                           animatedStar(
                             opacity: _starOpacity,
                             size: 12,
                             top: 85,
                             left: -5,
                           ),
-
-                          //  NEW: TOP RIGHT
                           animatedStar(
                             opacity: _starOpacity,
                             size: 18,
@@ -151,24 +157,34 @@ class _RequestcreatesucessState extends State<Requestcreatesucess>
                             left: 100,
                           ),
 
-                          //  CHECK CIRCLE
-                          Container(
-                            height: 100,
-                            width: 100,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.btn_primery,
-                            ),
-                            child: const Icon(
-                              Icons.check,
-                              size: 80,
-                              color: Colors.white,
+                          //  Pulsing check icon
+                          ScaleTransition(
+                            scale: _checkScale,
+                            child: Container(
+                              height: 90,
+                              width: 90,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.btn_primery,
+                              ),
+                              child: const Icon(
+                                Icons.check,
+                                size: 80,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 18),
+                      Text(
+                        "Request ID: ${widget.serviceRequestId}",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.btn_primery,
+                        ),
+                      ),
                       const Text(
                         "Service request submitted successfully.",
                         textAlign: TextAlign.center,
@@ -183,11 +199,11 @@ class _RequestcreatesucessState extends State<Requestcreatesucess>
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 12, color: Colors.white70),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 20),
                       AppButton(
                         text: "View My Request",
                         onPressed: () {
-                           context.push(RouteNames.bottomnav);
+                          context.push(RouteNames.bottomnav);
                         },
                         color: AppColors.btn_primery,
                         width: double.infinity,

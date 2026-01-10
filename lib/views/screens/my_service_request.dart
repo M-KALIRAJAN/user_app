@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
@@ -18,7 +19,7 @@ class MyServiceRequest extends StatefulWidget {
   State<MyServiceRequest> createState() => _MyServiceRequestState();
 }
 
-class _MyServiceRequestState extends State<MyServiceRequest>  {
+class _MyServiceRequestState extends State<MyServiceRequest> {
   MyService _myService = MyService();
   List<dynamic> MyServices = [];
   bool isLoading = true;
@@ -27,34 +28,26 @@ class _MyServiceRequestState extends State<MyServiceRequest>  {
   void initState() {
     super.initState();
     myserviceslist();
-
   }
-  
+  String formatDate(String date) {
+    if (date.isEmpty) return "";
 
-String formatDate(String date) {
-  if (date.isEmpty) return "";
+    try {
+      // Backend format
+      final inputFormat = DateFormat('yyyy-MM-dd, HH:mm');
 
-  try {
-    // Backend format
-    final inputFormat = DateFormat('yyyy-MM-dd, HH:mm');
+      // UI format (SHORT MONTH)
+      final outputFormat = DateFormat('d MMM yyyy hh:mm a');
 
-    // UI format (SHORT MONTH)
-    final outputFormat = DateFormat('d MMM yyyy hh:mm a');
+      final DateTime parsedDate = inputFormat.parse(date);
 
-    final DateTime parsedDate = inputFormat.parse(date);
-
-    return outputFormat.format(parsedDate);
-  } catch (e) {
-    return date;
+      return outputFormat.format(parsedDate);
+    } catch (e) {
+      return date;
+    }
   }
-}
-
-
-
-
 
   Future<void> myserviceslist() async {
-    AppLogger.warn("************************************");
     try {
       final response = await _myService.myallservices();
       if (!mounted) return;
@@ -65,11 +58,8 @@ String formatDate(String date) {
         isLoading = false;
       });
 
-      
       if (response != null &&
-          response.every((e) => e["serviceStatus"] == "completed")) {
-      
-      }
+          response.every((e) => e["serviceStatus"] == "completed")) {}
     } catch (e) {
       isLoading = false;
       AppLogger.error("MyServiceerr $e");
@@ -94,14 +84,14 @@ String formatDate(String date) {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AppCircleIconButton(icon: Icons.arrow_back, onPressed: () {}),
-                const  Text(
+                  const Text(
                     "MY Service Request",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: AppFontSizes.large,
                     ),
                   ),
-                const  Text(""),
+                  const Text(""),
                 ],
               ),
             ),
@@ -116,14 +106,21 @@ String formatDate(String date) {
                           const ServiceRequestCardShimmer(),
                     )
                   : MyServices.isEmpty
-                  ? const Center(child: Text("No Service Requests Found"))
+                  ? Center(
+                      child: SvgPicture.asset(
+                        'assets/icons/my_icon.svg',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.contain,
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: MyServices.length,
                       itemBuilder: (context, index) {
                         final service = MyServices[index];
                         return ServiceRequestCard(
                           title: service["serviceRequestID"] ?? "",
-                         date: formatDate(service["createdAt"] ?? ""),
+                          date: formatDate(service["createdAt"] ?? ""),
                           description: service["feedback"] ?? "",
                           serviceStatus: service['serviceStatus'] ?? "",
                           serviceLogo:

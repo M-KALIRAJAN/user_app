@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/core/constants/app_consts.dart';
 import 'package:nadi_user_app/core/utils/logger.dart';
 import 'package:nadi_user_app/core/utils/snackbar_helper.dart';
 import 'package:nadi_user_app/services/points_request.dart';
-import 'package:nadi_user_app/views/screens/point_details.dart';
 import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 enum RecipientType { admin, friend }
@@ -32,7 +30,7 @@ class _AddPointBottomSheetContentState
       return;
     }
 
-    AppLogger.warn("FORM VALIDATED ✅");
+    AppLogger.warn("FORM VALIDATED ");
 
     final points = _pointsController.text.trim();
     final mobile = _mobileController.text.trim();
@@ -40,7 +38,19 @@ class _AddPointBottomSheetContentState
     AppLogger.warn("Submitting points=$points, mobile=$mobile");
 
     if (_selectedType == RecipientType.admin) {
-      AppLogger.warn("Admin flow selected");
+        setState(() => isLoading = true);
+        try{
+         final result = await _pointsRequest.sendtoadmin(points: points);
+                 setState(() => isLoading = false);
+        AppLogger.warn("API SUCCESS: $result");
+        SnackbarHelper.ShowSuccess(context, "Points request sent successfully");
+          Navigator.pop(context);
+        }catch(e){
+        AppLogger.error("API ERROR: $e");
+        setState(() => isLoading = false);
+        SnackbarHelper.showError(context, e.toString());
+        }
+
     } else {
       try {
         setState(() => isLoading = true);
@@ -52,7 +62,6 @@ class _AddPointBottomSheetContentState
         setState(() => isLoading = false);
         AppLogger.warn("API SUCCESS: $result");
         SnackbarHelper.ShowSuccess(context, "Points request sent successfully");
-
         Navigator.pop(context);
       } catch (e) {
         AppLogger.error("API ERROR: $e");
@@ -102,10 +111,9 @@ class _AddPointBottomSheetContentState
                 ),
               ),
               const SizedBox(height: 20),
-
               /// Title
               const Text(
-                "Recipient",
+                "Request To Points",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 12),

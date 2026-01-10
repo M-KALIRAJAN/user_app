@@ -1,4 +1,5 @@
 
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/views/auth/forgotpassword.dart';
@@ -45,10 +46,20 @@ final appRouter = GoRouter(
       path: RouteNames.forgotpassword,
       builder: (context, state) => const Forgotpassword(),
     ),
-     GoRoute(
-      path: RouteNames.requestcreatesucess,
-      builder: (context, state) => const Requestcreatesucess(),
-    ),
+  GoRoute(
+  path: RouteNames.requestcreatesucess,
+  builder: (context, state) {
+    // Cast state.extra to String safely
+    final serviceRequestId = state.extra as String?;
+    if (serviceRequestId == null) {
+      return Scaffold(
+        body: Center(child: Text("No Service Request ID found")),
+      );
+    }
+    return Requestcreatesucess(serviceRequestId: serviceRequestId);
+  },
+),
+
     GoRoute(
       path: RouteNames.login,
       builder: (context, state) => const LoginView(),
