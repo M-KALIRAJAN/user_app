@@ -20,6 +20,61 @@ class _AccountStepperState extends State<AccountStepper> {
   final _formKeyAddress = GlobalKey<FormState>();
   final _formKeyAddMember = GlobalKey<FormState>();
   final addressController = AddressController();
+  Widget _buildStep() {
+    switch (_currentStep) {
+      case 0:
+        return AccountFormView(
+          key: const ValueKey(0),
+          accountType: widget.accountType,
+          formKey: _formKeyIndividual,
+          onNext: () {
+            if (_formKeyIndividual.currentState!.validate()) {
+              setState(() => _currentStep = 1);
+            }
+          },
+        );
+
+      case 1:
+        return Address(
+          key: const ValueKey(1),
+          accountType: widget.accountType,
+          formKey: _formKeyAddress,
+          controller: addressController,
+          onNext: () {
+            if (_formKeyAddress.currentState!.validate()) {
+              setState(() {
+                if (widget.accountType == "Family") {
+                  _currentStep = 2;
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Account created successfully"),
+                    ),
+                  );
+                }
+              });
+            }
+          },
+        );
+
+      case 2:
+        return Addmember(
+          key: const ValueKey(2),
+          accountType: widget.accountType,
+          formKey: _formKeyAddMember,
+          onNext: () {
+            if (_formKeyAddMember.currentState!.validate()) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text("Completed!")));
+            }
+          },
+        );
+
+      default:
+        return const SizedBox();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +87,7 @@ class _AccountStepperState extends State<AccountStepper> {
 
       body: Column(
         children: [
-          // CUSTOM STEPPER 
+          // CUSTOM STEPPER
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             child: CustomStepper(currentStep: _currentStep, titles: stepTitles),
@@ -43,59 +98,71 @@ class _AccountStepperState extends State<AccountStepper> {
           // SCROLLABLE CONTENT
           Expanded(
             child: SingleChildScrollView(
-             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              child: IndexedStack(
-                index: _currentStep,
-                children: [
-                  // Step 1: Account
-                  AccountFormView(
-                    accountType: widget.accountType,
-                    formKey: _formKeyIndividual,
-                    onNext: () {
-                      if (_formKeyIndividual.currentState!.validate()) {
-                        setState(() => _currentStep = 1);
-                      }
-                    },
-                  ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
 
-                
-                Address(
-  accountType: widget.accountType,
-  formKey: _formKeyAddress,
-  controller: addressController,
-  onNext: () {
-    if (_formKeyAddress.currentState!.validate()) {
-      setState(() {
-        if (widget.accountType == "Family") {
-          _currentStep = 2; // go to Add Member
-        } else {
-          // Individual account → finish flow here
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Account created successfully")),
-          );
-        }
-      });
-    }
-  },
-),
+              // child: IndexedStack(
+              //   index: _currentStep,
+              //   children: [
+              //     // Step 1: Account
+              //     AccountFormView(
+              //       accountType: widget.accountType,
+              //       formKey: _formKeyIndividual,
+              //       onNext: () {
+              //         if (_formKeyIndividual.currentState!.validate()) {
+              //           setState(() => _currentStep = 1);
+              //         }
+              //       },
+              //     ),
 
+              //     Address(
+              //       accountType: widget.accountType,
+              //       formKey: _formKeyAddress,
+              //       controller: addressController,
+              //       onNext: () {
+              //         if (_formKeyAddress.currentState!.validate()) {
+              //           setState(() {
+              //             if (widget.accountType == "Family") {
+              //               _currentStep = 2; // go to Add Member
+              //             } else {
+              //               // Individual account → finish flow here
+              //               ScaffoldMessenger.of(context).showSnackBar(
+              //                 const SnackBar(
+              //                   content: Text("Account created successfully"),
+              //                 ),
+              //               );
+              //             }
+              //           });
+              //         }
+              //       },
+              //     ),
 
-                  // Step 3: Add Member (Family Only)
-                  if (widget.accountType == "Family")
-                    
-                      Addmember(
-                      accountType: widget.accountType,
-                      formKey: _formKeyAddMember,
-                      onNext: () {
-                        if (_formKeyAddMember.currentState!.validate()) {
-                          // LAST STEP
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Completed!")),
-                          );
-                        }
-                      }
-                               )
-                ],
+              //     // Step 3: Add Member (Family Only)
+              //     if (widget.accountType == "Family")
+              //       Addmember(
+              //         accountType: widget.accountType,
+              //         formKey: _formKeyAddMember,
+              //         onNext: () {
+              //           if (_formKeyAddMember.currentState!.validate()) {
+              //             // LAST STEP
+              //             ScaffoldMessenger.of(context).showSnackBar(
+              //               const SnackBar(content: Text("Completed!")),
+              //             );
+              //           }
+              //         },
+              //       ),
+              //   ],
+              // ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 280),
+                transitionBuilder: (child, animation) {
+                  final slide = Tween<Offset>(
+                    begin: const Offset(1, 0), //  Right to Left
+                    end: Offset.zero,
+                  ).animate(animation);
+
+                  return SlideTransition(position: slide, child: child);
+                },
+                child: _buildStep(),
               ),
             ),
           ),
@@ -169,7 +236,7 @@ class CustomStepper extends StatelessWidget {
 
           return Expanded(
             child: Transform.translate(
-              offset: const Offset(0, -10), 
+              offset: const Offset(0, -10),
               child: Container(
                 height: 2,
                 // margin: const EdgeInsets.symmetric(horizontal: 4),

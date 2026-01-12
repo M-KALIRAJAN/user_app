@@ -16,7 +16,6 @@ class RecentActivity extends StatefulWidget {
   @override
   State<RecentActivity> createState() => _RecentActivityState();
 }
-
 class _RecentActivityState extends State<RecentActivity> {
   LogsService _logsservice = LogsService();
   List<Userlogmodel> logs = [];
@@ -98,17 +97,14 @@ class _RecentActivityState extends State<RecentActivity> {
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     if (_isLoding) {
       return _buildSimmer();
     }
-
     if (logs.isEmpty) {
       return Center(child: Text("No recent activity"));
     }
-
     final displaylog = widget.limitLogs
         ? (logs.length > 5 ? logs.sublist(0, 5) : logs)
         : logs;
@@ -148,9 +144,7 @@ class _RecentActivityState extends State<RecentActivity> {
                       ),
                     ),
                   ),
-
                   const SizedBox(width: 12),
-
                   /// Text section
                   Expanded(
                     child: Column(
@@ -173,9 +167,7 @@ class _RecentActivityState extends State<RecentActivity> {
                       ],
                     ),
                   ),
-
                   const SizedBox(width: 8),
-
                   /// Status chip
                   Container(
                     height: 22,
@@ -196,9 +188,7 @@ class _RecentActivityState extends State<RecentActivity> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 12),
-
               const Divider(color: AppColors.borderGrey, height: 1),
               const SizedBox(height: 12),
             ],

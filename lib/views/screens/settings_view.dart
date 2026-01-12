@@ -6,6 +6,7 @@ import 'package:nadi_user_app/preferences/preferences.dart';
 import 'package:nadi_user_app/providers/theme_provider.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
+import 'package:nadi_user_app/widgets/buttons/primary_button.dart';
 
 class SettingsView extends ConsumerStatefulWidget {
   const SettingsView({super.key});
@@ -88,6 +89,37 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
     );
   }
 
+  String selectedLanguage = "ENG";
+  Widget languageOption(String value) {
+    bool isActive = selectedLanguage == value;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedLanguage = value;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 2),
+        decoration: BoxDecoration(
+          color: isActive
+              ? const Color.fromRGBO(13, 95, 72, 1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          value,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: isActive ? Colors.white : Colors.black87,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Future<void> _logout(BuildContext context) async {
@@ -139,7 +171,9 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                     settingItem(
                       text: "About App",
                       icon: Image.asset("assets/icons/i.png"),
-                      onTap: () {},
+                      onTap: () {
+                        showAppDialog(context);
+                      },
                     ),
                     const SizedBox(height: 15),
                     settingItem(
@@ -209,11 +243,51 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                     ),
                     const SizedBox(height: 15),
 
-                    settingItem(
-                      text: "Change Language",
-                      icon: Image.asset("assets/icons/global.png"),
-                      onTap: () {},
+                    // settingItem(
+                    //   text: "Change Language",
+                    //   icon: Image.asset("assets/icons/global.png"),
+                    //   onTap: () {},
+                    // ),
+                    Row(
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color.fromRGBO(76, 149, 129, 0.3),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Image.asset("assets/icons/global.png"),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          "Change Language",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: const Color.fromRGBO(178, 209, 202, 1),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              languageOption("BH"),
+                              languageOption("ENG"),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
+
                     const SizedBox(height: 15),
                     settingItem(
                       text: "History",
@@ -266,7 +340,6 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                   ref
                                       .read(themeProvider.notifier)
                                       .changeTheme(ThemeMode.light);
-                                  
                                 },
                                 child: themeOption("Light"),
                               ),
@@ -318,6 +391,54 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
           ],
         ),
       ),
+    );
+  }
+
+  void showAppDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title
+                const Text(
+                  "About App",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 15),
+                // App description
+                const Text(
+                  "Nadi User App helps users manage services easily and efficiently.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 10),
+                // Version
+                const Text(
+                  "Version 1.0.0",
+                  style: TextStyle(fontSize: 13, color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
+                AppButton(
+                  text: "Close",
+                  height: 45,
+                  onPressed: () => Navigator.pop(context),
+                  color: AppColors.btn_primery,
+                  width: double.infinity,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

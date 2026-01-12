@@ -241,7 +241,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
 
-    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 2.05).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
@@ -249,9 +249,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
     _loadSplashMedia();
   }
 
-  // --------------------------------------------------
+
   // LOAD IMAGE / VIDEO FROM BACKEND
-  // --------------------------------------------------
+
   Future<void> _loadSplashMedia() async {
     debugPrint("📡 Calling splash API...");
 
@@ -296,9 +296,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
     }
   }
 
-  // --------------------------------------------------
+
   // FIREBASE NOTIFICATIONS
-  // --------------------------------------------------
+
   Future<void> _initNotifications() async {
     await FirebaseMessaging.instance.requestPermission(
       alert: true,
@@ -312,9 +312,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
     }
   }
 
-  // --------------------------------------------------
+
   // NAVIGATION
-  // --------------------------------------------------
+
   void _startNavigation() {
     Future.delayed(const Duration(seconds: 5), () {
       if (!mounted) return;
@@ -338,9 +338,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
     }
   }
 
-  // --------------------------------------------------
+
   // MEDIA UI WITH ANIMATION
-  // --------------------------------------------------
+ 
   Widget _buildMedia() {
     Widget child;
 

@@ -11,6 +11,7 @@ import 'package:nadi_user_app/services/my_service.dart';
 import 'package:nadi_user_app/widgets/ServiceRequestCardShimmer.dart';
 import 'package:nadi_user_app/widgets/app_back.dart';
 import 'package:nadi_user_app/widgets/my_service_card.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class MyServiceRequest extends StatefulWidget {
   const MyServiceRequest({super.key});
@@ -29,6 +30,7 @@ class _MyServiceRequestState extends State<MyServiceRequest> {
     super.initState();
     myserviceslist();
   }
+
   String formatDate(String date) {
     if (date.isEmpty) return "";
 
@@ -114,25 +116,38 @@ class _MyServiceRequestState extends State<MyServiceRequest> {
                         fit: BoxFit.contain,
                       ),
                     )
-                  : ListView.builder(
-                      itemCount: MyServices.length,
-                      itemBuilder: (context, index) {
-                        final service = MyServices[index];
-                        return ServiceRequestCard(
-                          title: service["serviceRequestID"] ?? "",
-                          date: formatDate(service["createdAt"] ?? ""),
-                          description: service["feedback"] ?? "",
-                          serviceStatus: service['serviceStatus'] ?? "",
-                          serviceLogo:
-                              service["serviceId"]['serviceLogo'] ?? "",
-                          onViewDetails: () {
-                            context.push(
-                              RouteNames.serviceRequestDetails,
-                              extra: service,
-                            );
-                          },
-                        );
-                      },
+                  : AnimationLimiter(
+                      child: ListView.builder(
+                        itemCount: MyServices.length,
+                        itemBuilder: (context, index) {
+                          final service = MyServices[index];
+
+                          return AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: const Duration(milliseconds: 700),
+                            child: SlideAnimation(
+                              verticalOffset: 50, // bottom → top
+                              curve: Curves.easeOutCubic,
+                              child: FadeInAnimation(
+                                child: ServiceRequestCard(
+                                  title: service["serviceRequestID"] ?? "",
+                                  date: formatDate(service["createdAt"] ?? ""),
+                                  description: service["feedback"] ?? "",
+                                  serviceStatus: service['serviceStatus'] ?? "",
+                                  serviceLogo:
+                                      service["serviceId"]['serviceLogo'] ?? "",
+                                  onViewDetails: () {
+                                    context.push(
+                                      RouteNames.serviceRequestDetails,
+                                      extra: service,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
             ),
           ],

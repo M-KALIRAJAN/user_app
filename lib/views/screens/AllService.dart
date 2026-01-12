@@ -8,6 +8,7 @@ import 'package:nadi_user_app/providers/serviceProvider.dart';
 import 'package:nadi_user_app/routing/app_router.dart';
 
 import 'package:nadi_user_app/widgets/app_back.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class Allservice extends ConsumerStatefulWidget {
   const Allservice({super.key});
@@ -26,7 +27,6 @@ class _AllserviceState extends ConsumerState<Allservice> {
       body: SafeArea(
         child: Column(
           children: [
-           
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
@@ -46,99 +46,104 @@ class _AllserviceState extends ConsumerState<Allservice> {
             ),
             const Divider(),
             const SizedBox(height: 15),
-        
+
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: GridView.builder(
-                  itemCount: services.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.1,
-                  ),
-                  itemBuilder: (context, index) {
-                    final service = services[index];
-                    final String name = service['name'] ?? '';
-                    final String serviceId = service['_id'] ?? "";
-                    final String? image = service['serviceImage'];
+                child: AnimationLimiter(
+                  child: GridView.builder(
+                    itemCount: services.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 1.1,
+                        ),
+                    itemBuilder: (context, index) {
+                      final service = services[index];
+                      final String name = service['name'] ?? '';
+                      final String serviceId = service['_id'] ?? "";
+                      final String? image = service['serviceImage'];
 
-                    return TweenAnimationBuilder(
-                      tween: Tween<double>(begin: 0.8, end: 1),
-                      duration: Duration(milliseconds: 300 + index * 100),
-                      curve: Curves.easeOut,
-                      builder: (context, double scale, child) {
-                        return Transform.scale(
-                          scale: scale,
-                          child: Opacity(
-                            opacity: scale,
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () {
-                          context.push(
-                            RouteNames.sendservicerequest,
-                            extra: {
-                              'title': name,
-                              'imagePath': "${ImageBaseUrl.baseUrl}/$image",
-                              'serviceId': serviceId,
-                              'heroTag': "serviceHero$index",
-                            },
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.25),
-                                blurRadius: 5,
-                                spreadRadius: 1,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Hero(
-                                  tag: "serviceHero$index",
-                                  child: CachedNetworkImage(
-                                    imageUrl: "${ImageBaseUrl.baseUrl}/$image",
-                                    height: 80,
-                                    width: 140,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Container(
-                                      color: Colors.grey.shade200,
-                                      height: 80,
-                                      width: 140,
+                      return AnimationConfiguration.staggeredGrid(
+                        position: index,
+                        columnCount: 2,
+                        duration: const Duration(
+                          milliseconds: 900,
+                        ), //  slow & smooth
+                        child: SlideAnimation(
+                          verticalOffset: 40, // bottom → top feel
+                          curve: Curves.easeOutCubic,
+                          child: FadeInAnimation(
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () {
+                                context.push(
+                                  RouteNames.sendservicerequest,
+                                  extra: {
+                                    'title': name,
+                                    'imagePath':
+                                        "${ImageBaseUrl.baseUrl}/$image",
+                                    'serviceId': serviceId,
+                                    'heroTag': "serviceHero$index",
+                                  },
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.25),
+                                      blurRadius: 5,
+                                      spreadRadius: 1,
                                     ),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
-                                  ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Hero(
+                                        tag: "serviceHero$index",
+                                        child: CachedNetworkImage(
+                                          imageUrl:
+                                              "${ImageBaseUrl.baseUrl}/$image",
+                                          height: 80,
+                                          width: 140,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) =>
+                                              Container(
+                                                color: Colors.grey.shade200,
+                                                height: 80,
+                                                width: 140,
+                                              ),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      name,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 10),
-                              Text(
-                                name,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
